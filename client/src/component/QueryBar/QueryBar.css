@@ -1,0 +1,16 @@
+.QueryBar {
+  min-width: 520px;
+  height: 34px;
+  display: flex;
+  align-items: flex-start;
+  background-color: white;
+}
+
+.QueryBar-container {
+  background-color: white;
+  border-radius: 2px;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  border: 1px solid #e8e8e8;
+}

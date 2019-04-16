@@ -1,0 +1,23 @@
+{
+  "name": "knowledge-assist-app-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "react",
+    "oneWEX",
+    "Watson"
+  ],
+  "author": "Inho Han",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "compression": "^1.7.4",
+    "express": "^4.16.4",
+    "method-override": "^2.3.10"
+  }
+}

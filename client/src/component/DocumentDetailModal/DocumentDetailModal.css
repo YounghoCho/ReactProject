@@ -1,0 +1,22 @@
+.DocumentDetailModal-body {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  grid-gap: 16px;
+  overflow-x: auto;
+  height: 70vh;
+}
+
+@media only screen and (max-width: 1200px) {
+  .App-name,
+  .App-logo {
+    display: none;
+  }
+}
+
+.DocumentDetailModal-body-content {
+  overflow: scroll;
+}
+
+.DocumentDetailModal-body-field table {
+  table-layout: fixed;
+}

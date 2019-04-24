@@ -10,16 +10,16 @@ const BasicRow = ({ title, body, highlighting, onClick, index, style }) => (
     style={{
       ...style
     }}
-    onClick={onClick}
+    onClick={onClick} //팝업창
   >
-    <List.Item.Meta
+    <List.Item.Meta //ant design, Avatar는 1,2,3 주황색 넘버링
       avatar={
-        <Avatar className="BasicRow-avatar" size="large">
-          {index}
+        <Avatar className="BasicRow-avatar" size="large"> 
+          {index} 
         </Avatar>
       }
       title={title.length < 100 ? title : title.slice(0, 100) + "..."}
-      description={
+      description={ //본문내용 response중 highlighting데이터
         highlighting ? (
           <div
             dangerouslySetInnerHTML={{

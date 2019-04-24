@@ -3,17 +3,17 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "antd": "^3.16.3",
+    "antd": "^3.6.1",
     "axios": "^0.18.0",
-    "classnames": "^2.2.6",
-    "d3": "^5.9.2",
+    "classnames": "^2.2.5",
+    "d3": "^5.5.0",
     "d3-cloud": "^1.2.5",
-    "npm": "^6.9.0",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-redux": "^5.1.1",
-    "react-scripts": "^2.1.8",
-    "redux": "^4.0.1",
+    "npm": "^6.4.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-redux": "^5.0.7",
+    "react-scripts": "1.1.4",
+    "redux": "^4.0.0",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
@@ -21,11 +21,5 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+  }
 }

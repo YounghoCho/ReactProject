@@ -1,9 +1,9 @@
-/**
- * This file is for declaring constants
- */
+//글로벌 String 선언부
 
-/**
- * CONSTANT FOR UI TEXTS
+/* Internationalization = i18n 이라하며, 다국어 시스템을 구현하는 환경을 구성하는 것이다.
+   각 js파일에서 import { i18n } from "./lib/constant"; 를 해서 String 메세지들을 사용한다.
+
+* CONSTANT FOR UI TEXTS
  * Basic form of writing string constants:
  * "ko-KR": "",
  * ko: "",
@@ -137,10 +137,10 @@ const STRINGS = {
 
 const i18n = {};
 
-const keys = Object.keys(STRINGS);
+const keys = Object.keys(STRINGS); //Object.keys는 STRINGS객체의 요소들을 각각 '0', '1' 이렇게 저장한다. ref : https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
 const keyCount = keys.length;
 // default language is English
-const languageCode = navigator.language || "en-US";
+const languageCode = navigator.language || "en-US"; //nevigator는 브라우저 종류에따라 조금 다르며 브라우저에서 설정된 언어표준에 따라 언어를 설정하는 객체이다. ref : https://developer.mozilla.org/en-US/docs/Web/API/NavigatorLanguage/language 
 for (let i = 0; i < keyCount; i++) {
   i18n[keys[i]] = STRINGS[keys[i]][languageCode];
 }

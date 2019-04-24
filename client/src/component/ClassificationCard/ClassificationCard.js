@@ -14,8 +14,8 @@ const ClassificationCard = ({ className, title, data, isLoading }) => (
     <List
       itemLayout="horizontal"
       loading={isLoading}
-      dataSource={data}
-      renderItem={item => (
+      dataSource={data} //server/app.js에서 result.data.metadata를 App.js에서 받아온다음 classes를 이쪽으로 넘긴다.
+      renderItem={item => ( //위에서 받아오 dataSource를 한개씩 item파라미터에 넣어 함수형으로 컴포넌트 리턴받는다.
         <ClassifierResultContainer
           key={`${item.probability}-${item.label}`}
           label={item.label}

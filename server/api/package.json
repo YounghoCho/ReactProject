@@ -1,0 +1,31 @@
+{
+  "name": "knowledge-assitant-api-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node",
+    "react",
+    "oneWEX",
+    "Watson"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "jsonwebtoken": "^8.2.1",
+    "method-override": "^2.3.10",
+    "morgan": "^1.9.0",
+    "pm2": "^3.5.0",
+    "request": "^2.85.0",
+    "request-debug": "^0.2.0",
+    "request-promise-native": "^1.0.5"
+  }
+}

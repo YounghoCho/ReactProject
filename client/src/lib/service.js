@@ -1,3 +1,5 @@
+//서버쪽으로 요청을 보내는 부분이다.
+
 import axios from "axios";
 
 const ROOT_URI =
@@ -6,7 +8,7 @@ const ROOT_URI =
     : process.env.REACT_APP_KA_API_URL;
 
 /**
- *
+ * 참고 변수명
  * @param {string} collectionId
  * @param {string} query
  * @param {number} docCount
@@ -63,7 +65,8 @@ export const fetchSimilarDocumentQueryResult = (
     data: {
       collectionId,
       query,
-      docCount
+      docCount,
+      test
     }
   }).then(response => response.data);
 

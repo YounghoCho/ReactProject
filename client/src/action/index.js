@@ -3,66 +3,72 @@
  * Please refer to https://redux.js.org/basics/actions
  */
 import axios from "axios";
-// 무슨 콜렉션들이지?
+//export 변수인 이유는 ../reducer에서 import해서 쓰기위해서이다.
 export const SET_CURRENT_COLLECTION = "SET_CURRENT_COLLECTION";
 export const SET_COLLECTIONS = "SET_COLLECTIONS";
 export const REQUEST_COLLECTIONS = "REQUEST_COLLECTIONS";
-//.env파일은 어디서 가져오지?
+
+/*process.env
+
+env는 command에 쳐보면 리눅스의 모든 환경번수들을 출력한다.
+즉 nodejs가 사용할 시스템의 환경변수를 정의하는 파일이며 process.env 방식으로 호출해서 사용한다.
+*/
 const ROOT_URI =
-  process.env.NODE_ENV !== "production"
+  process.env.NODE_ENV !== "production" //질문 : .env 파일은 자동으로 설정파일로 인식되어 읽어올 수 있는건가?
     ? "http://localhost:3100"
     : process.env.REACT_APP_KA_API_URL;
-//액션생성함수 : 액션을 만들다.
+//액션함수
 let setCurrentCollection = collectionId => {
   return {
-    //액션 : 상태 변화에 쓰이며 type 필드는 필수다.
-    type: SET_CURRENT_COLLECTION,
+    //액션
+    type: SET_CURRENT_COLLECTION, //현재 선택된 컬렉션
     collectionId
   };
 };
 
 let setCollections = collections => {
   return {
-    type: SET_COLLECTIONS,
+    type: SET_COLLECTIONS, //api로 불러온 콜렉션들
     collections
   };
 };
 
 let requestCollections = () => {
   return {
-    type: REQUEST_COLLECTIONS
+    type: REQUEST_COLLECTIONS //조회 할 콜렉션
   };
 };
 
 let fetchCollections = defaultCollectionId => {
-  //디스패치 : 액션을 발생시키는 함수. 파라미터에는 액션함수가 전달되어 발생하고, 스토어는 리듀서를 실행시켜 해당 액션을 처리하고 새로운 상태를 업데이트한다.
+  //액션실행함수
   return dispatch => {
-    dispatch(requestCollections());
-    return axios
-      .get(`${ROOT_URI}/collections`)
-      .then(response => response.data) //data랑 collections, collection은  어디서오는거야?
+    dispatch(requestCollections()); //인자로 액션함수를 전달하면, 스토어에서 리듀서에게 알려 state를 변화시킴
+    return axios //axio로 HTTP request를 보낸다.
+      .get(`${ROOT_URI}/collections`) //server/api/app.js의 /collections 라우터로 요청 전송.
+      .then(response => response.data) //es6 arrow funcion: function(res){return res.data}와 같다. 즉, 라우터에서 onewex 콜렉션 api응답인 response.data.items을 담아서 보낸게 response.data인데 이게 response라는 변수에 담긴다.
       .then(response => {
-        let mappedCollections = response.collections.map(collection => ({
-          id: collection.id,
+        //res.data를 한번더 까면 비로소 전달받은 collections객체(res.data.items)를 볼수있다.
+        let mappedCollections = response.collections.map(collection => ({ //collection 익명변수에는 호이스팅으로 response.data(items)가 들어온다.
+          id: collection.id, //items.id를 map시켜서 새로운 let변수를 만든다.
           name: collection.name
         }));
         let isCollectionFound = false;
-        if (defaultCollectionId) {
+        if (defaultCollectionId) { //읽어올 콜렉션 개수만큼 반복하면서 default로 등록된 collection 아이디와 일치하면 종료한다.
           for (let i = 0, count = mappedCollections.length; i < count; i++) {
             if (mappedCollections[i].id === defaultCollectionId) {
               isCollectionFound = true;
               break;
             }
           }
-        }//액션이 실행되면 어떻게 변하는거야?
-        dispatch(setCollections(mappedCollections));
-        dispatch(
+        }
+        dispatch(setCollections(mappedCollections)); //가져온 collection 들을 저장하고
+        dispatch( //현재 컬렉션을 저장해준다.
           setCurrentCollection(
             isCollectionFound
               ? defaultCollectionId
               : mappedCollections.length > 0
-                ? mappedCollections[0].id
-                : ""
+                ? mappedCollections[0].id //첫번째 콜렉션을 보여주거나
+                : ""  //콜렉션이 없으면 빈칸을 출력한다.
           )
         );
       })
@@ -71,8 +77,8 @@ let fetchCollections = defaultCollectionId => {
 };
 
 export {
-  setCurrentCollection,
-  setCollections,
-  requestCollections,
-  fetchCollections
+  setCurrentCollection, //App.js 에서 사용
+  setCollections, //여기서만 사용
+  requestCollections, //여기서만 사용
+  fetchCollections //App.js  에서 사용
 };

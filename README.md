@@ -16,7 +16,7 @@
 - 순차적인 dispatch에 의해 3개 action 객체들이 reducer의 실행로직 "collections()으로 순차적으로 전달된다"(중요)
 - 순차적으로 들어온 action들이 각각의 로직이 수행된다(setCurrentCollection, setCollections, requestCollections) 
 - 다시 App.js로 돌아와서 "fetchCollections" 호출 후 컬렉션들을 가져온다음 this.setState({isApplicationLoading : false})로 바뀌면서 최초 로딩될때 끄느 spining로딩 아이콘이 꺼지게된다.
-
+</br>
 <b>2. 원하는 콜렉션을 선택하고 쿼리를 날린다.</b>
 -쿼리 버튼은 최 말단 컴포넌트인 /component/QueryBar.js의 <Button onClick={onSearch}>에서 발생하며 상위 컴포넌트인 App.js에서 import하고있다.
 -App.js에서 <QueryBar onSerach={this.handleSearch}>에서 props로 handelSearch를 QueryBar로 전달한다.
@@ -28,7 +28,7 @@
 -즉 호출된 fetch 함수를 /lib/service.js에서 보면 axios로 onewex API를 호출하는 역할을 한다. 
 -그럼 server의 api router에서 miner의 api를 까서 request를 보내고 결과를 docs라는 key에 맵핑해서 App.js 아래의 fetchFunc로 최종 결과를 받아오고 setState로 re-rander를 한다.
 
-<h3>Word-cloud function Flow</h3> </br>
+<h3>Word-cloud function Flow</h3>
 src/App.js : 기본적으로 ResultCard를 그린다. render( <ResulrCard renderRow(queryMode)>)
 src/App.js : renderRow()가 queryMode에 따라서 <WordCloudRow> 혹은 <BasicRow>를 가져오면서 data를 넘긴다.
 WordCloudRow.js : <BasicRow>를 가져온다음 <WordCloud>를 가져온다. (참고로 <BasicRow>는 antd의 <List>를 가져와서 doc본문을 그리는 역할을 한다)

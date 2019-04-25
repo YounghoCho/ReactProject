@@ -1,4 +1,4 @@
-#리덕스 Flow
+#리덕스 Flow </br>
  client/src/index.js : App.js 호출 및 Store에 App 등록(action, reducer가 App.js로 전달된다)
  client/src/configureStore.js : Stroe 생성
  client/src/App.js : App 구현부로 state초기값으로 화면을 render한다.

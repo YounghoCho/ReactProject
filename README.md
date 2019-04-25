@@ -1,11 +1,12 @@
-#리덕스 Flow </br>
+<h3>Application Flow</h3>
+* Redux Flow </br>
  client/src/index.js : App.js 호출 및 Store에 App 등록(action, reducer가 App.js로 전달된다)
  client/src/configureStore.js : Stroe 생성
  client/src/App.js : App 구현부로 state초기값으로 화면을 render한다.
  client/src/reducer/index.js
  client/src/action/index.js
 
-#앱 실행 Flow
+* App working Flow
 1. 최초 화면 띄우면서 collection 정보를 불러온다.
 - src/index.js : store를 생성한 뒤에 App.js을 호출한다.
 - App.js가 호출되면서 기본 render()를 하고 그후에 componentDidMount가 실행되면서 fetchCollections()를 호출한다.
@@ -27,8 +28,31 @@
 -즉 호출된 fetch 함수를 /lib/service.js에서 보면 axios로 onewex API를 호출하는 역할을 한다. 
 -그럼 server의 api router에서 miner의 api를 까서 request를 보내고 결과를 docs라는 key에 맵핑해서 App.js 아래의 fetchFunc로 최종 결과를 받아오고 setState로 re-rander를 한다.
 
-#워드 클라우드 Flow </br>
+* Word-cloud function Flow </br>
 src/App.js : 기본적으로 ResultCard를 그린다. render( <ResulrCard renderRow(queryMode)>)
 src/App.js : renderRow()가 queryMode에 따라서 <WordCloudRow> 혹은 <BasicRow>를 가져오면서 data를 넘긴다.
 WordCloudRow.js : <BasicRow>를 가져온다음 <WordCloud>를 가져온다. (참고로 <BasicRow>는 antd의 <List>를 가져와서 doc본문을 그리는 역할을 한다)
 WordCloud.js : data를 받아와서 실제로 D3를 그린다. 데이터는 쿼리검색 버튼 눌렀을때 App.js의 fetchAnalysisData가 호출되면서 이미 브라우저로 가져온상태이다.
+
+<h3>How to run this app</h3>
+1. client/npm install, server/api/npm install, server/web/npm install
+
+2. client/에 .env 파일을 생성해준다.
+//파일명 : .env
+//파일내용 : REACT_APP_KA_API_URL=http://khwex-sd-host.fyre.ibm.com:8100
+//파일설명 : production 환경에서 port를 8100으로 지정했고 실제로 배포했을때 8100 port와 해당 주소를 가지고 API_URL로 쓰겠다는 뜻이다. 이건 gitignore에서 제외되기때문에 드라이브에 따로 보관한다.
+
+3. client/npm run build를 한다.
+//코드설명 : client단의 소스를 배포가능한 단위로 만들어서 server side에서 돌리게 해준다.
+mkdir /server/web/client
+cp client/build/* ../../server/web/client
+//코드설명 : 빌드된 client side가 서버쪽 client로 오게된다. 그래야 client에서 server쪽 호출이 가능하다.
+
+4. server/api/config.json을 생성한다.
+{
+  "rootUri" : "https://localhost",
+  "username" : "admin",
+  "password" : "admin",
+  "collectionId" : "3dbf7d7d-b9d2-1180-0000-01673ef5187c"
+}
+//코드설명 : docker port 443은 htts의 기본 포트이므로 생략하며 http가 아닌 https를 써야 onewex api docs에 접근할 수 있다.

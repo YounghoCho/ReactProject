@@ -27,7 +27,7 @@
 -즉 호출된 fetch 함수를 /lib/service.js에서 보면 axios로 onewex API를 호출하는 역할을 한다. 
 -그럼 server의 api router에서 miner의 api를 까서 request를 보내고 결과를 docs라는 key에 맵핑해서 App.js 아래의 fetchFunc로 최종 결과를 받아오고 setState로 re-rander를 한다.
 
-#워드 클라우드 Flow
+#워드 클라우드 Flow </br>
 src/App.js : 기본적으로 ResultCard를 그린다. render( <ResulrCard renderRow(queryMode)>)
 src/App.js : renderRow()가 queryMode에 따라서 <WordCloudRow> 혹은 <BasicRow>를 가져오면서 data를 넘긴다.
 WordCloudRow.js : <BasicRow>를 가져온다음 <WordCloud>를 가져온다. (참고로 <BasicRow>는 antd의 <List>를 가져와서 doc본문을 그리는 역할을 한다)

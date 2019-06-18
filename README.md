@@ -56,3 +56,6 @@ cp client/build/* ../../server/web/client
   "collectionId" : "3dbf7d7d-b9d2-1180-0000-01673ef5187c"
 }
 //코드설명 : docker port 443은 htts의 기본 포트이므로 생략하며 http가 아닌 https를 써야 onewex api docs에 접근할 수 있다.
+
+5. ./server/pm2 start ecosystem.config.js --env production
+로 실행한다.

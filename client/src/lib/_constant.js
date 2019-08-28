@@ -71,13 +71,7 @@ const STRINGS = {
     "en-US": "Classification",
     en: "Classification"
   },
-  // FacetField Card
-  Facet_CARD_TITLE: {
-    "ko-KR": "분석 관점",
-    ko: "분석 관심",
-    "en-US": "Facet Field",
-    en: "Facet Field"
-  },
+
   // Word Statistics Card
   WORD_STATISTICS_CARD_TITLE: {
     "ko-KR": "단어 통계",

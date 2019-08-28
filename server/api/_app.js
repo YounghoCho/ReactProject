@@ -225,11 +225,11 @@ const addHighlightingAndUserDefinedAnnotations = (
 
   const highlighting = highlightings[docId][keys[0]].join("\n"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
    const analyzedFacets = previews[docId].analyzed_facets;
-  //  console.log("### doc id ? " + docId);
+   console.log("### doc id ? " + docId);
    return {
     ...doc,
     ___highlighting: highlighting,
-    ___annotations: makeUserDefinedAnnotationList(analyzedFacets) //previews[docId].analyzed_facets; 분석패싯들을 전달하고, 파싱된 어노테이션 list를 return한다.
+    ___annotations: makeUserDefinedAnnotationList(analyzedFacets)
   };
 };
 
@@ -266,10 +266,9 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     for (annoName in temp) {
       // general noun or user-defined annotation
       if (
-       annoName.startsWith("annotation._word.noun.general") ||
-       (!annoName.startsWith("annotation._") &&
-      //  (!annoName.startsWith("annotation._") && annoName.startsWith("annotation._word.noun.general") &&
-        !annoName.startsWith("annotation.subfacet"))
+        annoName.startsWith("annotation._word.noun.general") ||
+        (!annoName.startsWith("annotation._") &&
+          !annoName.startsWith("annotation.subfacet"))
       ) {
         splitterIndex = annoName.indexOf("$") + 1;
         indices = temp[annoName];
@@ -281,7 +280,6 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
       }
     }
   }
-  console.log("#9 annotaions : " + annoList);
   return annoList
     .filter(val => val.annotation.length > 1)
     .sort((prev, next) => next.count - prev.count);
@@ -351,7 +349,7 @@ app.post("/basic-query", (req, res) => {
       // rows: docCount,
       // wt: "json"
     }),
-    url: `${STD_API_URI}/explore/${collectionId}/query?facet=on&facet.field=author&facet.field=keyword`
+    url: `${STD_API_URI}/explore/${collectionId}/query`
   });
 
   Promise.all([basicQuery, fetchFields(collectionId)])
@@ -359,36 +357,20 @@ app.post("/basic-query", (req, res) => {
       const basicQueryResponse = responses[0];
       const fetchFieldsResponse = responses[1];
       // console.log("token : " + session.token);
-      //   console.log("#2 : " + JSON.stringify(basicQueryResponse.data));
+      //  console.log("#2 : " + JSON.stringify(basicQueryResponse.data));
      //  console.log("#3 : " + JSON.stringify(fetchFieldsResponse.data));
-
-      //response객체는 크게 response, highlights, previews JSON 형태
-      const { response, facet_counts, highlighting, previews } = basicQueryResponse.data;
-      const docs = response.docs; //배열형태의 데이터¥
-      const author =  facet_counts.facet_fields.author; //facet_fileds는 배열이 아니라서 author 까지잡아줌
-      const keyword =  facet_counts.facet_fields.keyword;
-      // console.log("#1 : " + JSON.stringify(facet_counts.facet_fields.author));
-      // console.log("#2 : " + JSON.stringify(facet_counts.facet_fields.keyword));
-      let facetsArray = [];
-      let facetsCount = 3*2; //패싯은 3줄만 가져올것이며, 가져올 배열은 패싯명:갯수로 되어있어서 *2
       
-      for( let i=0; i< facetsCount; i+=2){
-          let temp = author[i] + " : " + author[i+1];
-          facetsArray.push(temp); 
-      }
-      for( let i=0; i< facetsCount; i+=2){
-        let temp = keyword[i] + " : " + keyword[i+1];
-        facetsArray.push(temp); 
-    }
+      const { response, highlighting, previews } = basicQueryResponse.data;
+      const docs = response.docs;
+      //  console.log("docs? : " + docs);
       const { tags, fields } = fetchFieldsResponse.data;
       const fieldMap = makeFieldMap(tags, fields);
       // console.log("highlighting : " + highlighting);
       // console.log("previews : " + previews);
       res.status(200).send({
-        docs: docs  //array
-         .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews)) //similar에서는 addUserDefinedAnnotations에서 ___annotaions들을 반환하고, basic에서는 addHighlightingAndUserDefinedAnnotations에서 ___ano..를 반환한다.
-         .map(mapFieldLabel(fieldMap)),
-        facetFields: facetsArray
+        docs: docs
+         .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews))
+         .map(mapFieldLabel(fieldMap))
       });
     })
     .catch(promiseErrorHandler(res));
@@ -470,7 +452,7 @@ app.post("/phrasal-query", (req, res) => {
 
   // lack of referential transparency, need to get rid of variables from outer function such as phrase, collectionId, session.token
   const queryWithAnnotations = annotations => {
-    let query = phrase; //쿼리문
+    let query = phrase;
     const queryOptions = {
       method: "POST",
       url: `${ROOT_URI}/miner/main/rapi/solr/${collectionId}/query`,
@@ -491,8 +473,6 @@ app.post("/phrasal-query", (req, res) => {
         return `${prevAnnotation} OR ${curAnnotation}`;
       })} OR ${query})`;
     }
-
-    
     form.q = `*:* AND ${query}`;
     queryOptions.data = queryString.stringify(form);
     return axios(queryOptions);
@@ -579,54 +559,6 @@ app.get("/collections/:collectionId", (req, res) => {
     })
     .catch(promiseErrorHandler(res));
 });
-
-// //NLQ
-//       app.post("/similar-document-query", (req, res) => {
-//         const query = req.body.query || "";
-      
-//         const basicQuery = axios({
-//           method: "POST",
-//           headers: {
-//             Authorization: `Bearer ${session.token}`,
-//             "Content-Type": "application/x-www-form-urlencoded"
-//           },
-//           data: queryString.stringify({
-//             q: query,
-//             start: 0,
-//             count: 10,
-//             sort: null,
-//             protocol: 'https:',
-//             method: 'GET',
-//             host: 'localhost',
-//             port: 443,
-//             path: '/api/v1/explore/3dbf7d7d-b9d2-1180-0000-016cb3bb7f58/query?q=ai&start=0&rows=10&userid=admin&facet=on&facet.field=author&facet=on&facet.field=author&facet.field=keyword',
-//             sendCookie: 'all'
-//           }),
-//           url: 'https://khwex-sd-host.fyre.ibm.com/builder/api/search',
-//           Referer: 'https://khwex-sd-host.fyre.ibm.com/builder/application/cognitive_search?search12=&page12=1'
-//         });
-      
-//         Promise.all([basicQuery])
-//         .then(responses => {
-//           const basicQueryResponse = responses[0];
-//           // console.log("token : " + session.token);
-//           console.log("#2 : " + JSON.stringify(responses[0]));
-  
-//             //  console.log("#3 : " + JSON.stringify(basicQueryResponse.data.response));
-//             //  console.log("#4 : " + JSON.stringify(basicQueryResponse.data.params));
-//             //  console.log("#5 : " + JSON.stringify(basicQueryResponse.data.facet_counts));
-             
-//          //  console.log("#3 : " + JSON.stringify(fetchFieldsResponse.data));
-    
-
-//           // console.log("highlighting : " + highlighting);
-//           // console.log("previews : " + previews);
-//           res.status(200).send({
-//           });
-//         })
-//         .catch(promiseErrorHandler(res));
-//     });
-
 //NLP 검색 api의 형태를 따르고 similar document search를 수행한다.
 app.post("/similar-document-query", (req, res) => {
   const collectionId = req.body.collectionId;
@@ -670,7 +602,6 @@ app.post("/similar-document-query", (req, res) => {
       let tempDocId;
       for (let i = 0, docCount = docs.length; i < docCount; i++) {
         tempDocId = docs[i].id || "";
-        //유사문서검색
         promises.push( //다시한번 api요청을 반복(for)요청 하는데 doc_id와 쿼리에 tempDocId를 넣어서 각각의 document를 response로 보낸다. 
           axios({
             method: "POST",

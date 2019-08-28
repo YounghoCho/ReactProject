@@ -14,8 +14,9 @@ class ResultCard extends Component {
   }
 
   setCardRef = element => {
-    if(element.current) //if문 없으면 current가 뭐냐고하면서 에러남. 이 자체구문은 react element 검색해서 보기.
+    if(element.current){
       this.cardBody = element.current.childNodes[1];
+    }
   };
 
   handlePageChange = page => {
@@ -44,7 +45,7 @@ class ResultCard extends Component {
       isLoading,
       onClickDocument,
       pageSize,
-      renderRow //queryMode에 따라 wordCloud와 Doc 본문을 그리는 함수(App.js)
+      renderRow
     } = this.props;
     const { currentPage } = this.state;
     const documentCount = data.length;
@@ -64,7 +65,7 @@ class ResultCard extends Component {
         }}
         ref={this.setCardRef}
         actions={[
-          <Pagination //pages
+          <Pagination
             size="small"
             total={documentCount}
             showTotal={(total, range) =>
@@ -79,8 +80,8 @@ class ResultCard extends Component {
         <List
           itemLayout="horizontal"
           loading={isLoading}
-          dataSource={partialData} //antd 예제를 보면 DataSource에 들어온 data들은 각각 1개씩이 renderItem에 인자로 들어간다.
-          renderItem={renderRow(onClickDocument)} //onClickDocument함수를 인자로 받는데 이 함수는 handleDocumentClick(App.js)를 호출하고 setState로 api로 받아온 document를 갱신한다.
+          dataSource={partialData}
+          renderItem={renderRow(onClickDocument)}
         />
       </Card>
     );

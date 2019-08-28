@@ -60,7 +60,7 @@ class WordCloud extends Component {
     this.svg = d3.select(element);
     this.svgElement = element;
   };
-  //최초 컴포넌트 render 후 실행
+
   componentDidMount() {
     this.renderWordCloud(
       this.props.data,
@@ -68,7 +68,7 @@ class WordCloud extends Component {
       this.svgElement.clientHeight
     );
   }
-  //prop(width, height, data, colorSet) 변화 후 render 실행
+
   componentDidUpdate(prevProps) {
     const prevDataLength = prevProps.data.length;
     const newDataLength = this.props.data.length;
@@ -83,12 +83,12 @@ class WordCloud extends Component {
       );
     }
   }
-  //component가 안보이게되면 DOM에서 제거한다.
+
   componentWillUnmount() {
     this.svg = null;
     this.svgElement = null;
   }
-  //작업순서 : react rencer -> return -> D3 render(Jquery rendering을 componentDidMount에서한다.)
+
   render() {
     const { width, height } = this.props;
     return (
@@ -195,8 +195,9 @@ class WordCloud extends Component {
   };
   /* end of d3 rendering methods */
 }
+
 WordCloud.propTypes = {
-  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]), //포함된 PropType중 하나.
+  width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   data: PropTypes.array,
   colorSet: PropTypes.oneOf(["blue", "red", "green"])

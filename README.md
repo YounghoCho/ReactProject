@@ -59,3 +59,8 @@ cp client/build/* ../../server/web/client
 
 5. ./server/pm2 start ecosystem.config.js --env production
 로 실행한다.
+
+<h2>Error</h2>
+# ISSUE 1
+CODE: EPROTO / Message: write EPROTO 140162199893888:error:14077410:SSL routines:SSL23_GET_SERVER_HELLO:sslv3 alert handshake failure:../deps/openssl/openssl/ssl/s23_clnt.c:802:
+=> application 이전할 때 발생하는 오류, 이유는 Nodejs 버전때문 (8 x, 12 x, 10(stable) 에서만 에러가 없음)

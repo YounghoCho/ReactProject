@@ -6,9 +6,20 @@
     width:10px;
 }
 
-#listHeader {
+#listHeader1,#listHeader2,#listHeader3,#listHeader4{
     font-weight: bold;
-    color: rgb(238,191,45);
+}
+#listHeader1{
+    color: #1c498d;
+}
+#listHeader2{
+    color: #8a231e;
+}
+#listHeader3{
+    color: #11533f;
+}
+#listHeader4{
+    color: #C49102;
 }
 #root > div > div > div.ant-spin-nested-loading > div > div > div{
     height:1px;

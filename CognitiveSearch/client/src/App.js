@@ -354,7 +354,28 @@ class App extends Component {
           const title = item.title;
           const body = item.body;
           const highlighting = item.___highlighting || "";
+          //WordCloud용 데이터로, 색상을 각각 주기 위한 작업.
+          let annotations1=[], annotations2=[], annotations3=[], annotations4=[];
           const annotations = item.___annotations;
+          for(let i=0; i<annotations.length; i++){
+            switch(annotations[i].colorGroup){
+              case "ai":
+                annotations1 = annotations1.concat(annotations[i]);
+                break;
+              case "industry":
+                annotations2 = annotations2.concat(annotations[i]);
+                break;
+              case "application":
+                annotations3 = annotations3.concat(annotations[i]);
+                break;
+              case "keywords":
+                annotations4 = annotations4.concat(annotations[i]);
+                break;
+              default:
+                annotations1 = annotations1.concat(annotations[i]);
+                break;
+            }
+          }
           //details
           const keyword = item.keyword;
           const author  = item.author;
@@ -368,7 +389,10 @@ class App extends Component {
                 body={body}
                 highlighting={highlighting}
                 onClick={onClickItem.bind(this, item)}
-                data={annotations}
+                data={annotations1}
+                data2={annotations2}
+                data3={annotations3}
+                data4={annotations4}
                 keyword = {keyword}
                 author = {author}
                 journalTitle = {journalTitle}

@@ -260,7 +260,8 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     annoName,
     annoList = [],
     splitterIndex,
-    indices;
+    indices,
+    colorGroup;
   for (fieldName in analyzedFacets) {
     temp = analyzedFacets[fieldName];
     for (annoName in temp) {
@@ -273,19 +274,46 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
         
       //annotation.subfacet : ._phrase, ._word 등
         //
-        if  (annoName.startsWith("annotation.unstructure.tech.ai")
-            || annoName.startsWith("annotation.unstructure.industry")
-            || annoName.startsWith("annotation.unstructure.application")
-            || annoName.startsWith("annotation.unstructure.keywords")
-        ){
+        if  (annoName.startsWith("annotation.unstructure.tech.ai")){
           splitterIndex = annoName.indexOf("$") + 1;
           indices = temp[annoName];
           annoList.push({
             annotation: annoName.slice(splitterIndex),
             indices,
-            count: indices.length
-        });
-      }
+            count: indices.length,
+            colorGroup: "ai"
+          });
+        }
+        if  (annoName.startsWith("annotation.unstructure.industry")){
+            splitterIndex = annoName.indexOf("$") + 1;
+            indices = temp[annoName];
+            annoList.push({
+                annotation: annoName.slice(splitterIndex),
+                indices,
+                count: indices.length,
+                colorGroup: "industry"
+            });
+        }
+        if  (annoName.startsWith("annotation.unstructure.application")){
+            splitterIndex = annoName.indexOf("$") + 1;
+            indices = temp[annoName];
+            annoList.push({
+                annotation: annoName.slice(splitterIndex),
+                indices,
+                count: indices.length,
+                colorGroup: "application"
+            });
+        }
+        if  (annoName.startsWith("annotation.unstructure.keywords")){
+            splitterIndex = annoName.indexOf("$") + 1;
+            indices = temp[annoName];
+            annoList.push({
+                annotation: annoName.slice(splitterIndex),
+                indices,
+                count: indices.length,
+                colorGroup: "keywords"
+            });
+        }
     }
   }
   // console.log("#10 annotaions : " + JSON.stringify(annoList));

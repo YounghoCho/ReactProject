@@ -19,7 +19,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery 
     >
         <List
          size="small"
-         header={<div id={'listHeader'}>{title1st}</div>}
+         header={<div id={'listHeader1'}>{title1st}</div>}
          itemLayout="horizontal"
          loading={isLoading}
          dataSource={data.slice(0,3)}
@@ -40,7 +40,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery 
         />
         <List
         size="small"
-         header={<div id={'listHeader'}>{title2nd}</div>}
+         header={<div id={'listHeader2'}>{title2nd}</div>}
          itemLayout="horizontal"
          loading={isLoading}
          dataSource={data.slice(3,6)}
@@ -61,7 +61,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery 
         />
         <List
         size="small"
-         header={<div id={'listHeader'}>{title3rd}</div>}
+         header={<div id={'listHeader3'}>{title3rd}</div>}
          itemLayout="horizontal"
          loading={isLoading}
          dataSource={data.slice(6,9)}
@@ -82,7 +82,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery 
         />
         <List
         size="small"
-         header={<div id={'listHeader'}>{title4th}</div>}
+         header={<div id={'listHeader4'}>{title4th}</div>}
          itemLayout="horizontal"
          loading={isLoading}
          dataSource={data.slice(9,12)}

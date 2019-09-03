@@ -13,7 +13,7 @@ const WORD_COLOR_SETS = {
     "#009bef",
     "#047cc0",
     "#175d8d",
-    "#1c496d"
+    "#1c498d"
   ],
   red: [
     /* IBM Design color: Red */
@@ -22,7 +22,7 @@ const WORD_COLOR_SETS = {
     "#ff5c49",
     "#e62325",
     "#aa231f",
-    "#83231e"
+    "#9f231e"
   ],
   green: [
     /* IBM Design color: Green */
@@ -31,27 +31,16 @@ const WORD_COLOR_SETS = {
     "#00aa5e",
     "#00884b",
     "#116639",
-    "#12512e"
+    "#11593f"
+  ],
+  yellow: [
+    "#F8DE7E",
+    "#FADA5E",
+    "#FCD12A",
+    "#FFC30B",
+    "#FDA50F",
+    "#C49102"
   ]
-  // "#E3F2FD",
-  // "#BBDEFB",
-  // "#90CAF9",
-  // "#64B5F6",
-  // "#42A5F5",
-  // "#2196F3",
-  // "#1E88E5",
-  // "#1976D2",
-  // "#1565C0",
-  // "#0D47A1"
-  /* IBM Design color : Blue */
-  // "#a8c0f3",
-  // "#79a6f6",
-  // "#5392ff",
-  // "#2d74da",
-  // "#1f57a4",
-  // "#25467a",
-  // "#1d3458",
-  // "#19273c"
 };
 
 class WordCloud extends Component {
@@ -64,6 +53,10 @@ class WordCloud extends Component {
   componentDidMount() {
     this.renderWordCloud(
       this.props.data,
+        this.props.data2,
+        this.props.data3,
+        this.props.data4,
+
       this.svgElement.clientWidth,
       this.svgElement.clientHeight
     );
@@ -78,6 +71,9 @@ class WordCloud extends Component {
     ) {
       this.renderWordCloud(
         this.props.data,
+          this.props.data2,
+          this.props.data3,
+          this.props.data4,
         this.svgElement.clientWidth,
         this.svgElement.clientHeight
       );
@@ -106,7 +102,7 @@ class WordCloud extends Component {
     return false;
   }
 
-  createWords = data => {
+  createWords = (data, GroupColor) => {
     if (data.length === 0) {
       return [];
     }
@@ -128,7 +124,8 @@ class WordCloud extends Component {
     let colorScale = d3
       .scaleQuantize()
       .domain([minCount, maxCount])
-      .range(WORD_COLOR_SETS[this.props.colorSet]);
+      // .range(WORD_COLOR_SETS[this.props.colorSet]);
+    .range(WORD_COLOR_SETS[GroupColor]);
 
     let words = data.map((datum, index) => {
       const fontSize = fontSizeScale(datum.count);
@@ -146,13 +143,19 @@ class WordCloud extends Component {
     return words;
   };
 
-  renderWordCloud = (data, viewBoxWidth, viewBoxHeight) => {
+  renderWordCloud = (data, data2, data3, data4, viewBoxWidth, viewBoxHeight) => {
     this.svg
       .select("g")
       .selectAll("*")
       .remove();
 
-    let words = this.createWords(data);
+    let words = this.createWords(data, "blue");
+    let words2 = this.createWords(data2, "red");
+    let words3 = this.createWords(data3, "green");
+    let words4 = this.createWords(data4, "yellow");
+    words = words.concat(words2);
+    words = words.concat(words3);
+    words = words.concat(words4);
 
     let layout = cloud()
       .size([viewBoxWidth, viewBoxHeight])

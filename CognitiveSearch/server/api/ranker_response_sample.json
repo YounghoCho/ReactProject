@@ -1,0 +1,479 @@
+{
+    "responseHeader": {
+        "zkConnected": true,
+        "status": 0,
+        "QTime": 78,
+        "params": {
+            "carrot.url": "id",
+            "bigram.maxlength": "15",
+            "df": "body",
+            "hl.requiredFieldMatch": "true",
+            "hl": "true",
+            "echoParams": "ALL",
+            "indent": "true",
+            "fl": "*, [guard]",
+            "clustering.engine": "amaclustering",
+            "clustering.results": "true",
+            "defType": "adismax",
+            "qdoc": "{\"fields\":{\"body\":\"the straw is not attached\"},\"metadata\":{}}",
+            "qf": "body",
+            "carrot.outputSubClusters": "true",
+            "sow": "false",
+            "wt": "json",
+            "mm": "100%",
+            "carrot.produceSummary": "true",
+            "bigram": "on",
+            "hl.encoder": "html",
+            "hl.snippets": "4",
+            "q": "*.*",
+            "clustering": "false",
+            "hl.method": "unified",
+            "carrot.title": "claim_product",
+            "carrot.snippet": "body",
+            "rq": "{!sss}",
+            "hl.q": "*.*"
+        }
+    },
+    "response": {
+        "numFound": 113,
+        "start": 0,
+        "docs": [
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&295",
+                "body": [
+                    "Straw is not attached."
+                ],
+                "date": [
+                    "2016-05-12T00:00:00Z"
+                ],
+                "client_age": [
+                    "50"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Manhattan"
+                ],
+                "client_segment": [
+                    "Golden Card Member"
+                ],
+                "claim_id": [
+                    "295"
+                ],
+                "claim_product": [
+                    "lemon tea"
+                ],
+                "client_sex": [
+                    "Female"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Tea"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&97",
+                "body": [
+                    "There was no straw attached to the drink."
+                ],
+                "date": [
+                    "2016-02-13T00:00:00Z"
+                ],
+                "client_age": [
+                    "20"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Manhattan"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "97"
+                ],
+                "claim_product": [
+                    "pine juice"
+                ],
+                "client_sex": [
+                    "Female"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Juice"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&619",
+                "body": [
+                    "I like to buy tea from ABCDE confectionery company, but this time there was no straw attached to the pack."
+                ],
+                "date": [
+                    "2016-09-28T00:00:00Z"
+                ],
+                "client_age": [
+                    "20"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Bronx"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "619"
+                ],
+                "claim_product": [
+                    "lemon tea"
+                ],
+                "client_sex": [
+                    "Male"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Tea"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&336",
+                "body": [
+                    "There was no spoon attached to the cup."
+                ],
+                "date": [
+                    "2016-05-29T00:00:00Z"
+                ],
+                "client_age": [
+                    "50"
+                ],
+                "client_location": [
+                    "Bronx"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "336"
+                ],
+                "claim_product": [
+                    "chocolate ice cream"
+                ],
+                "client_sex": [
+                    "Male"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Ice cream"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&810",
+                "body": [
+                    "I like to buy chocolate ice cream from ABCDE confectionery company, but this time there was no spoon attached to the pack."
+                ],
+                "date": [
+                    "2016-12-11T00:00:00Z"
+                ],
+                "client_age": [
+                    "40"
+                ],
+                "client_location": [
+                    "Queens"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "810"
+                ],
+                "claim_product": [
+                    "chocolate ice cream"
+                ],
+                "client_sex": [
+                    "Female"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Ice cream"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&677",
+                "body": [
+                    "the straw was detached."
+                ],
+                "date": [
+                    "2016-10-22T00:00:00Z"
+                ],
+                "client_age": [
+                    "60"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Bronx"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "677"
+                ],
+                "claim_product": [
+                    "lemon tea"
+                ],
+                "client_sex": [
+                    "Male"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Tea"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&673",
+                "body": [
+                    "The straw was detached."
+                ],
+                "date": [
+                    "2016-10-21T00:00:00Z"
+                ],
+                "client_age": [
+                    "20"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Manhattan"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "673"
+                ],
+                "claim_product": [
+                    "lemon tea"
+                ],
+                "client_sex": [
+                    "Male"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Tea"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&370",
+                "body": [
+                    "The straw was detached."
+                ],
+                "date": [
+                    "2016-06-14T00:00:00Z"
+                ],
+                "client_age": [
+                    "40"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Queens"
+                ],
+                "client_segment": [
+                    "Golden Card Member"
+                ],
+                "claim_id": [
+                    "370"
+                ],
+                "claim_product": [
+                    "lemon tea"
+                ],
+                "client_sex": [
+                    "Male"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Tea"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&783",
+                "body": [
+                    "The straw was detached."
+                ],
+                "date": [
+                    "2016-12-01T00:00:00Z"
+                ],
+                "client_age": [
+                    "70"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Manhattan"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "783"
+                ],
+                "claim_product": [
+                    "lemon tea"
+                ],
+                "client_sex": [
+                    "Male"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Tea"
+                ]
+            },
+            {
+                "id": "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&830",
+                "body": [
+                    "The straw was detached."
+                ],
+                "date": [
+                    "2016-12-22T00:00:00Z"
+                ],
+                "client_age": [
+                    "50"
+                ],
+                "label_predicted": [
+                    "package_container"
+                ],
+                "client_location": [
+                    "Bronx"
+                ],
+                "client_segment": [
+                    "Silver Card Member"
+                ],
+                "claim_id": [
+                    "830"
+                ],
+                "claim_product": [
+                    "pine juice"
+                ],
+                "client_sex": [
+                    "Female"
+                ],
+                "label": [
+                    "package_container"
+                ],
+                "claim_product_line": [
+                    "Juice"
+                ]
+            }
+        ]
+    },
+    "highlighting": {
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&295": {
+            "body_bigram": [
+                "Straw&#32;is&#32;not&#32;attache<em>d&#46;</em>"
+            ],
+            "body": [
+                "<em>Straw</em>&#32;<em>is</em>&#32;<em>not</em>&#32;<em>attached</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&97": {
+            "body_bigram": [
+                "There&#32;was&#32;no&#32;straw&#32;attached&#32;to&#32;the&#32;drin<em>k&#46;</em>"
+            ],
+            "body": [
+                "There&#32;<em>was&#32;no&#32;straw</em><em>&#32;attached</em>&#32;<em>to&#32;the&#32;drink</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&619": {
+            "body_bigram": [
+                "I&#32;like&#32;to&#32;buy&#32;tea&#32;from&#32;ABCDE&#32;confectionery&#32;company&#44;&#32;but&#32;this&#32;time&#32;there&#32;was&#32;no&#32;straw&#32;attached&#32;to&#32;the&#32;pac<em>k&#46;</em>"
+            ],
+            "body": [
+                "I&#32;<em>like</em>&#32;to&#32;<em>buy</em><em>&#32;tea</em>&#32;<em>from&#32;ABCDE&#32;confectionery&#32;company</em>&#44;&#32;<em>but</em>&#32;this&#32;<em>time</em>&#32;<em>there</em>&#32;<em>was</em><em>&#32;no&#32;straw</em><em>&#32;attached</em>&#32;<em>to&#32;the&#32;pack</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&336": {
+            "body_bigram": [
+                "There&#32;was&#32;no&#32;spoon&#32;attached&#32;to&#32;the&#32;cu<em>p&#46;</em>"
+            ],
+            "body": [
+                "There&#32;<em>was&#32;no&#32;spoon</em><em>&#32;attached</em>&#32;<em>to&#32;the&#32;cup</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&810": {
+            "body_bigram": [
+                "I&#32;like&#32;to&#32;buy&#32;chocolate&#32;ice&#32;cream&#32;from&#32;ABCDE&#32;confectionery&#32;company&#44;&#32;but&#32;this&#32;time&#32;there&#32;was&#32;no&#32;spoon&#32;attached&#32;to&#32;the&#32;pac<em>k&#46;</em>"
+            ],
+            "body": [
+                "I&#32;<em>like</em>&#32;to&#32;<em>buy</em><em>&#32;chocolate</em><em>&#32;ice&#32;cream</em>&#32;<em>from&#32;ABCDE&#32;confectionery&#32;company</em>&#44;&#32;<em>but</em>&#32;this&#32;<em>time</em>&#32;<em>there</em>&#32;<em>was</em><em>&#32;no&#32;spoon</em><em>&#32;attached</em>&#32;<em>to&#32;the&#32;pack</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&677": {
+            "body_bigram": [
+                "the&#32;straw&#32;was&#32;detache<em>d&#46;</em>"
+            ],
+            "body": [
+                "the&#32;<em>straw</em>&#32;<em>was</em>&#32;<em>detached</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&673": {
+            "body_bigram": [
+                "The&#32;straw&#32;was&#32;detache<em>d&#46;</em>"
+            ],
+            "body": [
+                "The&#32;<em>straw</em>&#32;<em>was</em>&#32;<em>detached</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&370": {
+            "body_bigram": [
+                "The&#32;straw&#32;was&#32;detache<em>d&#46;</em>"
+            ],
+            "body": [
+                "The&#32;<em>straw</em>&#32;<em>was</em>&#32;<em>detached</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&783": {
+            "body_bigram": [
+                "The&#32;straw&#32;was&#32;detache<em>d&#46;</em>"
+            ],
+            "body": [
+                "The&#32;<em>straw</em>&#32;<em>was</em>&#32;<em>detached</em><em>&#46;</em>"
+            ]
+        },
+        "file:///wexdata/zing/data/importer/cc1e933f-5447-4fe2-ab64-0a621d37f3a4/sample_data_VoC_label.csv?converter-id=18&830": {
+            "body_bigram": [
+                "The&#32;straw&#32;was&#32;detache<em>d&#46;</em>"
+            ],
+            "body": [
+                "The&#32;<em>straw</em>&#32;<em>was</em>&#32;<em>detached</em><em>&#46;</em>"
+            ]
+        }
+    }
+}

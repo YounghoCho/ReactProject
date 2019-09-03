@@ -1,0 +1,15 @@
+.FacetCard {
+    overflow: auto;
+}
+.ant-spin-nested-loading > div > div > div > div > img
+{
+    width:10px;
+}
+
+#listHeader {
+    font-weight: bold;
+    color: rgb(238,191,45);
+}
+#root > div > div > div.ant-spin-nested-loading > div > div > div{
+    height:1px;
+}

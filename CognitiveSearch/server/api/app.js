@@ -209,7 +209,7 @@ const fetchFields = collectionId =>
   });
 
 const fetchHighlight = (collectionId, finalQuery, start, docCount) =>
-    axios({
+   axios({
         method: "POST",
         headers: {
             Authorization: `Bearer ${session.token}`,
@@ -637,8 +637,155 @@ app.get("/collections/:collectionId", (req, res) => {
 
 
 
-
 //final
+app.post("/similar-document-query", (req, res) => {
+    const collectionId = req.body.collectionId;
+    const query = req.body.query || "";
+    const docCount = req.body.docCount || 5;
+    const start = req.body.start || 0;
+    const newFacet = req.body.newFacet || "";
+
+    const nlpData = {
+        fields: {
+            body: query
+        },
+        metadata: {}
+    };
+
+    const nlpRequest = axios({
+        method: "POST",
+        url: `${ROOT_URI}/api/v1/collections/${collectionId}/analyze`,
+        headers: {
+            Authorization: `Bearer ${session.token}`,
+            "Content-Type": "application/json",
+            accept: "application/json"
+        },
+        data: nlpData
+    });
+// now(2);
+    Promise.all([nlpRequest])
+        .then(responses => {
+// now(3);
+            const nlpResponse = responses[0]; //miner 화면의 query결과
+            // console.log("#출력1 : " + fetchSimilarDocumentsResponse.data); //objec 출력
+            // console.log("#출력2 : " + fetchSimilarDocumentsResponse.data.toString()); //object 출력
+            // console.log("#출력3 : " + JSON.stringify(fetchSimilarDocumentsResponse.data)); //올바른 출력
+            const responseData = nlpResponse.data;
+            const parseData = responseData.enriched.body[0].annotations;
+            const annoLength = parseData.length;
+            let annoResult = ''; //나중에 원본 query와 합친다.
+
+            for(let i=0; i<annoLength; i++){
+                if(parseData[i].type === ".unstructure.tech.ai" ||
+                    parseData[i].type === ".unstructure.industry" ||
+                    parseData[i].type === ".unstructure.application")
+                {
+                    annoResult += " OR ";
+                    annoResult += parseData[i].properties.facetval.trim();
+                }
+            } //end for
+            let finalQuery = '';
+            if(query === annoResult)
+                finalQuery = query;
+            else
+                finalQuery = query + annoResult;
+
+            if(newFacet != '')
+                finalQuery += " AND ";
+                finalQuery += newFacet;
+
+            console.log("#결과 : " + finalQuery);
+            /***************** NLP 완료 *******************/
+// now(4);
+            //error: "Request path contains unescaped characters"
+            //원인 : uri 중간에 공백이? 아니 한글이 들어가서 그래..
+            //해결 : 해결불가;
+            const facetUriToBeAdded =
+                'facet=on'
+                + '&facet.field=annotation.unstructure.tech'
+                + '&facet.field=annotation.unstructure.industry'
+                + '&facet.field=annotation.unstructure.application';
+
+            const freeTextSearch = axios({
+                method: "POST",
+                headers: { //기본적으로 onewex api 요청할때 필요한 token이다. ip/docs/ 가면나와있음.
+                    Authorization: `Bearer ${session.token}`,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data: queryString.stringify({
+                    q: finalQuery,
+                    wt: "json",
+                    rows: docCount,  //속도에 영향 //fetchHighlight의 rows수도 맞춰줘야한다.
+                    preview: true, //preview 팝업을 켜는 옵션
+                    start : start
+                }),
+                url: `${STD_API_URI}/explore/${collectionId}/query?${facetUriToBeAdded}`, //F12로 request header 열어서 정보확인
+            });
+
+// now(5);
+            Promise.all([freeTextSearch, fetchHighlight(collectionId, finalQuery, start, docCount)])
+                .then(responses => {
+// now(6);
+
+                    const freeTextResponse = responses[0];
+                    const getHighlightingResponse = responses[1];
+                    // console.log("## : " + JSON.stringify(freeTextResponse.data));
+
+                    const { response, facet_counts, previews } = freeTextResponse.data;
+                    const {highlighting} = getHighlightingResponse.data;
+                    // console.log("#test : "+JSON.stringify(highlighting));
+                    const docs = response.docs;
+                    //S : Data for FacetCard
+                    const annoTech =  facet_counts.facet_fields[`annotation.unstructure.tech`]; //그냥 facet_fields.annotation.unstructure하면 json 구조가 깨져서 에러남.
+                    const annoIndustry = facet_counts.facet_fields[`annotation.unstructure.industry`];
+                    const annoApplication = facet_counts.facet_fields[`annotation.unstructure.application`];
+                    // console.log("#11 : " + annoTech);
+                    let facetsArray = [];
+                    let facetsCount = 5*2;
+                    let assemble = (annoArray) => {
+                        if(annoArray == undefined){
+                            let emptyString = "";
+                            facetsArray.push(emptyString);
+                            facetsArray.push(emptyString);
+                            facetsArray.push(emptyString);
+                        }
+                        else{
+                            for( let i=0; i< facetsCount; i+=2){
+                                // console.log("#Annotation Arrays : "+annoArray.toString())
+                                let temp = (annoArray[i] + " : " + annoArray[i + 1]);
+                                facetsArray.push(temp);
+                            }
+                        }
+                    };
+                    assemble(annoTech);
+                    assemble(annoIndustry);
+                    assemble(annoApplication);
+                    //E : Data for FacetCard
+// now(7);
+
+                    res.status(200).send({
+                        docs: docs  //array
+                            .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews)), //similar에서는 addUserDefinedAnnotations에서 ___annotaions들을 반환하고, basic에서는 addHighlightingAndUserDefinedAnnotations에서 ___ano..를 반환한다.
+                        facetFields: facetsArray
+                    });
+
+
+                }) //end Promise freeTextSearch
+                .catch(promiseErrorHandler("1:"+res))
+
+        }) //end nlpRequest
+        .catch(promiseErrorHandler("2"+res));
+});
+
+
+
+
+
+
+
+
+
+
 app.post("/similar-document-query", (req, res) => {
     const collectionId = req.body.collectionId;
     const query = req.body.query || "";

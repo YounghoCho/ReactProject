@@ -1,8 +1,13 @@
+let test1 = () => {
+    func(1);
+}
+let test2 = () => {
+    func(2);
+}
 
-let queryHistory = [
-    {
-        query : 1
-    }
-];
 
-console.log(queryHistory[0].query);
+let func = (n) => {
+    console.log("test" + n);
+}
+test1();
+test2();

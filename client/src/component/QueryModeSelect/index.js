@@ -1,7 +1,0 @@
-export {
-  default,
-  QUERY_MODE_BASIC_SEARCH,
-  QUERY_MODE_SIMILAR_DOCUMENT_SEARCH,
-  QUERY_MODE_PHRASAL_SEARCH,
-  QUERY_MODE
-} from "./QueryModeSelect";

@@ -235,6 +235,7 @@ class App extends Component {
       documents: [],
       facetFields: []
     });
+    
     this.fetchAnalysisData(query, null);
     this.fetchAnalysisData2(query, null);
     this.fetchAnalysisData3(query, null);

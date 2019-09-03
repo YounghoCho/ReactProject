@@ -1,7 +1,0 @@
-.QueryModeSelect > div {
-  border: none !important;
-}
-
-.QueryModeSelect.ant-select-open > div {
-  box-shadow: 0 0 0 0 transparent;
-}

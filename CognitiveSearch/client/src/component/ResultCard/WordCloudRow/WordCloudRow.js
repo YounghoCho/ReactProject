@@ -3,7 +3,6 @@ import PropTypes from "prop-types";
 import BasicRow from "../BasicRow";
 import WordCloud from "../../WordCloud";
 import "./WordCloudRow.css";
-import { List, Descriptions } from 'antd';
 
 const WordCloudRow = ({ data, data2, data3, title, body, highlighting, onClick,
                           keyword, author, journalTitle, publisher, yearOfPublication}) => (

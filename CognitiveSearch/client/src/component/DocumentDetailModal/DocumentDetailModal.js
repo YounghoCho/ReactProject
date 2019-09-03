@@ -1,3 +1,5 @@
+<<<<<<< HEAD
+<<<<<<< HEAD
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Modal, Table, Tabs } from "antd";

@@ -52,7 +52,9 @@ export const fetchClassifierResult = (collectionId, query) =>
 export const fetchSimilarDocumentQueryResult = (
   collectionId,
   query,
-  docCount
+  docCount,
+  start,
+  newFacet
 ) =>
   axios({
     url: `${ROOT_URI}/similar-document-query`,
@@ -63,7 +65,9 @@ export const fetchSimilarDocumentQueryResult = (
     data: {
       collectionId,
       query,
-      docCount
+      docCount,
+        start,
+        newFacet
     }
   }).then(response => response.data);
 

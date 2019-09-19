@@ -5,9 +5,7 @@ import WordCloud from "../../WordCloud";
 import "./WordCloudRow.css";
 import { List, Descriptions } from 'antd';
 
-
-
-const WordCloudRow = ({ data, data2, data3, data4, title, body, highlighting, onClick,
+const WordCloudRow = ({ data, data2, data3, title, body, highlighting, onClick,
                           keyword, author, journalTitle, publisher, yearOfPublication}) => (
   <div className="WordCloudRow">
     <BasicRow
@@ -15,13 +13,16 @@ const WordCloudRow = ({ data, data2, data3, data4, title, body, highlighting, on
       body={body}
       highlighting={highlighting}
       onClick={onClick}
+      author={author}
+      publisher={publisher}
+      yearOfPublication={yearOfPublication == null ? '' : yearOfPublication.toString().substr(0,10)}
     />
-    <WordCloud width={"100%"} height={"100%"} data={data} data2={data2} data3={data3} data4={data4}/>
-    <Descriptions bordered>
-    <Descriptions.Item label="작성자" span={3}>{author}</Descriptions.Item>
-    <Descriptions.Item label="발행처" span={3}>{publisher}</Descriptions.Item>
-    <Descriptions.Item label="발행년도" span={3}>{yearOfPublication}</Descriptions.Item>
-    </Descriptions>
+    <WordCloud width={"100%"} height={"100%"} data={data} data2={data2} data3={data3}/>
+    {/*<Descriptions bordered>*/}
+        {/*<Descriptions.Item label="작성자" span={3}>{author}</Descriptions.Item>*/}
+        {/*<Descriptions.Item label="발행처" span={3}>{publisher}</Descriptions.Item>*/}
+        {/*<Descriptions.Item label="발행년도" span={3}>{yearOfPublication}</Descriptions.Item>*/}
+    {/*</Descriptions>*/}
  </div>
 );
 

@@ -8,40 +8,27 @@ import "./WordCloud.css";
 const WORD_COLOR_SETS = {
   blue: [
     /* IBM Design color: Cerulean */
-    "#95c4f3",
-    "#56acf2",
     "#009bef",
     "#047cc0",
-    "#175d8d",
-    "#1c498d"
+    "#046cc0",
+    "#175d8d"
   ],
   red: [
     /* IBM Design color: Red */
-    "#ffaa9d",
-    "#ff806c",
     "#ff5c49",
     "#e62325",
-    "#aa231f",
-    "#9f231e"
+    "#d31325",
+    "#aa231f"
   ],
   green: [
     /* IBM Design color: Green */
-    "#57d785",
-    "#34bc6e",
     "#00aa5e",
     "#00884b",
-    "#116639",
-    "#11593f"
-  ],
-  yellow: [
-    "#F8DE7E",
-    "#FADA5E",
-    "#FCD12A",
-    "#FFC30B",
-    "#FDA50F",
-    "#C49102"
+    "#00784b",
+    "#116639"
   ]
 };
+
 
 class WordCloud extends Component {
   /* React lifecycle methods */
@@ -55,8 +42,6 @@ class WordCloud extends Component {
       this.props.data,
         this.props.data2,
         this.props.data3,
-        this.props.data4,
-
       this.svgElement.clientWidth,
       this.svgElement.clientHeight
     );
@@ -73,7 +58,6 @@ class WordCloud extends Component {
         this.props.data,
           this.props.data2,
           this.props.data3,
-          this.props.data4,
         this.svgElement.clientWidth,
         this.svgElement.clientHeight
       );
@@ -102,7 +86,29 @@ class WordCloud extends Component {
     return false;
   }
 
-  createWords = (data, GroupColor) => {
+  createColor = ( data, GroupColor )=> {
+    if (data.length === 0) {
+      return [];
+    }
+    // Use the max total_amount in the data as the max in the scale's domain
+    // note we have to ensure the total_amount is a number.
+    let maxCount = d3.max(data, datum => datum.count);
+    let minCount = d3.min(data, datum => datum.count);
+
+    let colorScale = d3
+        .scaleQuantize()
+        .domain([minCount, maxCount])
+        .range(WORD_COLOR_SETS[GroupColor]);
+
+    let words = data.map((datum, index) => {
+      return {
+        color: colorScale(datum.count)
+      };
+    });
+    return words;
+  };
+
+  createWords = ( data )=> {
     if (data.length === 0) {
       return [];
     }
@@ -112,20 +118,14 @@ class WordCloud extends Component {
     let minCount = d3.min(data, datum => datum.count);
 
     let fontSizeScale = d3
-      .scaleLinear()
-      .domain([minCount, maxCount])
-      .range([14, 32]);
+        .scaleLinear()
+        .domain([minCount, maxCount])
+        .range([14, 32]);
 
     let fontWeightScale = d3
-      .scaleQuantize()
-      .domain([minCount, maxCount])
-      .range(["lighter", "normal", "bold", "bolder"]);
-
-    let colorScale = d3
-      .scaleQuantize()
-      .domain([minCount, maxCount])
-      // .range(WORD_COLOR_SETS[this.props.colorSet]);
-    .range(WORD_COLOR_SETS[GroupColor]);
+        .scaleQuantize()
+        .domain([minCount, maxCount])
+        .range(["lighter", "normal", "bold", "bolder"]);
 
     let words = data.map((datum, index) => {
       const fontSize = fontSizeScale(datum.count);
@@ -134,32 +134,53 @@ class WordCloud extends Component {
         fontSize,
         fontWeight: fontWeightScale(datum.count),
         text: datum.annotation,
-        count: datum.count,
-        color: colorScale(datum.count)
+        count: datum.count
       };
     });
-    words.sort((a, b) => b.count - a.count);
-
     return words;
   };
 
-  renderWordCloud = (data, data2, data3, data4, viewBoxWidth, viewBoxHeight) => {
+
+  renderWordCloud = (data, data2, data3, viewBoxWidth, viewBoxHeight) => {
     this.svg
       .select("g")
       .selectAll("*")
       .remove();
 
-    let words = this.createWords(data, "blue");
-    let words2 = this.createWords(data2, "red");
-    let words3 = this.createWords(data3, "green");
-    let words4 = this.createWords(data4, "yellow");
-    words = words.concat(words2);
-    words = words.concat(words3);
-    words = words.concat(words4);
+    let color = this.createColor(data, "blue");
+    let color2 = this.createColor(data2, "red");
+    let color3 = this.createColor(data3, "green");
+    color = color.concat(color2);
+    color = color.concat(color3);
+    // color :[{"color":"#ff5c49"},{"color":"#9f231e"},{"color":"#1c498d"},{"color":"#009bef"}]
+
+    data = data.concat(data2);
+    data = data.concat(data3);
+    let words = this.createWords(data);
+    // words :[{"id":0,"fontSize":32,"fontWeight":"bolder","text":"인공지능","count":60},
+    //         {"id":1,"fontSize":14,"fontWeight":"lighter","text":"머신러닝","count":3},
+    //         {"id":0,"fontSize":14,"fontWeight":"lighter","text":"조영호","count":20},
+    //         {"id":1,"fontSize":32,"fontWeight":"bolder","text":"강효정","count":40}
+    //        ]
+
+    let sum = {};
+    let result = [];
+    for(let i=0; i<color.length; i++){
+      sum = Object.assign(words[i], color[i]);
+      result.push(sum);
+    }
+    result.sort((a, b) => b.count - a.count);
+    // alert(JSON.stringify(result));
+    // result : [{"id":0,"fontSize":32,"fontWeight":"bolder","text":"인공지능","count":60,"color":"#ff5c49"},
+    //           {"id":1,"fontSize":32,"fontWeight":"bolder","text":"강효정","count":40,"color":"#009bef"},
+    //           {"id":0,"fontSize":14,"fontWeight":"lighter","text":"조영호","count":20,"color":"#1c498d"},
+    //           {"id":1,"fontSize":14,"fontWeight":"lighter","text":"머신러닝","count":3,"color":"#9f231e"}
+    //          ]
+
 
     let layout = cloud()
       .size([viewBoxWidth, viewBoxHeight])
-      .words(words)
+      .words(result)
       .text(datum => datum.text)
       .rotate(() => 0)
       .fontSize(datum => datum.fontSize)

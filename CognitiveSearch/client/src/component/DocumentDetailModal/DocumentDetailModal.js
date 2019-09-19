@@ -32,7 +32,7 @@ class DocumentDetailModal extends Component {
 
   render() {
     const {
-      doc,
+      doc,  //result[0].docs (본문)
       fieldPageSize,
       wordPageSize,
       visible,
@@ -40,10 +40,11 @@ class DocumentDetailModal extends Component {
       onCancel,
       footer
     } = this.props;
+
     const { currentFieldPage, currentWordPage } = this.state;
     return (
       <Modal
-        title={doc.title || "No title"}
+        title={doc.Title || "No title"}
         visible={visible}
         onCancel={onCancel}
         onOk={onOk}
@@ -55,15 +56,7 @@ class DocumentDetailModal extends Component {
             className="DocumentDetailModal-body-content"
             ref={this.setModalBodyContentRef}
           >
-            {doc.___highlighting ? (
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: `${doc.___highlighting}`
-                }}
-              />
-            ) : (
-              doc.body
-            )}
+            <div dangerouslySetInnerHTML={ {__html: doc.body.toString().replace(/\n/g,`<br>`)} }></div>
           </div>
           <div className="DocumentDetailModal-body-field">
             <Tabs defaultActiveKey="fields">
@@ -147,7 +140,26 @@ class DocumentDetailModal extends Component {
     if (!annotations || annotations.length === 0) {
       return <div class="ant-list-empty-text">No data</div>;
     }
+    // console.log("무엇이왔나요? : " + JSON.stringify(annotations));
 
+    //annotations 배열 쪼개기 from App.js
+    let annotations1=[], annotations2=[], annotations3=[];
+    for(let i=0; i<annotations.length; i++){
+      switch(annotations[i].colorGroup){
+        case "ai":
+          annotations1 = annotations1.concat(annotations[i]);
+          break;
+        case "industry":
+          annotations2 = annotations2.concat(annotations[i]);
+          break;
+        case "application":
+          annotations3 = annotations3.concat(annotations[i]);
+          break;
+        default:
+          annotations1 = annotations1.concat(annotations[i]);
+          break;
+      }
+    }
     const columns = [
       {
         title: i18n.WORD,
@@ -166,7 +178,13 @@ class DocumentDetailModal extends Component {
           width={"100%"}
           height={"30vh"}
           data={
-            annotations.length > 50 ? annotations.slice(0, 50) : annotations
+            annotations1.length > 50 ? annotations1.slice(0, 50) : annotations1
+          }
+          data2={
+            annotations2.length > 50 ? annotations2.slice(0, 50) : annotations2
+          }
+          data3={
+            annotations3.length > 50 ? annotations3.slice(0, 50) : annotations3
           }
         />
         <Table

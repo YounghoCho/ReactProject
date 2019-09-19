@@ -116,43 +116,43 @@ class App extends Component {
         <Layout className="App">
         <Header className="App-header">
         <div className="App-header-container">
-        <img className="App-logo" src={logo} alt="logo" height="40" />
-        <div className="App-name-container">
-        <div className="App-name-title">
-        IBM Cognitive Search
-    </div>
-    <div className="App-name-subtitle">
-        Watson Explorer oneWEX ver.12.0.3
-    </div>
-    </div>
-    <CollectionSelect
-    collections={collections}
-    currentCollectionId={currentCollection.id}
-    onChangeCollection={this.handleCollectionChange}
-    onClickRefresh={this.handleCollectionRefreshClick}
-    isLoadingCollection={isFetchingCollections}
-    />
-    </div>
-
-    <QueryBar
-    inputValue={query}
-    onChangeInput={this.handleQueryInputChange}
-    onClear={this.handleClearQuery}
-    onSearch={this.handleSearch}
-    queryMode={nextQueryMode}
-    onChangeQueryMode={this.handleQueryModeChange}
-    placeholder={i18n.QUERY_BAR_PLACEHOLDER}
-    disabled={isApplicationLoading}
-    />
+          <img className="App-logo" src={logo} alt="logo" height="40" />
+          <div className="App-name-container" onClick={this.goToHome}>
+            <div className="App-name-title">
+              IBM Cognitive Search
+            </div>
+            <div className="App-name-subtitle">
+                Watson Explorer oneWEX ver.12.0.3
+            </div>
+          </div>
+          <QueryBar
+              inputValue={query}
+              onChangeInput={this.handleQueryInputChange}
+              onClear={this.handleClearQuery}
+              onSearch={this.handleSearch}
+              queryMode={nextQueryMode}
+              onChangeQueryMode={this.handleQueryModeChange}
+              placeholder={i18n.QUERY_BAR_PLACEHOLDER}
+              disabled={isApplicationLoading}
+          />
+        </div>
+          <CollectionSelect
+              collections={collections}
+              currentCollectionId={currentCollection.id}
+              onChangeCollection={this.handleCollectionChange}
+              onClickRefresh={this.handleCollectionRefreshClick}
+              isLoadingCollection={isFetchingCollections}
+          />
     </Header>
+
     <Layout className="App-body">
-        <Spin
-    size="large"
-    tip={i18n.LOADING}
-    style={{ maxHeight: "100%" }}
-    spinning={isApplicationLoading}
-        >
-        <Content className="App-body-content">
+      <Spin
+        size="large"
+        tip={i18n.LOADING}
+        style={{ maxHeight: "100%" }}
+        spinning={isApplicationLoading}
+      >
+      <Content className="App-body-content">
         <div
           className="App-body-content-column"
           style={{ gridTemplateRows: "1fr" }}
@@ -168,23 +168,24 @@ class App extends Component {
     <div
     className="App-body-content-column"
     style={{ gridTemplateRows: "1fr" }}
-  >
-  <ResultCard
-    title={i18n.RESULT_CARD_TITLE}
-    isLoading={isDocumentsLoading}
-    data={documents}
-    onClickDocument={this.handleDocumentClick}
-    renderRow={this.renderRow(queryMode)}
-    />
+    >
+      <ResultCard
+        title={i18n.RESULT_CARD_TITLE}
+        isLoading={isDocumentsLoading}
+        data={documents}
+        onClickDocument={this.handleDocumentClick}
+        renderRow={this.renderRow(queryMode)}
+      />
     </div>
     </Content>
     </Spin>
     </Layout>
+
     <DocumentDetailModal
-    doc={selectedDocument}
-    visible={modalVisible}
-    onOk={this.handleModalClickOk}
-    onCancel={this.handleModalClickCancel}
+      doc={selectedDocument}
+      visible={modalVisible}
+      onOk={this.handleModalClickOk}
+      onCancel={this.handleModalClickCancel}
     />
     </Layout>
   );
@@ -192,6 +193,9 @@ class App extends Component {
   /* end of lifecycle methods */
 
   /* ui handler methods */
+  goToHome = () => {
+    window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8000';
+  }
   handleCollectionChange = collectionId => {
     this.props.setCurrentCollection(collectionId);
     browserStorage.setItem("defaultCollectionId", collectionId);
@@ -227,7 +231,14 @@ class App extends Component {
   };
 
   handleSendQuery = query => {
-    this.fetchAnalysisData(query);
+    this.setState({
+      documents: [],
+      facetFields: []
+    });
+    this.fetchAnalysisData(query, null);
+    this.fetchAnalysisData2(query, null);
+    this.fetchAnalysisData3(query, null);
+    this.fetchAnalysisData4(query, null);
   };
 
   handleModalClickOk = () => {
@@ -252,21 +263,29 @@ class App extends Component {
     });
   };
 
-  handleClickQuery = (index, query, queryMode, event) => {
+  handleClickQuery = (index, query, queryMode, newFacet) => {
     this.setState(
         {
           nextQueryMode: queryMode,
-          query
+          query,
+          documents: [],
+          facetFields: []
         },
         () => {
-          this.fetchAnalysisData(query);
+          this.fetchAnalysisData(query, newFacet);
+          this.fetchAnalysisData2(query, newFacet);
+          this.fetchAnalysisData3(query, newFacet);
+          this.fetchAnalysisData4(query, newFacet);
         }
     );
   };
   /* end of ui handler methods */
 
+
+
   /* other methods */
-  fetchAnalysisData = query => {
+  //yhj
+  fetchCore  = (query, newFacet, docCount, startPoint) => {
     this.setState({
       isClassificationDataLoading: true,
       isDocumentsLoading: true,
@@ -277,23 +296,23 @@ class App extends Component {
     let collectionId = this.props.currentCollection.id;
 
     switch (this.state.nextQueryMode) {
-      // case QUERY_MODE_BASIC_SEARCH:
-      //   fetchFunc = Promise.all([
-      //      fetchClassifierResult(collectionId, query),
-      //     fetchBasicQueryResult(collectionId, query, 30) //유사문서검색과 service.js내의 내용이 동일하다. server app.js에서 다르게 처리된다.
-      //   ]);
-      //   break;
-      // case QUERY_MODE_PHRASAL_SEARCH:
-      //   fetchFunc = Promise.all([
-      //      fetchClassifierResult(collectionId, query),
-      //     fetchPhrasalQueryResult(collectionId, query, 30)
-      //   ]);
-      //   break;
+        // case QUERY_MODE_BASIC_SEARCH:
+        //   fetchFunc = Promise.all([
+        //      fetchClassifierResult(collectionId, query),
+        //     fetchBasicQueryResult(collectionId, query, 30) //유사문서검색과 service.js내의 내용이 동일하다. server app.js에서 다르게 처리된다.
+        //   ]);
+        //   break;
+        // case QUERY_MODE_PHRASAL_SEARCH:
+        //   fetchFunc = Promise.all([
+        //      fetchClassifierResult(collectionId, query),
+        //     fetchPhrasalQueryResult(collectionId, query, 30)
+        //   ]);
+        //   break;
       default:
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
         fetchFunc = Promise.all([
-           // fetchClassifierResult(collectionId, query),
-          fetchSimilarDocumentQueryResult(collectionId, query, 30)
+          // fetchClassifierResult(collectionId, query),
+          fetchSimilarDocumentQueryResult(collectionId, query, docCount, startPoint, newFacet)
         ]);
         break;
     }
@@ -316,7 +335,7 @@ class App extends Component {
               // classificationData: results[0].classes, //fetchClassifierResult method 제거함으로써 1->0으로 response index 옮김.
               // documents: results[1].docs,
               // facetFields: results[1].facetFields,
-              documents: results[0].docs,
+              documents: prevState.documents.concat(results[0].docs), //연속 붙이기의 비밀
               facetFields: results[0].facetFields,
               queryHistory: [
                 {
@@ -341,6 +360,19 @@ class App extends Component {
         });
   };
 
+  fetchAnalysisData = (query, newFacet) => {
+    this.fetchCore(query, newFacet, 1, 0);
+  };
+  fetchAnalysisData2 = (query, newFacet) => {
+    this.fetchCore(query, newFacet, 2, 1);
+  };
+  fetchAnalysisData3 = (query, newFacet) => {
+    this.fetchCore(query, newFacet, 2, 3);
+  };
+  fetchAnalysisData4 = (query, newFacet) => {
+    this.fetchCore(query, newFacet, 2, 5);
+  };
+
   renderRow(queryMode) {
     switch (queryMode) {
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
@@ -351,11 +383,11 @@ class App extends Component {
           //documentes는 fetchFunc에서 반환되는 docs의 값이 들어간다.
 
          // const index = item.rank;
-          const title = item.title;
+          const title = item.Title;
           const body = item.body;
           const highlighting = item.___highlighting || "";
           //WordCloud용 데이터로, 색상을 각각 주기 위한 작업.
-          let annotations1=[], annotations2=[], annotations3=[], annotations4=[];
+          let annotations1=[], annotations2=[], annotations3=[];
           const annotations = item.___annotations;
           for(let i=0; i<annotations.length; i++){
             switch(annotations[i].colorGroup){
@@ -367,9 +399,6 @@ class App extends Component {
                 break;
               case "application":
                 annotations3 = annotations3.concat(annotations[i]);
-                break;
-              case "keywords":
-                annotations4 = annotations4.concat(annotations[i]);
                 break;
               default:
                 annotations1 = annotations1.concat(annotations[i]);
@@ -392,7 +421,6 @@ class App extends Component {
                 data={annotations1}
                 data2={annotations2}
                 data3={annotations3}
-                data4={annotations4}
                 keyword = {keyword}
                 author = {author}
                 journalTitle = {journalTitle}

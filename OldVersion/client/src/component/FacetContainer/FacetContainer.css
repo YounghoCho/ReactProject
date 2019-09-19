@@ -1,0 +1,32 @@
+.FacetContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.FacetContainer-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 16px;
+    width: 100%;
+}
+
+.FacetContainer-progressbar-text {
+    font-size: 12px;
+}
+
+.FacetContainer-progressbar {
+    box-sizing: border-box;
+    border-radius: 12px;
+    height: 8px;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.FacetContainer-progressbar > div {
+    border-radius: 12px;
+}

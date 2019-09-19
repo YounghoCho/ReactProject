@@ -7,3 +7,9 @@
   background-color: #f56a00 !important;
   vertical-align: middle !important;
 }
+
+#tags {
+  min-width: 80px;
+  height: 25px;
+  padding-top: 2px;
+}

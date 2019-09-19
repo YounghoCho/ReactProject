@@ -2,8 +2,8 @@
   width: 100%;
   padding: 0 32px !important;
   display: flex;
-  /*justify-content: space-between;*/
-  justify-content: flex-start;
+  justify-content: space-between;
+  /*justify-content: flex-start;*/
   align-items: center;
   z-index: 1000;
 }
@@ -15,6 +15,7 @@
 }
 
 .App-name-container {
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;

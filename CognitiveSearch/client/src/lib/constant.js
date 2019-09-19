@@ -73,10 +73,10 @@ const STRINGS = {
   },
   // FacetField Card
   Facet_CARD_TITLE: {
-    "ko-KR": "분석 관점",
-    ko: "분석 관심",
-    "en-US": "Facet Field",
-    en: "Facet Field"
+    "ko-KR": "문서 분포",
+    ko: "문서 분포",
+    "en-US": "Document distribution",
+    en: "Document distribution"
   },
   // Word Statistics Card
   WORD_STATISTICS_CARD_TITLE: {

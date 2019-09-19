@@ -14,7 +14,8 @@ const CollectionSelect = ({
   onClickRefresh,
   isLoadingCollection
 }) => (
-  <div className="CollectionSelect">
+  <div className="CollectionSelect" style={{color:'white'}}>
+    {`컬렉션 : `}
     <Select
       className="CollectionSelect-select"
       value={currentCollectionId}

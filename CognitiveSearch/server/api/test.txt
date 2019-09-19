@@ -1,2 +1,0 @@
-#test : {"file:///wexdata/datasample/data/Theorization_and_Utilization_of_Smart_Tourism_Ecosystems.pdf":{"body_bigram":["따라서&#32;관광<em>산업</em>은&#32;높은&#32;정&#10;&#10;보&
-

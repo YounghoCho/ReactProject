@@ -23,7 +23,7 @@ const BasicRow = ({ title, body, highlighting, onClick, style,
                     <div
                         dangerouslySetInnerHTML={{
                             __html: `${
-                                highlighting.length < 1000
+                                highlighting.length < 1200
                                     ? highlighting
                                     : highlighting.slice(0, 1000) + "..."
                                 }`

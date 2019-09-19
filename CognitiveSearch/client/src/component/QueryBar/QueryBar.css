@@ -15,3 +15,18 @@
   width: 100%;
   border: 1px solid #e8e8e8;
 }
+@media (min-width:320px) and (max-width:1300px) {  
+  .QueryBar {
+    min-width: 600px;
+  }
+}
+@media (min-width:1301px) and (max-width:1930px) {  
+  .QueryBar {
+    min-width: 1000px;
+  }
+}
+@media (min-width:1931px) and (max-width:3870px) {  
+  .QueryBar {
+    min-width: 1400px;
+  }
+}

@@ -240,6 +240,8 @@ class App extends Component {
     this.fetchAnalysisData2(query, null);
     this.fetchAnalysisData3(query, null);
     this.fetchAnalysisData4(query, null);
+    this.fetchAnalysisData5(query, null);
+    this.fetchAnalysisData6(query, null);
   };
 
   handleModalClickOk = () => {
@@ -277,6 +279,8 @@ class App extends Component {
           this.fetchAnalysisData2(query, newFacet);
           this.fetchAnalysisData3(query, newFacet);
           this.fetchAnalysisData4(query, newFacet);
+          this.fetchAnalysisData5(query, newFacet);
+          this.fetchAnalysisData6(query, newFacet);
         }
     );
   };
@@ -361,6 +365,7 @@ class App extends Component {
         });
   };
 
+//비동기 호출부
   fetchAnalysisData = (query, newFacet) => {
     this.fetchCore(query, newFacet, 1, 0);
   };
@@ -373,6 +378,12 @@ class App extends Component {
   fetchAnalysisData4 = (query, newFacet) => {
     this.fetchCore(query, newFacet, 2, 5);
   };
+  fetchAnalysisData5 = (query, newFacet) => {
+    this.fetchCore(query, newFacet, 10, 7);
+  };
+  fetchAnalysisData6 = (query, newFacet) => {
+    this.fetchCore(query, newFacet, 10, 17);
+  };
 
   renderRow(queryMode) {
     switch (queryMode) {
@@ -384,7 +395,6 @@ class App extends Component {
           //documentes는 fetchFunc에서 반환되는 docs의 값이 들어간다.
 
          // const index = item.rank;
-          const title = item.Title;
           const body = item.body;
           const highlighting = item.___highlighting || "";
           //WordCloud용 데이터로, 색상을 각각 주기 위한 작업.
@@ -412,6 +422,7 @@ class App extends Component {
           const journalTitle  = item.journalTitle;
           const publisher = item.publisher;
           const yearOfPublication = item.yearOfPublication;
+          const title = item.titleOfThesis || item.Title;
 
           return (
               <WordCloudRow

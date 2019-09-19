@@ -57,7 +57,7 @@ class ResultCard extends Component {
     return (
       <Card
         className={classNames("ResultCard", className)}
-        title={`${title} (Top ${documentCount})`}
+        title={`${title} : ${documentCount} 건`}
         bodyStyle={{
           overflow: "scroll",
           height: "calc(100% - 110.5px)",

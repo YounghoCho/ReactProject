@@ -250,11 +250,10 @@ const addHighlightingAndUserDefinedAnnotations = (
     // console.log("#7  : " + JSON.stringify(highlightings[docId].views.body[0].span));
     // console.log("#8  : " + JSON.stringify(highlightings[docId].views.body.length));
 
-    const highlighting = highlightings[docId][keys[0]].join("\n"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
+    const highlighting = highlightings[docId][keys[0]].join("<br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
     // console.log("#4 highlightings[docId][keys[0]] : " + highlightings[docId][keys[0]].toString());
     const analyzedFacets = previews[docId].analyzed_facets;
     //  console.log("### doc id ? " + docId);
-now(8);
     return {
         ...doc,
         ___highlighting: highlighting,
@@ -336,7 +335,6 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     }
   }
   // console.log("#10 annotaions : " + JSON.stringify(annoList));
-now(9);
   return annoList
     .filter(val => val.annotation.length > 1)
     .sort((prev, next) => next.count - prev.count);
@@ -678,17 +676,22 @@ app.post("/similar-document-query", (req, res) => {
             for(let i=0; i<annoLength; i++){
                 if(parseData[i].type === ".unstructure.tech.ai" ||
                     parseData[i].type === ".unstructure.industry" ||
-                    parseData[i].type === ".unstructure.application")
+                    parseData[i].type === ".unstructure.application" ||
+                    parseData[i].type === "._word.noun.others")
                 {
-                    annoResult += " OR ";
                     annoResult += parseData[i].properties.facetval.trim();
+                    annoResult += " OR ";
                 }
             } //end for
             let finalQuery = '';
+            //miner 검색시 검색어 맨앞,뒤에 OR가 붙으면 검색결과 0개.
+            if(annoResult.substr(annoResult.length-3, annoResult.length-1).trim() == "OR"){
+              annoResult = annoResult.substr(0, annoResult.length-4);
+            }
             if(query === annoResult)
                 finalQuery = query;
             else
-                finalQuery = query + annoResult;
+                finalQuery = annoResult;
 
             if(newFacet != '')
                 finalQuery += " AND ";
@@ -752,7 +755,12 @@ app.post("/similar-document-query", (req, res) => {
                         else{
                             for( let i=0; i< facetsCount; i+=2){
                                 // console.log("#Annotation Arrays : "+annoArray.toString())
-                                let temp = (annoArray[i] + " : " + annoArray[i + 1]);
+                                let temp;
+                                if(annoArray[i] == undefined){
+                                  temp = "undefined : 0";  
+                                }else{
+                                  temp = (annoArray[i] + " : " + annoArray[i + 1]);
+                                }
                                 facetsArray.push(temp);
                             }
                         }

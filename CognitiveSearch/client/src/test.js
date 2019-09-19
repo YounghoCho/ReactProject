@@ -1,13 +1,8 @@
-let test1 = () => {
-    func(1);
-}
-let test2 = () => {
-    func(2);
-}
+let str = "머신러닝 OR ";
 
-
-let func = (n) => {
-    console.log("test" + n);
+console.log(str.substr(str.length-3, str.length));
+if(str.substr(str.length-3, str.length).trim() === "OR"){
+    console.log("1");
+}else{
+    console.log("2");
 }
-test1();
-test2();

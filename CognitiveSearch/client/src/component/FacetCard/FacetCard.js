@@ -29,7 +29,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
                     0,
                     queryData,
                     1,
-                    item.substr(0, item.indexOf(':')-1)
+                    'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
                 )}
             >
                     {item.substr(item.length-1, item.length) == 0 ?
@@ -51,7 +51,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
                     0,
                     queryData,
                     1,
-                    item.substr(0, item.indexOf(':')-1)
+                    'annotation.unstructure.industry:"' + item.substr(0, item.indexOf(':')-1) + '"'
                 )}
             >
                 {item.substr(item.length-1, item.length) == 0 ?
@@ -73,7 +73,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
                     0,
                     queryData,
                     1,
-                    item.substr(0, item.indexOf(':')-1)
+                    'annotation.unstructure.application:"' + item.substr(0, item.indexOf(':')-1) + '"'
                 )}
             >
                 {item.substr(item.length-1, item.length) == 0 ?

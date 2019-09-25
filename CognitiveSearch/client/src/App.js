@@ -29,7 +29,8 @@ import {
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
-import logo from "./logo.svg";
+// import logo from "./logo.svg";
+import logo from "./logo2.png";
 
 // static file imports
 import "./App.css";
@@ -240,11 +241,11 @@ class App extends Component {
       facetFields: []
     });
     this.fetchAnalysisData(query, null);
-    // this.fetchAnalysisData2(query, null);
-    // this.fetchAnalysisData3(query, null);
-    // this.fetchAnalysisData4(query, null);
-    // this.fetchAnalysisData5(query, null);
-    // this.fetchAnalysisData6(query, null);
+    this.fetchAnalysisData2(query, null);
+    this.fetchAnalysisData3(query, null);
+    this.fetchAnalysisData4(query, null);
+    this.fetchAnalysisData5(query, null);
+    this.fetchAnalysisData6(query, null);
   };
 
   handleModalClickOk = () => {

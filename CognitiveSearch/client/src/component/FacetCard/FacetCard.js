@@ -9,10 +9,10 @@ let title1st = "기술요소";
 let title2nd = "적용산업";
 let title3rd = "응용분야";
 
-const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery }) => (
+const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery, currentCollectionDocCount }) => (
     <Card
         className={classNames("FacetCard", className)}
-        title={title}
+        title={title + " (전체 문서 수 : " + currentCollectionDocCount + ")"}
         // title={queryData}
         bodyStyle={{ overflow: "scroll", height: "calc(100% - 56px)" }}
     >

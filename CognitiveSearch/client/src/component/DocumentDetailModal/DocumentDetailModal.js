@@ -46,7 +46,7 @@ class DocumentDetailModal extends Component {
     const { currentFieldPage, currentWordPage } = this.state;
     return (
       <Modal
-        title={doc.Title || "No title"}
+        title={doc.journalTitle || doc.Title || "No title"}
         visible={visible}
         onCancel={onCancel}
         onOk={onOk}

@@ -1,7 +1,7 @@
 // module imports
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { setCurrentCollection, fetchCollections } from "./action";
+import { setCurrentCollection, fetchCollections, changeDocCountWithCurrentCollection } from "./action";
 import { Layout, Modal, Spin } from "antd";
 import moment from "moment";
 import QueryBar from "./component/QueryBar";
@@ -24,7 +24,8 @@ import {
   fetchClassifierResult,
   fetchSimilarDocumentQueryResult,
   fetchPhrasalQueryResult,
-  checkConnectionStatus
+  checkConnectionStatus,
+  getCollectionsDocCount
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
@@ -109,7 +110,8 @@ class App extends Component {
     const {
       isFetchingCollections,
       currentCollection,
-      collections
+      collections,
+      currentCollectionDocCount
     } = this.props;
 
     return (
@@ -163,6 +165,7 @@ class App extends Component {
             data={facetFields}
             queryData={this.state.query}
             onClickQuery={this.handleClickQuery}
+            currentCollectionDocCount={currentCollectionDocCount}
           />
         </div>
     <div
@@ -193,11 +196,12 @@ class App extends Component {
   /* end of lifecycle methods */
 
   /* ui handler methods */
-  goToHome = () => {
-    window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8000';
+ goToHome = () => {
+    window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8001';
   }
   handleCollectionChange = collectionId => {
     this.props.setCurrentCollection(collectionId);
+    this.props.changeDocCountWithCurrentCollection(collectionId);
     browserStorage.setItem("defaultCollectionId", collectionId);
   };
 
@@ -235,13 +239,12 @@ class App extends Component {
       documents: [],
       facetFields: []
     });
-    
     this.fetchAnalysisData(query, null);
-    this.fetchAnalysisData2(query, null);
-    this.fetchAnalysisData3(query, null);
-    this.fetchAnalysisData4(query, null);
-    this.fetchAnalysisData5(query, null);
-    this.fetchAnalysisData6(query, null);
+    // this.fetchAnalysisData2(query, null);
+    // this.fetchAnalysisData3(query, null);
+    // this.fetchAnalysisData4(query, null);
+    // this.fetchAnalysisData5(query, null);
+    // this.fetchAnalysisData6(query, null);
   };
 
   handleModalClickOk = () => {
@@ -257,6 +260,8 @@ class App extends Component {
   };
 
   handleDocumentClick = document => {
+    // alert(Object.keys(document)); 
+    alert(JSON.stringify(document.___highlighting));
     this.setState({
       modalVisible: true,
       selectedDocument: {
@@ -399,21 +404,23 @@ class App extends Component {
           const highlighting = item.___highlighting || "";
           //WordCloud용 데이터로, 색상을 각각 주기 위한 작업.
           let annotations1=[], annotations2=[], annotations3=[];
-          const annotations = item.___annotations;
-          for(let i=0; i<annotations.length; i++){
-            switch(annotations[i].colorGroup){
-              case "ai":
-                annotations1 = annotations1.concat(annotations[i]);
-                break;
-              case "industry":
-                annotations2 = annotations2.concat(annotations[i]);
-                break;
-              case "application":
-                annotations3 = annotations3.concat(annotations[i]);
-                break;
-              default:
-                annotations1 = annotations1.concat(annotations[i]);
-                break;
+          if(item.___annotations){
+            const annotations = item.___annotations;
+            for(let i=0; i<annotations.length; i++){
+              switch(annotations[i].colorGroup){
+                case "ai":
+                  annotations1 = annotations1.concat(annotations[i]);
+                  break;
+                case "industry":
+                  annotations2 = annotations2.concat(annotations[i]);
+                  break;
+                case "application":
+                  annotations3 = annotations3.concat(annotations[i]);
+                  break;
+                default:
+                  annotations1 = annotations1.concat(annotations[i]);
+                  break;
+              }
             }
           }
           //details
@@ -468,18 +475,21 @@ class App extends Component {
   }
   /* end of other methods */
 }
-
+//reducer에서 넘어오는 state 객체를 this.props.isFetch~ 라고 접근할 수 있게한다.
 const mapStateToProps = state => ({
   isFetchingCollections: state.collections.isFetching,
   currentCollection: state.collections.currentItem,
-  collections: state.collections.items
+  collections: state.collections.items,
+  currentCollectionDocCount: state.collections.currentCollectionDocCount  //from reducer/index.js
 });
-
+//this.props.fetch에 dispatch를 맵핑시켜 사용할 수 있다.
 const mapDispatchToProps = dispatch => ({
   fetchCollections: defaultCollectionId =>
       dispatch(fetchCollections(defaultCollectionId)),
   setCurrentCollection: collectionId =>
-      dispatch(setCurrentCollection(collectionId))
+      dispatch(setCurrentCollection(collectionId)),
+  changeDocCountWithCurrentCollection: collectionId =>
+    dispatch(changeDocCountWithCurrentCollection(collectionId))    
 });
 
 export default connect(

@@ -11,6 +11,21 @@ const ROOT_URI =
  * @param {string} query
  * @param {number} docCount
  */
+
+export const fetchDocumentCounts = (collectionId, query, newFacet) =>
+  axios({
+    method: "POST",
+    url: `${ROOT_URI}/collection-document-count`,
+    headers: {
+      "Content-Type": "application/json"
+    },
+    data: {
+      collectionId,
+      query,
+      newFacet
+    }
+  }).then(response => response.data);
+
 export const fetchBasicQueryResult = (collectionId, query, docCount) =>
   axios({
     method: "POST",
@@ -93,3 +108,15 @@ export const fetchPhrasalQueryResult = (collectionId, query, docCount) =>
 
 export const checkConnectionStatus = () =>
   axios.get(`${ROOT_URI}/connection`).then(response => response.data);
+
+export const getCollectionsDocCount = (collectionId) =>
+  axios({
+    url: `${ROOT_URI}/getCollectionsDocCount`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    data: {
+      collectionId
+    }
+  }).then(response => response.data);

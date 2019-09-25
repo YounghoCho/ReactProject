@@ -15,18 +15,34 @@
   width: 100%;
   border: 1px solid #e8e8e8;
 }
-@media (min-width:320px) and (max-width:1300px) {  
+/* 작은 순으로 */
+@media (min-width:0px) and (max-width:1536px) {  
+  .QueryBar {
+    min-width: 500px;
+  }
+}
+@media (min-width:1537px) and (max-width:1745px) {  
   .QueryBar {
     min-width: 600px;
   }
 }
-@media (min-width:1301px) and (max-width:1930px) {  
+@media (min-width:1537px) and (max-width:1920px) {  
+  .QueryBar {
+    min-width: 700px;
+  }
+}
+@media (min-width:1921px) and (max-width:2133px) {  
+  .QueryBar {
+    min-width: 850px;
+  }
+}
+@media (min-width:2134px) and (max-width:2400px) {  
   .QueryBar {
     min-width: 1000px;
   }
 }
-@media (min-width:1931px) and (max-width:3870px) {  
+@media (min-width:2401px) and (max-width:4000) {  
   .QueryBar {
-    min-width: 1400px;
+    min-width: 1200px;
   }
 }

@@ -15,7 +15,7 @@ let collections = (
     isFetching: false,
     currentItem: { name: "", id: "" },
     items: [],
-    currentCollectionDocCount: 0,
+    currentItemDocCount: 0,
   },
   action
 ) => {
@@ -41,7 +41,7 @@ let collections = (
       });
     case SET_CURRENT_COLLECTION_DOC_COUNT:
       return Object.assign({}, state, {
-        currentCollectionDocCount: action.docCount
+        currentItemDocCount: action.currentItemDocCount
       })
     default:
       return state;

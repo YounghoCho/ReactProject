@@ -158,6 +158,7 @@ app.get("/connection", (req, res) => {
     .catch(promiseErrorHandler(res));
 });
 
+
 // project modules
 // const classifierRouter = require("./router/classifierRouter");
 // app.use("/classifier", classifierRouter(STD_API_URI, COLLECTION_ID, session));
@@ -244,13 +245,17 @@ const addHighlightingAndUserDefinedAnnotations = (
 ) => doc => {
     // console.log("#1 higligihting : " + JSON.stringify(highlightings));
     const docId = doc.id;
-    const keys = Object.keys(highlightings[docId]); // => keys : body_bigram, body, views //body filed명이 바뀔수도 있으니 key값을 추출한다.
-    globalFieldName = keys[0];  //=> globalFieldName = body_bigram
+    const keys = Object.keys(highlightings[docId]); 
+    // v 12.0.2=> keys : body_bigram, body, views //body filed명이 바뀔수도 있으니 key값을 추출한다.
+    // v 12.0.3=> keys : FileName,body_bigram,body,views //FileName이 추가됨.
+
+    // console.log("#1 keys[0], keys[2] is : " + keys[0] +","+keys[2]);
+    globalFieldName = keys[2];  //=> globalFieldName = body_bigram
     // console.log("#6  : " + JSON.stringify(highlightings[docId].body));
     // console.log("#7  : " + JSON.stringify(highlightings[docId].views.body[0].span));
     // console.log("#8  : " + JSON.stringify(highlightings[docId].views.body.length));
 
-    const highlighting = highlightings[docId][keys[0]].join("<br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
+    const highlighting = highlightings[docId][keys[2]].join("<br><br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
     // console.log("#4 highlightings[docId][keys[0]] : " + highlightings[docId][keys[0]].toString());
     const analyzedFacets = previews[docId].analyzed_facets;
     //  console.log("### doc id ? " + docId);
@@ -676,13 +681,35 @@ app.post("/similar-document-query", (req, res) => {
             for(let i=0; i<annoLength; i++){
                 if(parseData[i].type === ".unstructure.tech.ai" ||
                     parseData[i].type === ".unstructure.industry" ||
-                    parseData[i].type === ".unstructure.application" ||
-                    parseData[i].type === "._word.noun.others")
+                    parseData[i].type === ".unstructure.application")
                 {
-                    annoResult += parseData[i].properties.facetval.trim();
-                    annoResult += " OR ";
+                  let path = parseData[i].properties.facetpath.trim();
+                  let fval = parseData[i].properties.facetval.trim();
+                  facetvalToCompare = fval;
+                  let temp = 'annotation' + path + ':"' + fval + '"';
+                  annoResult += temp;
+                  annoResult += " OR ";
                 }
             } //end for
+
+            //for 2.명사 수집
+            for(let i=0; i<annoLength; i++){
+              if(parseData[i].type === "._word.noun.general")
+              {
+                // console.log("1 명사는 : " + parseData[i].properties.facetval.trim());
+                //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
+                fval = parseData[i].properties.facetval.trim();
+                // console.log("비교문장은 :" + facetvalToCompare);
+                if(facetvalToCompare.indexOf(fval) == -1){
+                  // console.log("비교결과:" + "없음");
+                  annoResult += fval;
+                  annoResult += " OR ";
+                }else{
+                  // console.log("비교결과:있음");
+                }
+              }
+            } //end for 2      
+           
             let finalQuery = '';
             //miner 검색시 검색어 맨앞,뒤에 OR가 붙으면 검색결과 0개.
             if(annoResult.substr(annoResult.length-3, annoResult.length-1).trim() == "OR"){
@@ -732,11 +759,11 @@ app.post("/similar-document-query", (req, res) => {
 
                     const freeTextResponse = responses[0];
                     const getHighlightingResponse = responses[1];
-                    // console.log("## : " + JSON.stringify(freeTextResponse.data));
+                    // console.log("## : " + JSON.stringify(getHighlightingResponse.data));
 
                     const { response, facet_counts, previews } = freeTextResponse.data;
                     const {highlighting} = getHighlightingResponse.data;
-                    // console.log("#test : "+JSON.stringify(highlighting));
+                    //  console.log("#test : "+JSON.stringify(highlighting));
                     const docs = response.docs;
                     //S : Data for FacetCard
                     const annoTech =  facet_counts.facet_fields[`annotation.unstructure.tech`]; //그냥 facet_fields.annotation.unstructure하면 json 구조가 깨져서 에러남.
@@ -788,6 +815,7 @@ app.post("/similar-document-query", (req, res) => {
 
 
 
+<<<<<<< HEAD
 
 
 
@@ -931,4 +959,116 @@ app.post("/similar-document-query", (req, res) => {
 
         }) //end nlpRequest
         .catch(promiseErrorHandler("2"+res));
+=======
+//test
+app.post("/collection-document-count", (req, res) => {
+  const collectionId = req.body.collectionId;
+  const query = req.body.query || "";
+  const newFacet = req.body.newFacet || "";
+
+  const nlpData = {
+      fields: {
+          body: query
+      },
+      metadata: {}
+  };
+
+  const nlpRequest = axios({
+      method: "POST",
+      url: `${ROOT_URI}/api/v1/collections/${collectionId}/analyze`,
+      headers: {
+          Authorization: `Bearer ${session.token}`,
+          "Content-Type": "application/json",
+          accept: "application/json"
+      },
+      data: nlpData
+  });
+// now(2);
+  Promise.all([nlpRequest])
+      .then(responses => {
+
+          const nlpResponse = responses[0]; //miner 화면의 query결과
+          // console.log("#출력1 : " + fetchSimilarDocumentsResponse.data); //objec 출력
+          // console.log("#출력2 : " + fetchSimilarDocumentsResponse.data.toString()); //object 출력
+          // console.log("#출력3 : " + JSON.stringify(fetchSimilarDocumentsResponse.data)); //올바른 출력
+          const responseData = nlpResponse.data;
+          const parseData = responseData.enriched.body[0].annotations;
+          const annoLength = parseData.length;
+          let annoResult = ''; //나중에 원본 query와 합친다.
+
+          //for 1.어노테이션 수집
+          let facetvalToCompare = '';
+          for(let i=0; i<annoLength; i++){
+              if(parseData[i].type === ".unstructure.tech.ai" ||
+                  parseData[i].type === ".unstructure.industry" ||
+                  parseData[i].type === ".unstructure.application")
+              {
+                //일반 어노테이션 처리
+                  let path = parseData[i].properties.facetpath.trim();
+                  let fval = parseData[i].properties.facetval.trim();
+                  facetvalToCompare = fval;
+
+                  let temp = 'annotation' + path + ':"' + fval + '"';
+                  annoResult += temp;
+                  annoResult += " OR ";
+              }
+          } //end for 1
+          //for 2.명사 수집
+          for(let i=0; i<annoLength; i++){
+            if(parseData[i].type === "._word.noun.others")
+            {
+              //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
+              fval = parseData[i].properties.facetval.trim();
+              console.log("??"+facetvalToCompare);
+              if(facetvalToCompare.indexOf(fval) == -1){
+                console.log("in?");
+                annoResult += fval;
+                annoResult += " OR ";
+              }else{console.log("not");}
+            }
+           } //end for 2         
+          
+
+          let finalQuery = '';
+          //miner 검색시 검색어 맨앞,뒤에 OR가 붙으면 검색결과 0개.
+          if(annoResult.substr(annoResult.length-3, annoResult.length-1).trim() == "OR"){
+            annoResult = annoResult.substr(0, annoResult.length-4);
+          }
+          if(query === annoResult)
+              finalQuery = query;
+          else
+              finalQuery = annoResult;
+
+          if(newFacet != '')
+              finalQuery += " AND ";
+              finalQuery += newFacet;
+
+          console.log("#결과 : " + finalQuery);
+          /***************** NLP 완료 *******************/
+
+          const collectionStatus = axios({
+              method: "GET",
+              headers: { 
+                  Authorization: `Bearer ${session.token}`,
+                  "Content-Type": "application/x-www-form-urlencoded"
+              },
+              url: `${STD_API_URI}/collections/status`, //F12로 request header 열어서 정보확인
+          });
+
+// now(5);
+          Promise.all([collectionStatus])
+              .then(responses => {
+
+                  const collectionsStatusResponse = responses[0];
+                  console.log("#status : " + JSON.stringify(collectionsStatusResponse));
+                  res.status(200).send({
+                      docs: collectionsStatusResponse
+                  });
+
+
+              }) //end Promise freeTextSearch
+              .catch(promiseErrorHandler("1:"+res))
+      }) //end nlpRequest
+      .catch(promiseErrorHandler("2"+res));
+>>>>>>> 3b99fba... redux-thunk로 초기 데이터 호출, 반영하기
 });

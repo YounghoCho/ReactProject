@@ -21,20 +21,15 @@ let setCurrentCollection = collectionId => {
   };
 };
 
-// let changeDocCountWithCurrentCollection = collectionId => {
-//   return dispatch => {
-//     dispatch(setCurrentCollection(collectionId))
-//     return getCurrentCollectionDocs()
-//       .then(count => dispatch(setCurrentCollectionDocsCount(count)))
-//       .catch(err => console.error(err));
-//   }
-// }
-let changeDocCountWithCurrentCollection = collectionId => {
+let changeCurrentCollection = collectionId => {
   return dispatch => {
-    dispatch(setCurrentCollection(collectionId))  
-    return getCurrentCollectionDocs(collectionId)
+    dispatch(setCurrentCollection(collectionId))
+    return getCurrentCollectionDocs()
+      .then(count => dispatch(setCurrentCollectionDocsCount(count)))
+      .catch(err => console.error(err));
   }
 }
+
 let setCollections = collections => {
   return {
     type: SET_COLLECTIONS,
@@ -49,7 +44,6 @@ let requestCollections = () => {
 };
 
 let setCurrentCollectionDocsCount = (docCount) => {
-  // console.log("반환값 : " + docCount)
   return {
     type: SET_CURRENT_COLLECTION_DOC_COUNT,
     docCount
@@ -58,26 +52,13 @@ let setCurrentCollectionDocsCount = (docCount) => {
 
 
 //컬렉션 전체문서 얻기
-let getCurrentCollectionDocs = (defaultCollectionId) => 
+let getCurrentCollectionDocs = () => 
   axios({
     method: "GET",
     url: `${ROOT_URI}/collections/status`
   })
   // .then(response => response.data)//count리턴
-  .then(response => {
-//  console.log("#추출 : "+ JSON.stringify(response.data));
-// console.log("#defaultCollectionId : " + defaultCollectionId);
-    const items = response.data.items;
-    for(let i=0; i<items.length; i++){
-      let tempCollectionId = items[i].docproc.collectionID;
-      // console.log("cid : " + tempCollectionId);
-      if(tempCollectionId == defaultCollectionId){
-        setCurrentCollectionDocsCount(items[i].docproc.numberOfIndexedDocs);
-        break;
-      }
-    }
-  })
-  .catch(error => console.error("[err2]getCurrentCollectionDocs에러 : " + error.message));
+  .then(response => console.log("#추출 : "+ JSON.stringify(response.data)))
 
 let fetchCollections = defaultCollectionId => {
   return dispatch => {
@@ -109,7 +90,9 @@ let fetchCollections = defaultCollectionId => {
                 : ""
           )
         );
-      }).then(getCurrentCollectionDocs(defaultCollectionId))  //모든 곳에서 this.props.currentItemDocCount로 사용 가능하다.
+      }).then(getCurrentCollectionDocs())  //모든 곳에서 this.props.currentItemDocCount로 사용 가능하다.
+      //.then(count => dispatch(setCurrentCollectionDocsCount(count)))  //60line에서 얻어온 count를 넘긴다.
+      //.catch(error => console.error(error.message));
   };
 };
 
@@ -117,6 +100,5 @@ export {
   setCurrentCollection,
   setCollections,
   requestCollections,
-  fetchCollections,
-  changeDocCountWithCurrentCollection
+  fetchCollections
 };

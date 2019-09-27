@@ -1,7 +1,7 @@
 // module imports
 import React from "react";
 import PropTypes from "prop-types";
-import {List, Tag} from "antd";
+import {List} from "antd";
 
 // static file imports
 import "./FacetContainer.css";

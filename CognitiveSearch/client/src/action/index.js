@@ -68,14 +68,17 @@ let getCurrentCollectionDocs = (defaultCollectionId) =>
 //  console.log("#추출 : "+ JSON.stringify(response.data));
 // console.log("#defaultCollectionId : " + defaultCollectionId);
     const items = response.data.items;
+    let count = 0;
     for(let i=0; i<items.length; i++){
       let tempCollectionId = items[i].docproc.collectionID;
       // console.log("cid : " + tempCollectionId);
-      if(tempCollectionId == defaultCollectionId){
-        setCurrentCollectionDocsCount(items[i].docproc.numberOfIndexedDocs);
+      if(tempCollectionId === defaultCollectionId){
+        count = items[i].docproc.numberOfIndexedDocs;
         break;
       }
     }
+    console.log(count);
+    return count;
   })
   .catch(error => console.error("[err2]getCurrentCollectionDocs에러 : " + error.message));
 
@@ -109,7 +112,12 @@ let fetchCollections = defaultCollectionId => {
                 : ""
           )
         );
-      }).then(getCurrentCollectionDocs(defaultCollectionId))  //모든 곳에서 this.props.currentItemDocCount로 사용 가능하다.
+        return defaultCollectionId; //중요 : 여기서 response => {}에 대한 return을 안해주면, 아래 then이 비동기 처리가 되지 않는다. getCurrentCollectionDocs의 결과가 먼저 나오는 현상 발생
+      }).then(getCurrentCollectionDocs) //중요 : 여기서는 파라미터를 왜 안넘길까? return defaultCollectionId를 받아오기때문에 자동으로 넘어간다!
+      .then(count => {
+        // console.log(count); 
+        dispatch(setCurrentCollectionDocsCount(count))  //중요 : 그냥 setCurrent~하면 안되고 dispatch로 실행해준다.
+      });  //이제 모든 곳에서 this.props.currentItemDocCount로 사용 가능하다.
   };
 };
 

@@ -12,19 +12,6 @@ const ROOT_URI =
  * @param {number} docCount
  */
 
-export const fetchDocumentCounts = (collectionId, query, newFacet) =>
-  axios({
-    method: "POST",
-    url: `${ROOT_URI}/collection-document-count`,
-    headers: {
-      "Content-Type": "application/json"
-    },
-    data: {
-      collectionId,
-      query,
-      newFacet
-    }
-  }).then(response => response.data);
 
 export const fetchBasicQueryResult = (collectionId, query, docCount) =>
   axios({

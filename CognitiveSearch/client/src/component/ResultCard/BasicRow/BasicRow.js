@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { List, Avatar, Tag } from "antd";
+import { List, Tag } from "antd";
 
 import "./BasicRow.css";
 
@@ -29,10 +29,10 @@ const BasicRow = ({ title, body, highlighting, onClick, style,
                                 }`
                         }}
                     />
-                ) : body.length < 1000 ? (
+                ) : body.toString().length < 1000 ? (
                     body
                 ) : (
-                    body.slice(0, 1000) + "..."
+                    body.toString().slice(0, 1000) + "..."
                 )
             }
         />
@@ -48,16 +48,16 @@ const BasicRow = ({ title, body, highlighting, onClick, style,
 );
 
 BasicRow.propTypes = {
-    title: PropTypes.string,
-    body: PropTypes.string,
+    title: PropTypes.array,
+    body: PropTypes.array,
     highlighting: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
     onClick: PropTypes.func,
     index: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };
 
 BasicRow.defaultProps = {
-    title: "",
-    body: "",
+    title: [],
+    body: [],
     highlighting: "",
     onClick: () => {},
     index: 0

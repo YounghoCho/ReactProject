@@ -75,8 +75,8 @@ const STRINGS = {
   Facet_CARD_TITLE: {
     "ko-KR": "문서 분포",
     ko: "문서 분포",
-    "en-US": "Document distribution",
-    en: "Document distribution"
+    "en-US": "문서 분포",
+    en: "문서 분포"
   },
   // Word Statistics Card
   WORD_STATISTICS_CARD_TITLE: {

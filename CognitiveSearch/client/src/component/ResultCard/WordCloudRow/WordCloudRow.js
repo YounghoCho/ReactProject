@@ -27,8 +27,8 @@ const WordCloudRow = ({ data, data2, data3, title, body, highlighting, onClick,
 
 WordCloudRow.propTypes = {
   data: PropTypes.array,
-  title: PropTypes.string,
-  body: PropTypes.string,
+  title: PropTypes.array,
+  body: PropTypes.array,
   highlighting: PropTypes.string,
   onClick: PropTypes.func,
   index: PropTypes.number
@@ -36,8 +36,8 @@ WordCloudRow.propTypes = {
 
 WordCloudRow.defaultProps = {
   data: [],
-  title: "",
-  body: "",
+  title: [],
+  body: [],
   highlighting: <span />,
   onClick: () => {},
   index: 0

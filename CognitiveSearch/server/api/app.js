@@ -239,6 +239,7 @@ const fetchHighlight = (collectionId, finalQuery, start, docCount) =>
  * @param {Object} previews.documentId.tokens
  * @returns {Object}
  */
+
 const addHighlightingAndUserDefinedAnnotations = (
     highlightings,
     previews
@@ -678,32 +679,47 @@ app.post("/similar-document-query", (req, res) => {
             const annoLength = parseData.length;
             let annoResult = ''; //나중에 원본 query와 합친다.
 
+            //1. 패싯 어노테이션 수집
+            let facetvalToCompare = '';
             for(let i=0; i<annoLength; i++){
                 if(parseData[i].type === ".unstructure.tech.ai" ||
                     parseData[i].type === ".unstructure.industry" ||
                     parseData[i].type === ".unstructure.application")
                 {
-                  let path = parseData[i].properties.facetpath.trim();
-                  let fval = parseData[i].properties.facetval.trim();
-                  facetvalToCompare = fval;
-                  let temp = 'annotation' + path + ':"' + fval + '"';
-                  annoResult += temp;
-                  annoResult += " OR ";
+                  //tech.ai의 4개 value들이 있는 경우 상위 패싯인 tech로 검색되게 한다.
+                  if(parseData[i].type.trim() === ".unstructure.tech.ai"){
+                    let mlAnnotation = 'annotation.unstructure.tech:"인공지능"';
+                    mlToCompare = '인공지능 딥러닝 머신러닝 자연어처리';
+                    if(annoResult.indexOf(mlAnnotation) == -1){
+                        annoResult += mlAnnotation;
+                        annoResult += " AND ";
+                    }
+                  //일반 어노테이션 처리
+                  }else{
+                    let path = parseData[i].properties.facetpath.trim();
+                    let fval = parseData[i].properties.facetval.trim();
+                    facetvalToCompare = fval;
+
+                    let temp = 'annotation' + path + ':"' + fval + '"';
+                    annoResult += temp;
+                    
+                    annoResult += " AND ";
+                  }
                 }
-            } //end for
+            } //end 1
 
             //for 2.명사 수집
             for(let i=0; i<annoLength; i++){
-              if(parseData[i].type === "._word.noun.general")
+              if(parseData[i].type === "._word.noun.others" || parseData[i].type === "._word.noun.general" )
               {
                 // console.log("1 명사는 : " + parseData[i].properties.facetval.trim());
                 //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
                 fval = parseData[i].properties.facetval.trim();
                 // console.log("비교문장은 :" + facetvalToCompare);
-                if(facetvalToCompare.indexOf(fval) == -1){
+                if(facetvalToCompare.indexOf(fval) == -1 && mlToCompare.indexOf(fval) == -1){
                   // console.log("비교결과:" + "없음");
                   annoResult += fval;
-                  annoResult += " OR ";
+                  annoResult += " AND ";
                 }else{
                   // console.log("비교결과:있음");
                 }
@@ -712,8 +728,8 @@ app.post("/similar-document-query", (req, res) => {
            
             let finalQuery = '';
             //miner 검색시 검색어 맨앞,뒤에 OR가 붙으면 검색결과 0개.
-            if(annoResult.substr(annoResult.length-3, annoResult.length-1).trim() == "OR"){
-              annoResult = annoResult.substr(0, annoResult.length-4);
+            if(annoResult.substr(annoResult.length-4, annoResult.length-1).trim() == "AND"){
+              annoResult = annoResult.substr(0, annoResult.length-5);
             }
             if(query === annoResult)
                 finalQuery = query;
@@ -812,10 +828,6 @@ app.post("/similar-document-query", (req, res) => {
         .catch(promiseErrorHandler("2"+res));
 });
 
-
-
-
-<<<<<<< HEAD
 
 
 
@@ -959,116 +971,5 @@ app.post("/similar-document-query", (req, res) => {
 
         }) //end nlpRequest
         .catch(promiseErrorHandler("2"+res));
-=======
-//test
-app.post("/collection-document-count", (req, res) => {
-  const collectionId = req.body.collectionId;
-  const query = req.body.query || "";
-  const newFacet = req.body.newFacet || "";
 
-  const nlpData = {
-      fields: {
-          body: query
-      },
-      metadata: {}
-  };
-
-  const nlpRequest = axios({
-      method: "POST",
-      url: `${ROOT_URI}/api/v1/collections/${collectionId}/analyze`,
-      headers: {
-          Authorization: `Bearer ${session.token}`,
-          "Content-Type": "application/json",
-          accept: "application/json"
-      },
-      data: nlpData
-  });
-// now(2);
-  Promise.all([nlpRequest])
-      .then(responses => {
-
-          const nlpResponse = responses[0]; //miner 화면의 query결과
-          // console.log("#출력1 : " + fetchSimilarDocumentsResponse.data); //objec 출력
-          // console.log("#출력2 : " + fetchSimilarDocumentsResponse.data.toString()); //object 출력
-          // console.log("#출력3 : " + JSON.stringify(fetchSimilarDocumentsResponse.data)); //올바른 출력
-          const responseData = nlpResponse.data;
-          const parseData = responseData.enriched.body[0].annotations;
-          const annoLength = parseData.length;
-          let annoResult = ''; //나중에 원본 query와 합친다.
-
-          //for 1.어노테이션 수집
-          let facetvalToCompare = '';
-          for(let i=0; i<annoLength; i++){
-              if(parseData[i].type === ".unstructure.tech.ai" ||
-                  parseData[i].type === ".unstructure.industry" ||
-                  parseData[i].type === ".unstructure.application")
-              {
-                //일반 어노테이션 처리
-                  let path = parseData[i].properties.facetpath.trim();
-                  let fval = parseData[i].properties.facetval.trim();
-                  facetvalToCompare = fval;
-
-                  let temp = 'annotation' + path + ':"' + fval + '"';
-                  annoResult += temp;
-                  annoResult += " OR ";
-              }
-          } //end for 1
-          //for 2.명사 수집
-          for(let i=0; i<annoLength; i++){
-            if(parseData[i].type === "._word.noun.others")
-            {
-              //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
-              fval = parseData[i].properties.facetval.trim();
-              console.log("??"+facetvalToCompare);
-              if(facetvalToCompare.indexOf(fval) == -1){
-                console.log("in?");
-                annoResult += fval;
-                annoResult += " OR ";
-              }else{console.log("not");}
-            }
-           } //end for 2         
-          
-
-          let finalQuery = '';
-          //miner 검색시 검색어 맨앞,뒤에 OR가 붙으면 검색결과 0개.
-          if(annoResult.substr(annoResult.length-3, annoResult.length-1).trim() == "OR"){
-            annoResult = annoResult.substr(0, annoResult.length-4);
-          }
-          if(query === annoResult)
-              finalQuery = query;
-          else
-              finalQuery = annoResult;
-
-          if(newFacet != '')
-              finalQuery += " AND ";
-              finalQuery += newFacet;
-
-          console.log("#결과 : " + finalQuery);
-          /***************** NLP 완료 *******************/
-
-          const collectionStatus = axios({
-              method: "GET",
-              headers: { 
-                  Authorization: `Bearer ${session.token}`,
-                  "Content-Type": "application/x-www-form-urlencoded"
-              },
-              url: `${STD_API_URI}/collections/status`, //F12로 request header 열어서 정보확인
-          });
-
-// now(5);
-          Promise.all([collectionStatus])
-              .then(responses => {
-
-                  const collectionsStatusResponse = responses[0];
-                  console.log("#status : " + JSON.stringify(collectionsStatusResponse));
-                  res.status(200).send({
-                      docs: collectionsStatusResponse
-                  });
-
-
-              }) //end Promise freeTextSearch
-              .catch(promiseErrorHandler("1:"+res))
-      }) //end nlpRequest
-      .catch(promiseErrorHandler("2"+res));
->>>>>>> 3b99fba... redux-thunk로 초기 데이터 호출, 반영하기
 });

@@ -12,25 +12,19 @@ import {
   // QUERY_MODE_PHRASAL_SEARCH
 } from "./component/QueryModeSelect";
 import ResultCard from "./component/ResultCard";
-import ClassificationCard from "./component/ClassificationCard";
 import FacetCard from "./component/FacetCard";
-import QueryHistoryCard from "./component/QueryHistoryCard";
 import CollectionSelect from "./component/CollectionSelect";
 import DocumentDetailModal from "./component/DocumentDetailModal";
-import BasicRow from "./component/ResultCard/BasicRow";
 import WordCloudRow from "./component/ResultCard/WordCloudRow";
 import {
-  fetchBasicQueryResult,
-  fetchClassifierResult,
+  fetchPreviewResult,
   fetchSimilarDocumentQueryResult,
-  fetchPhrasalQueryResult,
-  checkConnectionStatus,
-  getCollectionsDocCount
+  checkConnectionStatus
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
-// import logo from "./logo.svg";
-import logo from "./logo2.png";
+import logo from "./logo.svg";
+// import logo from "./logo2.png";
 
 // static file imports
 import "./App.css";
@@ -98,13 +92,10 @@ class App extends Component {
       query,
       nextQueryMode,
       queryMode,
-      classificationData,
-      isClassificationDataLoading,
       documents,
       isDocumentsLoading,
       facetFields,
       isFacetFieldsLoading,
-      queryHistory,
       selectedDocument,
       modalVisible
     } = this.state;
@@ -242,10 +233,10 @@ class App extends Component {
     });
     this.fetchAnalysisData(query, null);
     this.fetchAnalysisData2(query, null);
-    this.fetchAnalysisData3(query, null);
-    this.fetchAnalysisData4(query, null);
-    this.fetchAnalysisData5(query, null);
-    this.fetchAnalysisData6(query, null);
+    // this.fetchAnalysisData3(query, null);
+    // this.fetchAnalysisData4(query, null);
+    // this.fetchAnalysisData5(query, null);
+    // this.fetchAnalysisData6(query, null);
   };
 
   handleModalClickOk = () => {
@@ -303,6 +294,7 @@ class App extends Component {
       isFacetFieldsLoading: true
     });
 
+    let fetchPreview;
     let fetchFunc;
     let collectionId = this.props.currentCollection.id;
 
@@ -321,6 +313,7 @@ class App extends Component {
         //   break;
       default:
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
+
         fetchFunc = Promise.all([
           // fetchClassifierResult(collectionId, query),
           fetchSimilarDocumentQueryResult(collectionId, query, docCount, startPoint, newFacet)

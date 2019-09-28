@@ -12,7 +12,6 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
     <Card
         className={classNames("FacetCard", className)}
         title={title + "" + (currentCollectionDocCount !== 0 ? " (전체:" + currentCollectionDocCount + "건)" : "")}
-        // title={queryData}
         bodyStyle={{ overflow: "scroll", height: "calc(100% - 56px)" }}
     >
         <List
@@ -31,7 +30,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
                     'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
                 )}
             >
-                    {item.substr(item.length-1, item.length) === 0 ?
+                    {item.substr(item.length-1, item.length) == 0 ?
                             (item.substr(item.length-2, item.length) > 0 ? item : '')
                             : item}
             </List.Item>
@@ -53,7 +52,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
                     'annotation.unstructure.industry:"' + item.substr(0, item.indexOf(':')-1) + '"'
                 )}
             >
-                {item.substr(item.length-1, item.length) === 0 ?
+                {item.substr(item.length-1, item.length) == 0 ?
                     (item.substr(item.length-2, item.length) > 0 ? item : '')
                     : item}
             </List.Item>
@@ -75,7 +74,7 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
                     'annotation.unstructure.application:"' + item.substr(0, item.indexOf(':')-1) + '"'
                 )}
             >
-                {item.substr(item.length-1, item.length) === 0 ?
+                {item.substr(item.length-1, item.length) == 0 ?
                     (item.substr(item.length-2, item.length) > 0 ? item : '')
                     : item}
             </List.Item>

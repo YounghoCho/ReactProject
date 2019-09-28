@@ -51,6 +51,30 @@ export const fetchClassifierResult = (collectionId, query) =>
  * @param {string} query
  * @param {number} docCount
  */
+export const fetchPreviewResult = (
+    collectionId,
+    query,
+    newFacet
+) =>
+    axios({
+        url: `${ROOT_URI}/preview-query`,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        data: {
+            collectionId,
+            query,
+            newFacet
+        }
+    }).then(response => response.data);
+
+/**
+ *
+ * @param {string} collectionId
+ * @param {string} query
+ * @param {number} docCount
+ */
 export const fetchSimilarDocumentQueryResult = (
   collectionId,
   query,
@@ -68,11 +92,33 @@ export const fetchSimilarDocumentQueryResult = (
       collectionId,
       query,
       docCount,
-        start,
-        newFacet
+      start,
+      newFacet
     }
   }).then(response => response.data);
 
+  export const fetchWordCloudResult = (
+    collectionId,
+    query,
+    docCount,
+    start,
+    newFacet
+  ) =>
+    axios({
+      url: `${ROOT_URI}/word-cloud-query`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: {
+        collectionId,
+        query,
+        docCount,
+        start,
+        newFacet
+      }
+    }).then(response => response.data);
+  
 /**
  *
  * @param {string} collectionId

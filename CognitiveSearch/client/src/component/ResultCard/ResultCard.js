@@ -42,13 +42,15 @@ class ResultCard extends Component {
       className,
       title,
       data,
+      docsCount,
       isLoading,
       onClickDocument,
       pageSize,
       renderRow
     } = this.props;
     const { currentPage } = this.state;
-    const documentCount = data.length;
+    // const documentCount = data.length;
+    const documentCount = docsCount;
     const partialData = data.slice(
       pageSize * (currentPage - 1),
       pageSize * currentPage

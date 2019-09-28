@@ -141,6 +141,7 @@ const promiseErrorHandler = res => error => {
 // authentication middleware for every REST API call for oneWEX
 app.use("/", authMiddleware(STD_API_URI, USERNAME, PASSWORD, session));
 
+console.log("로그인 시도");
 app.get("/connection", (req, res) => {
   axios({
     method: "GET",
@@ -157,7 +158,7 @@ app.get("/connection", (req, res) => {
     })
     .catch(promiseErrorHandler(res));
 });
-
+console.log("로그인 완료");
 
 // project modules
 // const classifierRouter = require("./router/classifierRouter");
@@ -196,6 +197,9 @@ const now = (num) => {
     msg += currentDate.getSeconds() + "초";
     console.log(msg);
 }
+const log = (str) => {
+    console.log("로그 : '" + str + "'");
+}
     /**
  * fetches field data
  * @param {string} collectionId
@@ -210,7 +214,7 @@ const fetchFields = collectionId =>
   });
 
 const fetchHighlight = (collectionId, finalQuery, start, docCount) =>
-   axios({
+    axios({
         method: "POST",
         headers: {
             Authorization: `Bearer ${session.token}`,
@@ -225,6 +229,36 @@ const fetchHighlight = (collectionId, finalQuery, start, docCount) =>
         url: `${STD_API_URI}/explore/${collectionId}/query` //F12로 request header 열어서 정보확인
     });
 
+const fetchDocCount = (collectionId, finalQuery) =>
+    axios({
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${session.token}`,
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: queryString.stringify({
+            q: finalQuery,
+            wt: "json",
+            rows: 1 //rows:1 로 지정하면 결과JSON
+        }),
+        url: `${STD_API_URI}/explore/${collectionId}/query` //F12로 request header 열어서 정보확인
+    });
+
+const fetchDocPreview = (collectionId, finalQuery, start, docCount, facetUriToBeAdded) =>
+    axios({
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${session.token}`,
+            "Content-Type": "application/x-www-form-urlencoded"
+        },
+        data: queryString.stringify({
+            q: finalQuery,
+            wt: "json",
+            rows: docCount,
+            start: start
+        }),
+        url: `${STD_API_URI}/explore/${collectionId}/query?${facetUriToBeAdded}` //F12로 request header 열어서 정보확인
+    });
 /**
  * parameter for Array.prototype.map()
  * appends highlighting and user-defined annotation data to list of queried documents
@@ -239,6 +273,19 @@ const fetchHighlight = (collectionId, finalQuery, start, docCount) =>
  * @param {Object} previews.documentId.tokens
  * @returns {Object}
  */
+
+const addHighlighting = (
+    highlightings
+) => doc => {
+    // log('in');
+    // console.dir(doc);
+    const docId = doc.id;
+    const keys = Object.keys(highlightings[docId]);
+    const highlighting = highlightings[docId][keys[2]].join("<br><br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
+    return {
+        ___highlighting: highlighting
+    };
+};
 
 const addHighlightingAndUserDefinedAnnotations = (
     highlightings,
@@ -262,7 +309,7 @@ const addHighlightingAndUserDefinedAnnotations = (
     //  console.log("### doc id ? " + docId);
     return {
         ...doc,
-        ___highlighting: highlighting,
+        // ___highlighting: highlighting, //preview에서 이미 불러온값
         ___annotations: makeUserDefinedAnnotationList(analyzedFacets) //previews[docId].analyzed_facets; 분석패싯들을 전달하고, 파싱된 어노테이션 list를 return한다.
     };
 };
@@ -642,7 +689,7 @@ app.get("/collections/:collectionId", (req, res) => {
 
 
 //final
-app.post("/similar-document-query", (req, res) => {
+app.post("/similar-document-query1", (req, res) => {
     const collectionId = req.body.collectionId;
     const query = req.body.query || "";
     const docCount = req.body.docCount || 5;
@@ -666,10 +713,8 @@ app.post("/similar-document-query", (req, res) => {
         },
         data: nlpData
     });
-// now(2);
     Promise.all([nlpRequest])
         .then(responses => {
-// now(3);
             const nlpResponse = responses[0]; //miner 화면의 query결과
             // console.log("#출력1 : " + fetchSimilarDocumentsResponse.data); //objec 출력
             // console.log("#출력2 : " + fetchSimilarDocumentsResponse.data.toString()); //object 출력
@@ -689,7 +734,6 @@ app.post("/similar-document-query", (req, res) => {
                   //tech.ai의 4개 value들이 있는 경우 상위 패싯인 tech로 검색되게 한다.
                   if(parseData[i].type.trim() === ".unstructure.tech.ai"){
                     let mlAnnotation = 'annotation.unstructure.tech:"인공지능"';
-                    mlToCompare = '인공지능 딥러닝 머신러닝 자연어처리';
                     if(annoResult.indexOf(mlAnnotation) == -1){
                         annoResult += mlAnnotation;
                         annoResult += " AND ";
@@ -702,7 +746,6 @@ app.post("/similar-document-query", (req, res) => {
 
                     let temp = 'annotation' + path + ':"' + fval + '"';
                     annoResult += temp;
-                    
                     annoResult += " AND ";
                   }
                 }
@@ -710,12 +753,16 @@ app.post("/similar-document-query", (req, res) => {
 
             //for 2.명사 수집
             for(let i=0; i<annoLength; i++){
-              if(parseData[i].type === "._word.noun.others" || parseData[i].type === "._word.noun.general" )
+              if(parseData[i].type === "._word.noun.general" )  //_word.noun.others 는 형용사등의 못잡는 단어들이 나옴.
               {
-                // console.log("1 명사는 : " + parseData[i].properties.facetval.trim());
-                //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
-                fval = parseData[i].properties.facetval.trim();
-                // console.log("비교문장은 :" + facetvalToCompare);
+                console.log("1 명사는 : " + parseData[i].properties.facetval.trim());
+                  console.log("2 패스는 : " + parseData[i].properties.facetpath.trim());
+
+                  //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
+                let fval = parseData[i].properties.facetval.trim();
+                let mlToCompare = '인공지능 딥러닝 머신러닝 자연어처리';
+
+                  // console.log("비교문장은 :" + facetvalToCompare);
                 if(facetvalToCompare.indexOf(fval) == -1 && mlToCompare.indexOf(fval) == -1){
                   // console.log("비교결과:" + "없음");
                   annoResult += fval;
@@ -738,9 +785,9 @@ app.post("/similar-document-query", (req, res) => {
 
             if(newFacet != '')
                 finalQuery += " AND ";
-                finalQuery += newFacet;
+            finalQuery += newFacet;
 
-            console.log("#결과 : " + finalQuery);
+            console.log("#결과1 : " + finalQuery);
             /***************** NLP 완료 *******************/
 // now(4);
             //error: "Request path contains unescaped characters"
@@ -767,11 +814,10 @@ app.post("/similar-document-query", (req, res) => {
                 }),
                 url: `${STD_API_URI}/explore/${collectionId}/query?${facetUriToBeAdded}`, //F12로 request header 열어서 정보확인
             });
-
 // now(5);
             Promise.all([freeTextSearch, fetchHighlight(collectionId, finalQuery, start, docCount)])
                 .then(responses => {
-// now(6);
+//  now(14);
 
                     const freeTextResponse = responses[0];
                     const getHighlightingResponse = responses[1];
@@ -866,16 +912,19 @@ app.post("/similar-document-query", (req, res) => {
             // console.log("#출력1 : " + fetchSimilarDocumentsResponse.data); //objec 출력
             // console.log("#출력2 : " + fetchSimilarDocumentsResponse.data.toString()); //object 출력
             // console.log("#출력3 : " + JSON.stringify(fetchSimilarDocumentsResponse.data)); //올바른 출력
+
             const responseData = nlpResponse.data;
             const parseData = responseData.enriched.body[0].annotations;
             const annoLength = parseData.length;
             let annoResult = ''; //나중에 원본 query와 합친다.
+
 
             for(let i=0; i<annoLength; i++){
                 if(parseData[i].type === ".unstructure.tech.ai" ||
                     parseData[i].type === ".unstructure.industry" ||
                     parseData[i].type === ".unstructure.application")
                 {
+
                     annoResult += " OR ";
                     annoResult += parseData[i].properties.facetval.trim();
                 }
@@ -896,6 +945,7 @@ app.post("/similar-document-query", (req, res) => {
             //error: "Request path contains unescaped characters"
             //원인 : uri 중간에 공백이? 아니 한글이 들어가서 그래..
             //해결 : 해결불가;
+
             const facetUriToBeAdded =
                 'facet=on'
                 + '&facet.field=annotation.unstructure.tech'
@@ -971,5 +1021,4 @@ app.post("/similar-document-query", (req, res) => {
 
         }) //end nlpRequest
         .catch(promiseErrorHandler("2"+res));
-
 });

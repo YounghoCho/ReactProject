@@ -23,6 +23,7 @@ module.exports = (rootUri, username, password, session) => (req, res, next) => {
       .then(response => {
         const { data, status, statusText, headers, config } = response;
         session.token = data.accessToken;
+        console.log("토큰발급 완료");
         next();
       })
       .catch(error => {
@@ -35,6 +36,7 @@ module.exports = (rootUri, username, password, session) => (req, res, next) => {
       })
       .catch(error => console.error(error));
   } else {
+    console.log("토큰이 이미 있음");
     next();
   }
 };

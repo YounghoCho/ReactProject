@@ -24,8 +24,8 @@ import {
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
-import logo from "./logo.svg";
-// import logo from "./logo2.png";
+// import logo from "./logo.svg";
+import logo from "./logo2.png";
 
 // static file imports
 import "./App.css";
@@ -56,7 +56,8 @@ class App extends Component {
         date: ""
       },
       modalVisible: false,
-      docsCount: 0
+      docsCount: 0,
+      docIds: []
     };
   }
 
@@ -100,7 +101,8 @@ class App extends Component {
       isFacetFieldsLoading,
       selectedDocument,
       modalVisible,
-      docsCount
+      docsCount,
+      docIds
     } = this.state;
     const {
       isFetchingCollections,
@@ -174,6 +176,7 @@ class App extends Component {
         docsCount={docsCount}
         onClickDocument={this.handleDocumentClick}
         renderRow={this.renderRow(queryMode)}
+        test={this.test}
       />
     </div>
     </Content>
@@ -192,6 +195,14 @@ class App extends Component {
   /* end of lifecycle methods */
 
   /* ui handler methods */
+test = () => () => {
+  this.setState(
+    () => {
+      alert("test");
+      // this.fetchAnalysisData(query, newFacet);
+    }
+);
+}
  goToHome = () => {
     window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8001';
   }
@@ -226,16 +237,16 @@ class App extends Component {
 
   handleSearch = () => {
     if (this.state.query.length > 0) {
-      this.handleSendQuery(this.state.query);
+      this.handleSendQuery(this.state.query, this.state.docIds);
     }
   };
 
-  handleSendQuery = query => {
+  handleSendQuery = (query, docIds) => {
     this.setState({
       documents: [],
       facetFields: []
     });
-    this.fetchAnalysisData(query, null);
+    this.fetchAnalysisData(query, null, docIds);
   };
 
   handleModalClickOk = () => {
@@ -263,14 +274,10 @@ class App extends Component {
   };
 
   handleClickQuery = (index, query, queryMode, newFacet) => {
-    let newQuery = query;
-    if(newFacet !== ''){
-      newQuery += (" AND " + newFacet);
-    }
     this.setState(
         {
           nextQueryMode: queryMode,
-          query: newQuery,
+          query: query,
           documents: [],
           facetFields: []
         },
@@ -361,6 +368,15 @@ class App extends Component {
           // alert("#3 results[1].facetFields : " + JSON.stringify(results[1].facetFields));
           // alert("#4 results[1].facetFields : " + JSON.stringify(results[1].author));
           //console.log("#4 results[1].facetFields : " + JSON.stringify(results[1].author));
+         
+          //문서들의 id값을 수집한다(api 비동기 콜을 위해서)
+          // console.log("#" + results[0].docs[0].id);
+          let docIdsArray=[];
+          for(let i=0; i<results[0].docs.length; i++){
+            docIdsArray.push(results[0].docs[i].id);
+          }
+          // console.log("doc : " + docIdsArray[0]);
+          // console.log("##" + docIdsArray.length); //10개
 
           this.setState((prevState, props) => {
             const index = prevState.queryHistory.length;
@@ -374,17 +390,12 @@ class App extends Component {
               // facetFields: results[1].facetFields,
               documents: prevState.documents.concat(results[0].docs), //연속 붙이기의 비밀
               facetFields: results[0].facetFields,
-              queryHistory: [
-                {
-                  index,
-                  query,
-                  date: moment().valueOf(),
-                  queryMode: prevState.nextQueryMode,
-                  collection: props.currentCollection
-                }
-              ].concat(prevState.queryHistory)
+              docIds: docIdsArray
             };
           });
+          for(let i=0; i<10; i++){
+            this.fetchWordCloud(docIdsArray[i], null, 1, 0);
+          }
         })
         .catch(error => {
           console.error(error);
@@ -425,13 +436,19 @@ class App extends Component {
           //preview JSON객체와 wordCloud JSON객체를 합친다
             // console.dir("result3: " + JSON.stringify(prevState.documents));
             // console.dir("#1 : " + JSON.stringify(prevState.documents[0]));
-            // console.dir("#2 : " + JSON.stringify(results[0].docs[0]));
-            let tempArr = prevState.documents;  //JSON객체
-            // console.log("#2 : " + JSON.stringify(arr));
+            // console.dir("#3 : " + JSON.stringify(results[0].docs[0]));
+
+            let tempArr = prevState.documents;  //JSON
+            // console.log("#2 : " + JSON.stringify(tempArr));
 
             for(let i=0; i<tempArr.length; i++){
-              Object.assign(tempArr[i], results[0].docs[i])
-            }            
+              if(Object.keys(results[0].docs).length > 0){  //docs[i].id 가 없는 애들이 있음
+                if(this.state.docIds[i] === results[0].docs[0].id){
+                  Object.assign(tempArr[i], results[0].docs[0])
+                }
+              }              
+            }     
+   
             // console.dir("#1 :" + JSON.stringify(tempArr))
             return {
               queryMode: prevState.nextQueryMode,
@@ -454,10 +471,10 @@ class App extends Component {
   };
 
 //실제 API 호출
-  fetchAnalysisData = (query, newFacet) => {
+  fetchAnalysisData = (query, newFacet, docIds) => {
       this.fetchPreview(query, newFacet);
       this.fetchCore(query, newFacet, 10, 0);
-      this.fetchWordCloud(query, newFacet, 10, 0);
+      // this.fetchWordCloud(docIds[0], newFacet, 1, 0);
         };
 
   renderRow(queryMode) {

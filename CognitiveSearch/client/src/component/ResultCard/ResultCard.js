@@ -46,7 +46,8 @@ class ResultCard extends Component {
       isLoading,
       onClickDocument,
       pageSize,
-      renderRow
+      renderRow,
+      test
     } = this.props;
     const { currentPage } = this.state;
     // const documentCount = data.length;
@@ -76,6 +77,7 @@ class ResultCard extends Component {
             pageSize={pageSize}
             current={currentPage}
             onChange={this.handlePageChange}
+            onClick={test}
           />
         ]}
       >

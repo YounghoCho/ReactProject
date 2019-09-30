@@ -283,6 +283,8 @@ const addHighlighting = (
     const keys = Object.keys(highlightings[docId]);
     const highlighting = highlightings[docId][keys[2]].join("<br><br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
     return {
+      ...doc,
+        id: docId,
         ___highlighting: highlighting
     };
 };

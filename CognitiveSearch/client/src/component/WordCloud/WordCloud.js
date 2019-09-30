@@ -5,27 +5,41 @@ import cloud from "d3-cloud";
 
 import "./WordCloud.css";
 
+// const WORD_COLOR_SETS = {
+//   blue: [
+//     /* IBM Design color: Cerulean */
+//     "#009bef",
+//     "#047cc0",
+//     "#046cc0",
+//     "#175d8d"
+//   ],
+//   red: [
+//     /* IBM Design color: Red */
+//     "#ff5c49",
+//     "#e62325",
+//     "#d31325",
+//     "#aa231f"
+//   ],
+//   green: [
+//     /* IBM Design color: Green */
+//     "#00aa5e",
+//     "#00884b",
+//     "#00784b",
+//     "#116639"
+//   ]
+// };
 const WORD_COLOR_SETS = {
   blue: [
     /* IBM Design color: Cerulean */
-    "#009bef",
-    "#047cc0",
-    "#046cc0",
-    "#175d8d"
+    "#009bef"
   ],
   red: [
     /* IBM Design color: Red */
-    "#ff5c49",
-    "#e62325",
-    "#d31325",
-    "#aa231f"
+    "#ff5c49"
   ],
   green: [
     /* IBM Design color: Green */
-    "#00aa5e",
-    "#00884b",
-    "#00784b",
-    "#116639"
+    "#00aa5e"
   ]
 };
 
@@ -120,12 +134,13 @@ class WordCloud extends Component {
     let fontSizeScale = d3
         .scaleLinear()
         .domain([minCount, maxCount])
-        .range([14, 32]);
+        .range([22, 42]);
 
     let fontWeightScale = d3
         .scaleQuantize()
         .domain([minCount, maxCount])
-        .range(["lighter", "normal", "bold", "bolder"]);
+        // .range(["lighter", "normal", "bold", "bolder"]);
+        .range(["normal", "bold", "bolder"]);
 
     let words = data.map((datum, index) => {
       const fontSize = fontSizeScale(datum.count);

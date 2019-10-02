@@ -30,16 +30,19 @@ import "./WordCloud.css";
 // };
 const WORD_COLOR_SETS = {
   blue: [
-    /* IBM Design color: Cerulean */
-    "rgb(222, 212, 22)"
+    /* IBM Design color: 보라 */
+    // "rgb(222, 212, 22)"
+      "rgb(137, 76, 156)"
   ],
   red: [
-    /* IBM Design color: Red */
-    "rgb(143, 30, 49)"
+    /* IBM Design color: 주황 */
+    // "rgb(143, 30, 49)"
+      "rgb(246,161,64)"
   ],
   green: [
-    /* IBM Design color: Green */
-    "rgb(101, 145, 31)"
+    /* IBM Design color: 초록 */
+    // "rgb(101, 145, 31)"
+    "rgb(118, 183, 91)"
   ]
 };
 

@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { List, Tag } from "antd";
+import { List, Avatar } from "antd";
 
 import "./BasicRow.css";
 
-const BasicRow = ({ title, body, highlighting, onClick, style,
+const BasicRow = ({title, body, highlighting, onClick, style,
                       author, publisher, yearOfPublication}) => (
   <div>
     <List.Item
@@ -17,7 +17,16 @@ const BasicRow = ({ title, body, highlighting, onClick, style,
         onClick={onClick}
     >
         <List.Item.Meta
-            title={<p style={{'font-weight':'bold','font-size':'18px'}}>{title.length < 100 ? title : title.slice(0, 100) + "..."}</p>}
+            // avatar={
+            //     <Avatar className="BasicRow-avatar" size="small">
+            //         {index}
+            //     </Avatar>
+            // }
+            title={<p style={{'fontWeight':'bold','fontSize':'18px'}}>
+                     {title.length < 100 ?
+                         title :
+                         title.slice(0, 100) + "..."}
+                   </p>}
             description={
                 highlighting ? (
                     <div

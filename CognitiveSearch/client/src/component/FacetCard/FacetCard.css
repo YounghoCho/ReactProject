@@ -11,16 +11,30 @@
 }
 #listHeader1{
     font-size:18px;
-    color: rgb(222, 212, 22);
+    color: rgb(137, 76, 156);
 }
 #listHeader2{
     font-size:18px;
-    color: rgb(143, 30, 49);
+    color: rgb(246,161,64);
 }
 #listHeader3{
     font-size:18px;
-    color: rgb(101, 145, 31);
+    color: rgb(118, 183, 91);
 }
 #root > div > div > div.ant-spin-nested-loading > div > div > div{
     height:1px;
+}
+
+#facetBlock, #valueBlock, #countBlock{
+    display: block;
+}
+#valueBlock, #countBlock{
+    float: left;
+}
+
+#chartDiv {
+    display: grid;
+    height: 2.5vh;
+    border: 1px solid red;
+    max-width: 500px;
 }

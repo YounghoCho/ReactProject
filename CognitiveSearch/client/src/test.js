@@ -1,5 +1,14 @@
-let code = 'english_%EA%B8%B0%EA%B3%84%EA%B3%B5%ED%95%99%EC%97%90%EC%84%9C%EC%9D%98';
+let arr = [30, 70, 20];
 
-console.log(
-  decodeURI(code)+ ", \n"
-);
+for(let i=0; i<2; i++){
+    for(let j=0; j<2; j++){
+        if(arr[j] < arr[j+1]){
+            console.log("yes");
+            let temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+}
+
+console.log(arr);

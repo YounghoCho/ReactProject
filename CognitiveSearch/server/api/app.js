@@ -979,16 +979,17 @@ app.post("/similar-document-query", (req, res) => {
                     let facetsCount = 5*2;
                     let assemble = (annoArray) => {
                         if(annoArray == undefined){
-                            let emptyString = "";
-                            facetsArray.push(emptyString);
-                            facetsArray.push(emptyString);
-                            facetsArray.push(emptyString);
+                            //받아온 어노테이션 배열이 없는경우 빈객체를 5개 채워준다.
+                            let emptyJson = {value:'undefined',count:0};
+                            for(let i=0; i<5; i++)
+                                facetsArray.push(emptyJson);
                         }
                         else{
                             for( let i=0; i< facetsCount; i+=2){
                                 // console.log("#Annotation Arrays : "+annoArray.toString())
                                 let temp = (annoArray[i] + " : " + annoArray[i + 1]);
                                 facetsArray.push(temp);
+
                             }
                         }
                     };

@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames/bind";
-import { Card, List } from "antd";
+import { Card, List, Checkbox} from "antd";
 import "./FacetCard.css";
 
 let title1st = "기술요소";
@@ -19,20 +19,32 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
          header={<div id={'listHeader1'}>{title1st}</div>}
          itemLayout="horizontal"
          loading={isLoading}
-         dataSource={data.slice(0,5)}
+         dataSource={data.slice(0,5)}   //data is FacetFields from App.js
          renderItem={item => (
             <List.Item style={{border:'none',cursor:'pointer'}}
-                onClick={onClickQuery.bind(
-                    this,
-                    0,
-                    queryData,
-                    1,
-                    'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
-                )}
+                // onClick={onClickQuery.bind(
+                //     this,
+                //     0,
+                //     queryData,
+                //     1,
+                //     'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
+                // )}
             >
-                    {item.substr(item.length-1, item.length) == 0 ?
-                            (item.substr(item.length-2, item.length) > 0 ? item : '')
-                            : item}
+                <List.Item.Meta
+                    description={
+                        <div id="facetBlock">
+                            <div id="valueBlock">
+                                <Checkbox onChange={''}>
+                                    {item.count == '0' ? '' : item.value}
+                                </Checkbox>
+                            </div>
+                            <div id="countBlock">
+                                <div id="chartDiv" style={{width:item.count}}/>
+                            </div>
+                        </div>
+                    }
+                />
+
             </List.Item>
           )}
         />
@@ -44,17 +56,28 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
          dataSource={data.slice(5,10)}
          renderItem={item => (
              <List.Item style={{border:'none',cursor:'pointer'}}
-                onClick={onClickQuery.bind(
-                    this,
-                    0,
-                    queryData,
-                    1,
-                    'annotation.unstructure.industry:"' + item.substr(0, item.indexOf(':')-1) + '"'
-                )}
+                // onClick={onClickQuery.bind(
+                //     this,
+                //     0,
+                //     queryData,
+                //     1,
+                //     'annotation.unstructure.industry:"' + item.substr(0, item.indexOf(':')-1) + '"'
+                // )}
             >
-                {item.substr(item.length-1, item.length) == 0 ?
-                    (item.substr(item.length-2, item.length) > 0 ? item : '')
-                    : item}
+                 <List.Item.Meta
+                     description={
+                         <div id="facetBlock">
+                             <div id="valueBlock">
+                                 <Checkbox onChange={''}>
+                                     {item.count == 0 ? '' : item.value}
+                                 </Checkbox>
+                             </div>
+                             <div id="countBlock">
+                                 {item.count}
+                             </div>
+                         </div>
+                     }
+                 />
             </List.Item>
           )}
         />
@@ -66,17 +89,28 @@ const FacetCard = ({ className, title, data, isLoading, queryData, onClickQuery,
          dataSource={data.slice(10,15)}
          renderItem={item => (
              <List.Item style={{border:'none',cursor:'pointer'}}
-        onClick={onClickQuery.bind(
-                    this,
-                    0,
-                    queryData,
-                    1,
-                    'annotation.unstructure.application:"' + item.substr(0, item.indexOf(':')-1) + '"'
-                )}
+        // onClick={onClickQuery.bind(
+        //             this,
+        //             0,
+        //             queryData,
+        //             1,
+        //             'annotation.unstructure.application:"' + item.substr(0, item.indexOf(':')-1) + '"'
+        //         )}
             >
-                {item.substr(item.length-1, item.length) == 0 ?
-                    (item.substr(item.length-2, item.length) > 0 ? item : '')
-                    : item}
+                 <List.Item.Meta
+                     description={
+                         <div id="facetBlock">
+                             <div id="valueBlock">
+                                 <Checkbox onChange={''}>
+                                     {item.count == 0 ? '' : item.value}
+                                 </Checkbox>
+                             </div>
+                             <div id="countBlock">
+                                 {item.count}
+                             </div>
+                         </div>
+                     }
+                 />
             </List.Item>
           )}
         />

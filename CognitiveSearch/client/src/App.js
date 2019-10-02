@@ -24,8 +24,8 @@ import {
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
-// import logo from "./logo.svg";
-import logo from "./logo2.png";
+import logo from "./logo.svg";
+// import logo from "./logo2.png";
 
 // static file imports
 import "./App.css";
@@ -59,7 +59,9 @@ class App extends Component {
       docsCount: 0,
       docIds: [],
       startDocument: 0,
-      currentPage: 1
+      currentPage: 1,
+        indexForResult: 1,
+        chartRate: '0vmax'
     };
   }
 
@@ -165,6 +167,7 @@ class App extends Component {
             queryData={this.state.query}
             onClickQuery={this.handleClickQuery}
             currentCollectionDocCount={currentCollectionDocCount}
+            chartRate={this.state.chartRate}
           />
         </div>
     <div
@@ -198,6 +201,32 @@ class App extends Component {
   /* end of lifecycle methods */
 
   /* ui handler methods */
+
+  getBarChartSize = (chartRate, jsonArray) =>{
+      for(let i=0; i<jsonArray.length; i++){ //15times
+          console.log("count.. : " + jsonArray[i].count);
+          if(0 < jsonArray[i].count && jsonArray[i].count <= chartRate){
+              jsonArray[i].count = '1vmax';
+          }else if(chartRate < jsonArray[i].count && jsonArray[i].count <= chartRate * 2){
+              jsonArray[i].count = '2vmax';
+          }else if(chartRate * 2 < jsonArray[i].count && jsonArray[i].count <= chartRate * 3){
+              jsonArray[i].count = '3vmax';
+          }else if(chartRate * 3 < jsonArray[i].count && jsonArray[i].count <= chartRate * 4){
+              jsonArray[i].count = '4vmax';
+          }else if(chartRate * 4 < jsonArray[i].count && jsonArray[i].count <= chartRate * 5){
+              jsonArray[i].count = '5vmax';
+          }else if(chartRate * 5 < jsonArray[i].count && jsonArray[i].count <= chartRate * 6){
+              jsonArray[i].count = '6vmax';
+          }else if(chartRate * 6 < jsonArray[i].count){
+              jsonArray[i].count = '7vmax';
+          }
+          console.log("result: " + jsonArray[i].count);
+      }
+
+      this.setState({
+          facetFields: jsonArray
+      })
+  }
   getNextPage = (page) => {
     //page is 1, 2, 3 ...
     //초기호출시 10개 (docIndex is 0~9)
@@ -369,6 +398,27 @@ class App extends Component {
           // console.log("doc : " + docIdsArray[0]);
           // console.log("##" + docIdsArray.length); //10개
 
+            //그래프 계산하기
+            let arr = [results[0].facetFields[0].count,
+                              results[0].facetFields[5].count,
+                              results[0].facetFields[10].count]; //index is 0~14
+            console.log("countArray : " + arr.toString());
+            //sort
+            for(let i=0; i<2; i++){
+                for(let j=0; j<2; j++){
+                    if(arr[j] < arr[j+1]){
+                        console.log("yes");
+                        let temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                    }
+                }
+            }
+            console.log("sortedArray : " + arr.toString());
+            const chartRate = arr[0]/7.0;   //vmax 7이 넘어가면 그래프가 아래로 내려가는 현상 발생.
+            console.log("rate : " + chartRate);
+            this.getBarChartSize(chartRate, results[0].facetFields); //float, jsonArray
+
           this.setState((prevState, props) => {
             const index = prevState.queryHistory.length;
             return {
@@ -382,7 +432,8 @@ class App extends Component {
               // documents: prevState.documents.concat(results[0].docs), //연속 붙이기의 비밀
               documents: results[0].docs, //연속 붙이기의 비밀
               facetFields: results[0].facetFields,
-              docIds: docIdsArray
+              docIds: docIdsArray,
+              chartRate: chartRate
             };
           });
           for(let i=0; i<10; i++){
@@ -437,9 +488,7 @@ class App extends Component {
             //비동기로 호출한 wordcloud를 기존에 불러온 preview 내용에 각 문서의 id값을 기준으로 highlight_body와 annotation들을 매핑해준다.
             for(let i=0; i<tempArr.length; i++){
               if(Object.keys(results[0].docs).length > 0){  //docs[i].id 가 없는 애들이 있음
-                console.log('in')
                 if(this.state.docIds[i] === results[0].docs[0].id){
-                  console.log("same")
                   Object.assign(tempArr[i], results[0].docs[0])
                 }
               }              
@@ -519,7 +568,6 @@ class App extends Component {
           const publisher = item.publisher;
           const yearOfPublication = item.yearOfPublication;
           const title = item.titleOfThesis || item.Title;
-
           return (
               <WordCloudRow
                 title={title}
@@ -532,33 +580,10 @@ class App extends Component {
                 keyword = {keyword}
                 author = {author}
                 journalTitle = {journalTitle}
-                publisher = {publisher}
+                publisher = {publisher} s
                 yearOfPublication = {yearOfPublication}
               />
-        );
-        };
-      // case QUERY_MODE_BASIC_SEARCH:
-      // case QUERY_MODE_PHRASAL_SEARCH:
-      default:
-        return onClickItem => item => {
-          const index = item.rank;
-          const title = item.title;
-          const body = item.body;
-          const highlighting = item.___highlighting || "";
-          //
-          const annotations = item.___annotations;
-          return (
-      //        <BasicRow
-      <WordCloudRow
-          index={index}
-          title={title}
-          body={body}
-          highlighting={highlighting}
-          onClick={onClickItem.bind(this, item)}
-          //
-          data={annotations.slice(0, 20)}
-          />
-        );
+          );
         };
     }
   }

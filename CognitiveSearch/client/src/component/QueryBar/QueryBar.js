@@ -29,12 +29,12 @@ class QueryBar extends Component {
     } = this.props;
     return (
       <div className="QueryBar" sytle={style}>
-        <QueryModeSelect
-          value={queryMode}
-          onChange={onChangeQueryMode}
-          disabled={disabled}
-          style={{ margin: "1px 0px", minWidth: 155 }}
-        />
+        {/*<QueryModeSelect*/}
+          {/*value={queryMode}*/}
+          {/*onChange={onChangeQueryMode}*/}
+          {/*disabled={disabled}*/}
+          {/*style={{ margin: "1px 0px", minWidth: 155 }}*/}
+        {/*/>*/}
         <div
           className="QueryBar-container"
           style={{

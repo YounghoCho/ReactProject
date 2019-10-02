@@ -10,13 +10,16 @@
     font-weight: bold;
 }
 #listHeader1{
-    color: #046cc0;
+    font-size:18px;
+    color: rgb(222, 212, 22);
 }
 #listHeader2{
-    color: #d31325;
+    font-size:18px;
+    color: rgb(143, 30, 49);
 }
 #listHeader3{
-    color: #00784b;
+    font-size:18px;
+    color: rgb(101, 145, 31);
 }
 #root > div > div > div.ant-spin-nested-loading > div > div > div{
     height:1px;

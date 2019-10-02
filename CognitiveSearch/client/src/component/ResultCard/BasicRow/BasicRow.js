@@ -17,7 +17,7 @@ const BasicRow = ({ title, body, highlighting, onClick, style,
         onClick={onClick}
     >
         <List.Item.Meta
-            title={title.length < 100 ? title : title.slice(0, 100) + "..."}
+            title={<p style={{'font-weight':'bold','font-size':'18px'}}>{title.length < 100 ? title : title.slice(0, 100) + "..."}</p>}
             description={
                 highlighting ? (
                     <div
@@ -39,9 +39,7 @@ const BasicRow = ({ title, body, highlighting, onClick, style,
 
     </List.Item>
       <div>
-          {author ? <Tag id='tags' color="volcano">{author}</Tag> : null}
-          {publisher ? <Tag id='tags' color="green">{publisher}</Tag> : null}
-          {yearOfPublication ? <Tag id='tags' color="blue">{yearOfPublication}</Tag> : null}
+          {author ? `${author} / ` : null}{publisher ? `${publisher} / ` : null}{yearOfPublication ? `${yearOfPublication}` : null}
       </div>
   </div>
 

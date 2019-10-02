@@ -31,15 +31,15 @@ import "./WordCloud.css";
 const WORD_COLOR_SETS = {
   blue: [
     /* IBM Design color: Cerulean */
-    "#009bef"
+    "rgb(222, 212, 22)"
   ],
   red: [
     /* IBM Design color: Red */
-    "#ff5c49"
+    "rgb(143, 30, 49)"
   ],
   green: [
     /* IBM Design color: Green */
-    "#00aa5e"
+    "rgb(101, 145, 31)"
   ]
 };
 
@@ -140,7 +140,7 @@ class WordCloud extends Component {
         .scaleQuantize()
         .domain([minCount, maxCount])
         // .range(["lighter", "normal", "bold", "bolder"]);
-        .range(["normal", "bold", "bolder"]);
+        .range(["bold"]);
 
     let words = data.map((datum, index) => {
       const fontSize = fontSizeScale(datum.count);
@@ -172,11 +172,6 @@ class WordCloud extends Component {
     data = data.concat(data2);
     data = data.concat(data3);
     let words = this.createWords(data);
-    // words :[{"id":0,"fontSize":32,"fontWeight":"bolder","text":"인공지능","count":60},
-    //         {"id":1,"fontSize":14,"fontWeight":"lighter","text":"머신러닝","count":3},
-    //         {"id":0,"fontSize":14,"fontWeight":"lighter","text":"조영호","count":20},
-    //         {"id":1,"fontSize":32,"fontWeight":"bolder","text":"강효정","count":40}
-    //        ]
 
     let sum = {};
     let result = [];
@@ -185,16 +180,12 @@ class WordCloud extends Component {
       result.push(sum);
     }
     result.sort((a, b) => b.count - a.count);
-    // alert(JSON.stringify(result));
-    // result : [{"id":0,"fontSize":32,"fontWeight":"bolder","text":"인공지능","count":60,"color":"#ff5c49"},
-    //           {"id":1,"fontSize":32,"fontWeight":"bolder","text":"강효정","count":40,"color":"#009bef"},
-    //           {"id":0,"fontSize":14,"fontWeight":"lighter","text":"조영호","count":20,"color":"#1c498d"},
-    //           {"id":1,"fontSize":14,"fontWeight":"lighter","text":"머신러닝","count":3,"color":"#9f231e"}
-    //          ]
+
 
 
     let layout = cloud()
       .size([viewBoxWidth, viewBoxHeight])
+      .padding(3) //글자간 간격
       .words(result)
       .text(datum => datum.text)
       .rotate(() => 0)

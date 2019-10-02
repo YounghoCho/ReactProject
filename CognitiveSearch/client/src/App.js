@@ -159,7 +159,7 @@ class App extends Component {
           style={{ gridTemplateRows: "1fr" }}
         >
           <FacetCard
-            title={i18n.Facet_CARD_TITLE + '(전체 1,009건)'}
+            title={i18n.Facet_CARD_TITLE + `(전체 1,009)`}
             isLoading={isFacetFieldsLoading}
             data={facetFields}
             queryData={this.state.query}

@@ -77,7 +77,7 @@ let getCurrentCollectionDocs = (defaultCollectionId) =>
         break;
       }
     }
-    console.log(count);
+    // console.log(count);
     return count;
   })
   .catch(error => console.error("[err2]getCurrentCollectionDocs에러 : " + error.message));
@@ -89,19 +89,28 @@ let fetchCollections = defaultCollectionId => {
       .get(`${ROOT_URI}/collections`)
       .then(response => response.data)
       .then(response => {
-        let mappedCollections = response.collections.map(collection => ({
-          id: collection.id,
-          name: collection.name
-        }));
+        // console.log(JSON.stringify(response.collections.id));
+        let mappedCollections = response.collections.map(
+          collection => ({
+            id: collection.id,
+            name: collection.name
+          })
+        );
         let isCollectionFound = false;
-        if (defaultCollectionId) {
-          for (let i = 0, count = mappedCollections.length; i < count; i++) {
-            if (mappedCollections[i].id === defaultCollectionId) {
-              isCollectionFound = true;
-              break;
-            }
-          }
-        }
+        //최초 접속해서 해당 브라우저의 사용자가 collections을 선택한 적 없을 경우
+        // console.log(mappedCollections[0]);
+        let customCollectionId = 'e8d1c521-b10b-f9be-0000-016d3dfc800c';
+        mappedCollections = mappedCollections.filter(info => info.id == customCollectionId);
+        isCollectionFound = true;
+        //OriginalCode : 컬렉션들중에 선택한 컬렉션을 지정해준다.
+        // if (defaultCollectionId) {
+        //   for (let i = 0, count = mappedCollections.length; i < count; i++) {
+        //     if (mappedCollections[i].id === defaultCollectionId) {  //defaultCollectionId은 CollectionSelect에서 선택된 컬렉션 id값
+        //       isCollectionFound = true;
+        //       break;
+        //     }
+        //   }
+        // }
         dispatch(setCollections(mappedCollections));
         dispatch(
           setCurrentCollection(
@@ -112,7 +121,7 @@ let fetchCollections = defaultCollectionId => {
                 : ""
           )
         );
- //       return defaultCollectionId; //중요 : 여기서 response => {}에 대한 return을 안해주면, 아래 then이 비동기 처리가 되지 않는다. getCurrentCollectionDocs의 결과가 먼저 나오는 현상 발생
+      //  return defaultCollectionId; //중요 : 여기서 response => {}에 대한 return을 안해주면, 아래 then이 비동기 처리가 되지 않는다. getCurrentCollectionDocs의 결과가 먼저 나오는 현상 발생
       })
       //   .then(getCurrentCollectionDocs) //중요 : 여기서는 파라미터를 왜 안넘길까? return defaultCollectionId를 받아오기때문에 자동으로 넘어간다!
       // .then(count => {

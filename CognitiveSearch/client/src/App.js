@@ -57,7 +57,9 @@ class App extends Component {
       },
       modalVisible: false,
       docsCount: 0,
-      docIds: []
+      docIds: [],
+      startDocument: 0,
+      currentPage: 1
     };
   }
 
@@ -102,7 +104,7 @@ class App extends Component {
       selectedDocument,
       modalVisible,
       docsCount,
-      docIds
+      currentPage
     } = this.state;
     const {
       isFetchingCollections,
@@ -176,7 +178,8 @@ class App extends Component {
         docsCount={docsCount}
         onClickDocument={this.handleDocumentClick}
         renderRow={this.renderRow(queryMode)}
-        test={this.test}
+        getNextPage={this.getNextPage}
+        pageNow={currentPage}
       />
     </div>
     </Content>
@@ -195,14 +198,18 @@ class App extends Component {
   /* end of lifecycle methods */
 
   /* ui handler methods */
-test = () => () => {
-  this.setState(
-    () => {
-      alert("test");
-      // this.fetchAnalysisData(query, newFacet);
-    }
-);
-}
+  getNextPage = (page) => {
+    //page is 1, 2, 3 ...
+    //초기호출시 10개 (docIndex is 0~9)
+    this.setState({
+      startDocument: ((page -1) * 10),
+      currentPage: page
+      },
+        () => {
+         this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
+        }
+    );
+  };
  goToHome = () => {
     window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8001';
   }
@@ -241,12 +248,12 @@ test = () => () => {
     }
   };
 
-  handleSendQuery = (query, docIds) => {
+  handleSendQuery = (query) => {
     this.setState({
       documents: [],
       facetFields: []
     });
-    this.fetchAnalysisData(query, null, docIds);
+    this.fetchAnalysisData(query, null, this.state.startDocument);
   };
 
   handleModalClickOk = () => {
@@ -282,7 +289,7 @@ test = () => () => {
           facetFields: []
         },
         () => {
-          this.fetchAnalysisData(query, newFacet);
+          this.fetchAnalysisData(query, newFacet, this.state.startDocument);
         }
     );
   };
@@ -291,6 +298,7 @@ test = () => () => {
 
 
   /* other methods */
+  //문서 수
   fetchPreview = (query, newFacet) => {
       this.setState({
           isDocumentsLoading: true,
@@ -328,6 +336,7 @@ test = () => () => {
 
   }
 
+  //문서 프리뷰
   fetchCore  = (query, newFacet, docCount, startPoint) => {
     this.setState({
       isClassificationDataLoading: true,
@@ -339,18 +348,6 @@ test = () => () => {
     let collectionId = this.props.currentCollection.id;
 
     switch (this.state.nextQueryMode) {
-        // case QUERY_MODE_BASIC_SEARCH:
-        //   fetchFunc = Promise.all([
-        //      fetchClassifierResult(collectionId, query),
-        //     fetchBasicQueryResult(collectionId, query, 30) //유사문서검색과 service.js내의 내용이 동일하다. server app.js에서 다르게 처리된다.
-        //   ]);
-        //   break;
-        // case QUERY_MODE_PHRASAL_SEARCH:
-        //   fetchFunc = Promise.all([
-        //      fetchClassifierResult(collectionId, query),
-        //     fetchPhrasalQueryResult(collectionId, query, 30)
-        //   ]);
-        //   break;
       default:
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
 
@@ -363,12 +360,6 @@ test = () => () => {
 
     return fetchFunc
         .then(results => {
-          // console.log("#1 results[1] : " + JSON.stringify(results[0]));
-          // alert("#2 results[1].docs : " + JSON.stringify(results[1].docs));
-          // alert("#3 results[1].facetFields : " + JSON.stringify(results[1].facetFields));
-          // alert("#4 results[1].facetFields : " + JSON.stringify(results[1].author));
-          //console.log("#4 results[1].facetFields : " + JSON.stringify(results[1].author));
-         
           //문서들의 id값을 수집한다(api 비동기 콜을 위해서)
           // console.log("#" + results[0].docs[0].id);
           let docIdsArray=[];
@@ -388,13 +379,14 @@ test = () => () => {
               // classificationData: results[0].classes, //fetchClassifierResult method 제거함으로써 1->0으로 response index 옮김.
               // documents: results[1].docs,
               // facetFields: results[1].facetFields,
-              documents: prevState.documents.concat(results[0].docs), //연속 붙이기의 비밀
+              // documents: prevState.documents.concat(results[0].docs), //연속 붙이기의 비밀
+              documents: results[0].docs, //연속 붙이기의 비밀
               facetFields: results[0].facetFields,
               docIds: docIdsArray
             };
           });
           for(let i=0; i<10; i++){
-            this.fetchWordCloud(docIdsArray[i], null, 1, 0);
+            this.fetchWordCloud(decodeURI(docIdsArray[i]), null, 1);  //docIdsArray : 인공지능의_미래.pdf (한국어는 깨져서 encoding된 string을 Decode 해준다.)
           }
         })
         .catch(error => {
@@ -410,7 +402,8 @@ test = () => () => {
 
 
   //wordcloud data
-  fetchWordCloud  = (query, newFacet, docCount, startPoint) => {
+  //여기서는 startpoin가 0이어야한다. 왜냐면 문서id로 검색해서 해당 문서의 어노테이션을 가져오니까
+  fetchWordCloud  = (query, newFacet, docCount) => {
     this.setState({
       isClassificationDataLoading: true,
       isDocumentsLoading: true,
@@ -425,30 +418,37 @@ test = () => () => {
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
 
         fetchWordCloud = Promise.all([
-          fetchWordCloudResult(collectionId, query, docCount, startPoint, newFacet)
+          fetchWordCloudResult(collectionId, query, docCount, newFacet)
         ]);
         break;
     }
 
-    return fetchWordCloud
+    return fetchWordCloud 
         .then(results => {
            this.setState((prevState, props) => {
           //preview JSON객체와 wordCloud JSON객체를 합친다
             // console.dir("result3: " + JSON.stringify(prevState.documents));
             // console.dir("#1 : " + JSON.stringify(prevState.documents[0]));
             // console.dir("#3 : " + JSON.stringify(results[0].docs[0]));
+            
+            let tempArr = this.state.documents;  //10개의 프리뷰 문서를 불러온다.
+            // console.log("#prevState.documents : " + JSON.stringify(tempArr));
 
-            let tempArr = prevState.documents;  //JSON
-            // console.log("#2 : " + JSON.stringify(tempArr));
-
+            //비동기로 호출한 wordcloud를 기존에 불러온 preview 내용에 각 문서의 id값을 기준으로 highlight_body와 annotation들을 매핑해준다.
             for(let i=0; i<tempArr.length; i++){
               if(Object.keys(results[0].docs).length > 0){  //docs[i].id 가 없는 애들이 있음
+                console.log('in')
                 if(this.state.docIds[i] === results[0].docs[0].id){
+                  console.log("same")
                   Object.assign(tempArr[i], results[0].docs[0])
                 }
               }              
             }     
-   
+                     
+            // let finalDocument;
+            // if(startPoint > 0){
+            //   finalDocument = Object.assign(slicedArr, tempArr);
+            // } 
             // console.dir("#1 :" + JSON.stringify(tempArr))
             return {
               queryMode: prevState.nextQueryMode,
@@ -456,6 +456,7 @@ test = () => () => {
               isDocumentsLoading: false,
               isFacetFieldsLoading: false,
               documents: tempArr  //Array
+              // documents: finalDocument  //prevState.documents의 한개의 객체에만 annotation을 싣어서 documnets객체 자체를 return한다.
             };
           });
         })
@@ -471,12 +472,13 @@ test = () => () => {
   };
 
 //실제 API 호출
-  fetchAnalysisData = (query, newFacet, docIds) => {
+  fetchAnalysisData = (query, newFacet, startDocument) => {
       this.fetchPreview(query, newFacet);
-      this.fetchCore(query, newFacet, 10, 0);
-      // this.fetchWordCloud(docIds[0], newFacet, 1, 0);
+      this.fetchCore(query, newFacet, 10, startDocument);
         };
-
+  fetchAnalysisDataMore = (query, newFacet, startDocument) => {
+    this.fetchCore(query, newFacet, 10, startDocument);
+      };
   renderRow(queryMode) {
     switch (queryMode) {
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:

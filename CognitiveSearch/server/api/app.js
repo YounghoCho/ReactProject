@@ -290,23 +290,10 @@ const addHighlighting = (
 };
 
 const addHighlightingAndUserDefinedAnnotations = (
-    highlightings,
     previews
 ) => doc => {
     // console.log("#1 higligihting : " + JSON.stringify(highlightings));
     const docId = doc.id;
-    const keys = Object.keys(highlightings[docId]); 
-    // v 12.0.2=> keys : body_bigram, body, views //body filed명이 바뀔수도 있으니 key값을 추출한다.
-    // v 12.0.3=> keys : FileName,body_bigram,body,views //FileName이 추가됨.
-
-    // console.log("#1 keys[0], keys[2] is : " + keys[0] +","+keys[2]);
-    globalFieldName = keys[2];  //=> globalFieldName = body_bigram
-    // console.log("#6  : " + JSON.stringify(highlightings[docId].body));
-    // console.log("#7  : " + JSON.stringify(highlightings[docId].views.body[0].span));
-    // console.log("#8  : " + JSON.stringify(highlightings[docId].views.body.length));
-
-    const highlighting = highlightings[docId][keys[2]].join("<br><br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
-    // console.log("#4 highlightings[docId][keys[0]] : " + highlightings[docId][keys[0]].toString());
     const analyzedFacets = previews[docId].analyzed_facets;
     //  console.log("### doc id ? " + docId);
     return {

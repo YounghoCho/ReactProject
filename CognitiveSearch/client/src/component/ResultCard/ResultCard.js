@@ -23,6 +23,7 @@ class ResultCard extends Component {
     this.setState({
       currentPage: page
     });
+    this.props.getNextPage(page);
   };
 
   componentDidUpdate = (prevProps, prevState) => {
@@ -32,7 +33,7 @@ class ResultCard extends Component {
     // if the query results(documents) were loaded from server, set current page to 0
     if (prevProps.isLoading && !this.props.isLoading) {
       this.setState({
-        currentPage: 1
+        currentPage: this.props.pageNow //페이지를 고정시키는 비밀
       });
     }
   };
@@ -47,16 +48,17 @@ class ResultCard extends Component {
       onClickDocument,
       pageSize,
       renderRow,
-      test
+      pageNow
     } = this.props;
+ 
     const { currentPage } = this.state;
     // const documentCount = data.length;
     const documentCount = docsCount;
-    const partialData = data.slice(
-      pageSize * (currentPage - 1),
-      pageSize * currentPage
-    );
-
+    // const partialData = data.slice(
+    //   pageSize * (currentPage - 1),
+    //   pageSize * currentPage
+    // );
+    const partialData = data;
     return (
       <Card
         className={classNames("ResultCard", className)}
@@ -76,9 +78,9 @@ class ResultCard extends Component {
             }
             pageSize={pageSize}
             current={currentPage}
+            // onChange={this.handlePageChange.bind(this, test)}
             onChange={this.handlePageChange}
-            onClick={test}
-          />
+            />
         ]}
       >
         <List

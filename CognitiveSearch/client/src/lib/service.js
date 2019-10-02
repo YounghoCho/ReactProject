@@ -101,7 +101,6 @@ export const fetchSimilarDocumentQueryResult = (
     collectionId,
     query,
     docCount,
-    start,
     newFacet
   ) =>
     axios({
@@ -114,7 +113,6 @@ export const fetchSimilarDocumentQueryResult = (
         collectionId,
         query,
         docCount,
-        start,
         newFacet
       }
     }).then(response => response.data);

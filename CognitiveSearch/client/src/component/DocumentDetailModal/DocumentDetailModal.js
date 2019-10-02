@@ -58,7 +58,12 @@ class DocumentDetailModal extends Component {
             className="DocumentDetailModal-body-content"
             ref={this.setModalBodyContentRef}
           >
-            <div dangerouslySetInnerHTML={ {__html: doc.body.toString().replace(/\n/g,`<br>`)} }></div>
+            {doc.___highlighting_body ? (
+             <div dangerouslySetInnerHTML={ {__html: doc.___highlighting_body.toString().replace(/\n/g,`<br>`)} }></div>
+            ): (
+              <div dangerouslySetInnerHTML={ {__html: doc.body.toString().replace(/\n/g,`<br>`)} }></div>
+            )}
+
           </div>
           <div className="DocumentDetailModal-body-field">
             <Tabs defaultActiveKey="fields">

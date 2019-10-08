@@ -875,6 +875,7 @@ app.post("/similar-document-query", (req, res) => {
     const docCount = req.body.docCount || 5;
     const start = req.body.start || 0;
     const newFacet = req.body.newFacet || "";
+    console.log("app.js에서 받은 newFacet은 : " + newFacet);
 
     const nlpData = {
         fields: {
@@ -990,6 +991,7 @@ app.post("/similar-document-query", (req, res) => {
                                 let temp = (annoArray[i] + " : " + annoArray[i + 1]);
                                 facetsArray.push(temp);
 
+
                             }
                         }
                     };
@@ -1003,6 +1005,7 @@ app.post("/similar-document-query", (req, res) => {
                         docs: docs  //array
                             .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews)), //similar에서는 addUserDefinedAnnotations에서 ___annotaions들을 반환하고, basic에서는 addHighlightingAndUserDefinedAnnotations에서 ___ano..를 반환한다.
                         facetFields: facetsArray
+
                     });
 
 

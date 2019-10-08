@@ -40,13 +40,17 @@ class App extends Component {
     this.state = {
       isApplicationLoading: true,
       query: "",
+      currentFacetQuery: "",
       queryMode: QUERY_MODE_SIMILAR_DOCUMENT_SEARCH,
       nextQueryMode: QUERY_MODE_SIMILAR_DOCUMENT_SEARCH,
       classificationData: [],
       isClassificationDataLoading: false,
       documents: [],
       isDocumentsLoading: false,
-      facetFields: [],
+      facetFields: [
+        {"value":"나랏", "count":'100%'}, {"value":"피자", "count":'70%'},
+        {"value":"말쌈", "count":'50%'},{"value":"치킨", "count":'30%'},
+        {"value":"사과", "count":'0'}], //[{value:, count:}]
       isFacetFieldsLoading : false,
       wordStats: [],
       queryHistory: [],
@@ -60,8 +64,9 @@ class App extends Component {
       docIds: [],
       startDocument: 0,
       currentPage: 1,
-        indexForResult: 1,
-        chartRate: '0vmax'
+      indexForResult: 1,
+      chartRate: '0%',
+      FacetCheckHistory: [] //[{key:'', check:''}]
     };
   }
 
@@ -122,10 +127,12 @@ class App extends Component {
           <img className="App-logo" src={logo} alt="logo" height="40" />
           <div className="App-name-container" onClick={this.goToHome}>
             <div className="App-name-title">
-              IBM Cognitive Search
+              IBM Cognitive Search 
+              {/* {console.log(JSON.stringify(this.state.FacetCheckHistory))} */}
             </div>
             <div className="App-name-subtitle">
                 Watson Explorer oneWEX ver.12.0.3
+
             </div>
           </div>
           <QueryBar
@@ -165,9 +172,10 @@ class App extends Component {
             isLoading={isFacetFieldsLoading}
             data={facetFields}
             queryData={this.state.query}
-            onClickQuery={this.handleClickQuery}
+            onFacetQuery={this.handleFacetQuery}
             currentCollectionDocCount={currentCollectionDocCount}
             chartRate={this.state.chartRate}
+            FacetCheckHistory={this.state.FacetCheckHistory}
           />
         </div>
     <div
@@ -203,125 +211,263 @@ class App extends Component {
   /* ui handler methods */
 
   getBarChartSize = (chartRate, jsonArray) =>{
-      for(let i=0; i<jsonArray.length; i++){ //15times
-          console.log("count.. : " + jsonArray[i].count);
-          if(0 < jsonArray[i].count && jsonArray[i].count <= chartRate){
-              jsonArray[i].count = '1vmax';
-          }else if(chartRate < jsonArray[i].count && jsonArray[i].count <= chartRate * 2){
-              jsonArray[i].count = '2vmax';
-          }else if(chartRate * 2 < jsonArray[i].count && jsonArray[i].count <= chartRate * 3){
-              jsonArray[i].count = '3vmax';
-          }else if(chartRate * 3 < jsonArray[i].count && jsonArray[i].count <= chartRate * 4){
-              jsonArray[i].count = '4vmax';
-          }else if(chartRate * 4 < jsonArray[i].count && jsonArray[i].count <= chartRate * 5){
-              jsonArray[i].count = '5vmax';
-          }else if(chartRate * 5 < jsonArray[i].count && jsonArray[i].count <= chartRate * 6){
-              jsonArray[i].count = '6vmax';
-          }else if(chartRate * 6 < jsonArray[i].count){
-              jsonArray[i].count = '7vmax';
-          }
-          console.log("result: " + jsonArray[i].count);
-      }
-
-      this.setState({
-          facetFields: jsonArray
-      })
-  }
-  getNextPage = (page) => {
-    //page is 1, 2, 3 ...
-    //초기호출시 10개 (docIndex is 0~9)
-    this.setState({
-      startDocument: ((page -1) * 10),
-      currentPage: page
-      },
-        () => {
-         this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
+    for(let i=0; i<jsonArray.length; i++){ //15times
+        // console.log("count.. : " + jsonArray[i].count);
+        if(0 < jsonArray[i].count && jsonArray[i].count <= chartRate){
+          Object.assign(jsonArray[i], {'size': '14%'});
+        }else if(chartRate < jsonArray[i].count && jsonArray[i].count <= chartRate * 2){
+          Object.assign(jsonArray[i], {'size': '28%'});
+        }else if(chartRate * 2 < jsonArray[i].count && jsonArray[i].count <= chartRate * 3){
+          Object.assign(jsonArray[i], {'size': '42%'});
+        }else if(chartRate * 3 < jsonArray[i].count && jsonArray[i].count <= chartRate * 4){
+          Object.assign(jsonArray[i], {'size': '56%'});
+        }else if(chartRate * 4 < jsonArray[i].count && jsonArray[i].count <= chartRate * 5){
+          Object.assign(jsonArray[i], {'size': '70%'});
+        }else if(chartRate * 5 < jsonArray[i].count && jsonArray[i].count <= chartRate * 6){
+          Object.assign(jsonArray[i], {'size': '84%'});
+        }else if(chartRate * 6 < jsonArray[i].count){
+          Object.assign(jsonArray[i], {'size': '100%'});
         }
-    );
-  };
- goToHome = () => {
-    window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8001';
-  }
-  handleCollectionChange = collectionId => {
-    this.props.setCurrentCollection(collectionId);
-    this.props.changeDocCountWithCurrentCollection(collectionId);
-    browserStorage.setItem("defaultCollectionId", collectionId);
-  };
-
-  handleCollectionRefreshClick = () => {
-    this.props.fetchCollections();
-  };
-
-  handleQueryModeChange = value => {
-    this.setState({
-      nextQueryMode: value
-    });
-  };
-
-  handleQueryInputChange = event => {
-    const query = event.target.value;
-    this.setState({
-      query
-    });
-  };
-
-  handleClearQuery = () => {
-    this.setState({
-      query: ""
-    });
-  };
-
-  handleSearch = () => {
-    if (this.state.query.length > 0) {
-      this.handleSendQuery(this.state.query, this.state.docIds);
     }
-  };
 
-  handleSendQuery = (query) => {
     this.setState({
-      documents: [],
-      facetFields: []
-    });
-    this.fetchAnalysisData(query, null, this.state.startDocument);
-  };
-
-  handleModalClickOk = () => {
-    this.setState({
-      modalVisible: false
-    });
-  };
-
-  handleModalClickCancel = () => {
-    this.setState({
-      modalVisible: false
-    });
-  };
-
-  handleDocumentClick = document => {
-    // alert(Object.keys(document)); 
-    // alert(JSON.stringify(document.___highlighting));
-    this.setState({
-      modalVisible: true,
-      selectedDocument: {
-        //date: moment(document.date).format("l") && moment(0).format("l"),
-        ...document
+        facetFields: jsonArray
+    })
+}
+getNextPage = (page) => {
+  //page is 1, 2, 3 ...
+  //초기호출시 10개 (docIndex is 0~9)
+  this.setState({
+    startDocument: ((page -1) * 10),
+    currentPage: page
+    },
+      () => {
+       this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
       }
-    });
-  };
+  );
+};
+goToHome = () => {
+  window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8001';
+}
+handleCollectionChange = collectionId => {
+  this.props.setCurrentCollection(collectionId);
+  this.props.changeDocCountWithCurrentCollection(collectionId);
+  browserStorage.setItem("defaultCollectionId", collectionId);
+};
 
-  handleClickQuery = (index, query, queryMode, newFacet) => {
-    this.setState(
-        {
-          nextQueryMode: queryMode,
-          query: query,
-          documents: [],
-          facetFields: []
-        },
-        () => {
-          this.fetchAnalysisData(query, newFacet, this.state.startDocument);
+handleCollectionRefreshClick = () => {
+  this.props.fetchCollections();
+};
+
+handleQueryModeChange = value => {
+  this.setState({
+    nextQueryMode: value
+  });
+};
+
+handleQueryInputChange = event => {
+  const query = event.target.value;
+  this.setState({
+    query
+  });
+};
+
+handleClearQuery = () => {
+  this.setState({
+    query: ""
+  });
+};
+
+handleSearch = () => {
+  if (this.state.query.length > 0) {
+    this.handleSendQuery(this.state.query, this.state.docIds);
+  }
+};
+
+handleSendQuery = (query) => {
+  this.setState({
+    documents: [],
+    facetFields: []
+  });
+  this.fetchAnalysisData(query, null, this.state.startDocument);
+};
+
+handleModalClickOk = () => {
+  this.setState({
+    modalVisible: false
+  });
+};
+
+handleModalClickCancel = () => {
+  this.setState({
+    modalVisible: false
+  });
+};
+
+handleDocumentClick = document => {
+  // alert(Object.keys(document)); 
+  // alert(JSON.stringify(document.___highlighting));
+  this.setState({
+    modalVisible: true,
+    selectedDocument: {
+      //date: moment(document.date).format("l") && moment(0).format("l"),
+      ...document
+    }
+  });
+};
+
+//패싯 선택 유무 갱신 및 새 쿼리 요청 (여기서는 FacetCheckHistory를 변경하며 실제 호출은 FetchCore에서 이뤄짐)
+handleFacetQuery = (query, newFacet, checkFacetForKey) => { //기존쿼리, 선택된패싯path:값, 패싯값.
+  let tempArr = this.state.FacetCheckHistory;
+  let isUnchecked = false;
+  let editNewFacet = newFacet;
+  if(!isUnchecked){
+    //최초 패싯값 클릭시
+    if(tempArr.length === 0){
+      tempArr.push({'key':checkFacetForKey, 'check':true});
+    }else{
+      //최초 값이 아닌 경우,
+        let isFind = false;
+        isUnchecked = false;
+        //반복하며, 기존 값과 새 값이 같으면 !check로 변경
+        for(let i=0; i<tempArr.length; i++){
+          if(tempArr[i].key === checkFacetForKey.trim()){
+            isFind = true;
+            tempArr[i].check = !tempArr[i].check;
+            if(tempArr[i].check === true){
+              console.log("unchecked");
+              isUnchecked = true;  
+            }
+          }
+        } //end for
+        //반복하며, 기존 값에 새 값이 없으면 push한다.
+        if(!isFind){
+          tempArr.push({'key':checkFacetForKey, 'check':true});
         }
+        
+    }
+    this.setState(
+      {
+        query: query,
+        documents: [],
+        facetFields: [],
+        FacetCheckHistory: tempArr
+      },
+      () => {
+          this.fetchAnalysisData(query, newFacet, this.state.startDocument);
+      }
     );
-  };
+  }
+
+  //uncheck된 경우 newFacet을 기존 query에서 제거하고, 
+  //fetchAnalysisData에 newFacet=null을 보낸다.
+  let final;
+  if(isUnchecked){
+    //newFacet을 전달하면 안된다.
+    editNewFacet = '';
+    let currentQuery = query;
+    let deleteQuery = newFacet;
+    // console.log(currentQuery + ", " + deleteQuery);
+    let strLength = deleteQuery.length;
+    let startPoint = currentQuery.indexOf(deleteQuery);
+    // console.log('strLen : ' + strLength);
+    // console.log('startPoint : ' + startPoint);
+
+    //문자열 처음에 패싯쿼리가 있을때
+    if(startPoint === 0){
+        final = currentQuery.substr(strLength+5, currentQuery.length);    //' AND '
+    }
+    //마지막
+    else if(startPoint + strLength === currentQuery.length){
+        final = currentQuery.substr(0, startPoint-5);
+    }
+    //중간
+    else{
+        final = currentQuery.substr(0, startPoint-5) + currentQuery.substr(startPoint+strLength, currentQuery.length);
+    }
+    console.log('final is : ' + final);
+    this.setState(
+      {
+        query: final,
+        documents: [],
+        facetFields: [],
+        FacetCheckHistory: tempArr
+      },
+      () => {
+          this.fetchAnalysisData(final, editNewFacet, this.state.startDocument);
+      }
+    );
+  }
+
+};
+
+handleClickQuery = (index, query, queryMode, newFacet) => {
+  this.setState(
+      {
+        nextQueryMode: queryMode,
+        query: query,
+        documents: [],
+        facetFields: []
+      },
+      () => {
+        this.fetchAnalysisData(query, newFacet, this.state.startDocument);
+      }
+  );
+};
+
+ //부모 함수 : fetchCore가 끝난 시점에 호출된다.
+ //컴포넌트에 전달 될 facetFields 객체의 check 속성을, App.js에서 상태를 저장하는 state인 FacetCheckHistory의 check으로 변경해준다.
+  updateFacetCheckHistory = () => {
+    //키 : 객체배열 FacetCheckHistory를 가져온다 [{ key:'', check:''}]
+    //비교 : facetFields를 가져온다 [{value:'', count:'', check:''}]
+    //if 키.key가 facetFields.value와 같으면 
+      //비교.check에 키.check을 넣어준다.
+    console.log('start')
+    let keys = this.state.FacetCheckHistory;  //Array
+    //그냥 최초 검색인 경우
+    if(keys.length === 0){
+      this.setState({
+        isClassificationDataLoading: false,
+        isDocumentsLoading: false,
+        isFacetFieldsLoading: false
+      });
+      return null;
+    }
+    let arr = this.state.facetFields; //Array
+    for(let i=0; i<keys.length; i++){
+      for(let j=0; j<arr.length; j++){
+        if(keys[i].key === arr[j].value){
+          arr[j].check = keys[i].check;
+        }
+      }
+    }
+    console.log('end');
+    this.setState({
+      facetFields: arr,
+      isClassificationDataLoading: false,
+      isDocumentsLoading: false,
+      isFacetFieldsLoading: false
+    });
+  }
+
+  appendFacetQuery = (newFacet) => {
+    let prevFacetAndNewFacet;
+    if(newFacet !== null){
+      console.log("새 패싯은 " +newFacet+ "이야")
+      let currentFacetQuery = this.state.currentFacetQuery;
+      if(currentFacetQuery === ''){
+        console.log("이전에 받은 쿼리는 null이라구")
+        prevFacetAndNewFacet = newFacet;
+      }else{
+        console.log("이전에 받은 쿼리는 "+currentFacetQuery+"이야")
+        prevFacetAndNewFacet = currentFacetQuery + " AND " + newFacet;
+      }
+    }else{
+      prevFacetAndNewFacet = newFacet;
+    }
+    console.log("최종 newfacet은 : " +  prevFacetAndNewFacet);
+    return prevFacetAndNewFacet;
+  }
   /* end of ui handler methods */
 
 
@@ -329,6 +475,7 @@ class App extends Component {
   /* other methods */
   //문서 수
   fetchPreview = (query, newFacet) => {
+    let prevFacetAndNewFacet = this.appendFacetQuery(newFacet);
       this.setState({
           isDocumentsLoading: true,
           isFacetFieldsLoading: true
@@ -340,7 +487,7 @@ class App extends Component {
           case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
 
               fetchPreview = Promise.all([
-                  fetchPreviewResult(collectionId, query, newFacet)
+                  fetchPreviewResult(collectionId, query, prevFacetAndNewFacet)
               ]);
               break;
       }
@@ -367,6 +514,8 @@ class App extends Component {
 
   //문서 프리뷰
   fetchCore  = (query, newFacet, docCount, startPoint) => {
+    let prevFacetAndNewFacet = this.appendFacetQuery(newFacet);
+
     this.setState({
       isClassificationDataLoading: true,
       isDocumentsLoading: true,
@@ -382,13 +531,15 @@ class App extends Component {
 
         fetchFunc = Promise.all([
           // fetchClassifierResult(collectionId, query),
-          fetchSimilarDocumentQueryResult(collectionId, query, docCount, startPoint, newFacet)
+          fetchSimilarDocumentQueryResult(collectionId, query, docCount, startPoint, prevFacetAndNewFacet)
         ]);
         break;
     }
 
     return fetchFunc
         .then(results => {
+          //패싯 선택시 쿼리를 계속 붙여나간다
+          console.log('results[0].resultFacet : ' + results[0].prevFacet);
           //문서들의 id값을 수집한다(api 비동기 콜을 위해서)
           // console.log("#" + results[0].docs[0].id);
           let docIdsArray=[];
@@ -402,30 +553,26 @@ class App extends Component {
             let arr = [results[0].facetFields[0].count,
                               results[0].facetFields[5].count,
                               results[0].facetFields[10].count]; //index is 0~14
-            console.log("countArray : " + arr.toString());
+            // console.log("countArray : " + arr.toString());
             //sort
             for(let i=0; i<2; i++){
                 for(let j=0; j<2; j++){
-                    if(arr[j] < arr[j+1]){
-                        console.log("yes");
+                    if(arr[j] < arr[j+1]){                     
                         let temp = arr[i];
                         arr[i] = arr[j];
                         arr[j] = temp;
                     }
                 }
             }
-            console.log("sortedArray : " + arr.toString());
+            // console.log("sortedArray : " + arr.toString());
             const chartRate = arr[0]/7.0;   //vmax 7이 넘어가면 그래프가 아래로 내려가는 현상 발생.
-            console.log("rate : " + chartRate);
+            // console.log("rate : " + chartRate);
             this.getBarChartSize(chartRate, results[0].facetFields); //float, jsonArray
 
           this.setState((prevState, props) => {
             const index = prevState.queryHistory.length;
             return {
               queryMode: prevState.nextQueryMode,
-              isClassificationDataLoading: false,
-              isDocumentsLoading: false,
-              isFacetFieldsLoading: false,
               // classificationData: results[0].classes, //fetchClassifierResult method 제거함으로써 1->0으로 response index 옮김.
               // documents: results[1].docs,
               // facetFields: results[1].facetFields,
@@ -433,9 +580,13 @@ class App extends Component {
               documents: results[0].docs, //연속 붙이기의 비밀
               facetFields: results[0].facetFields,
               docIds: docIdsArray,
-              chartRate: chartRate
+              chartRate: chartRate,
+              currentFacetQuery: results[0].prevFacet
             };
           });
+          //패싯 선택 유무 갱신
+          this.updateFacetCheckHistory();
+          //비동기 워드클라우드 요청
           for(let i=0; i<10; i++){
             this.fetchWordCloud(decodeURI(docIdsArray[i]), null, 1);  //docIdsArray : 인공지능의_미래.pdf (한국어는 깨져서 encoding된 string을 Decode 해준다.)
           }

@@ -25,16 +25,44 @@
     height:1px;
 }
 
+/* Graph */
 #facetBlock, #valueBlock, #countBlock{
     display: block;
+    /* border:1px solid blue; */
+}
+#facetBlock {
+    width: 100%;
+    /* border:1px solid green; */
 }
 #valueBlock, #countBlock{
     float: left;
 }
-
+#valueBlock {
+    width: 50%;    
+    /* border:1px solid yellow; */
+}
+#countBlock{
+    width: 50%;
+    /* border:1px solid palegreen; */
+}
 #chartDiv {
     display: grid;
-    height: 2.5vh;
-    border: 1px solid red;
-    max-width: 500px;
+    height: 100%;
+    background-color: rgb(45, 149, 237);
+}
+
+@keyframes chart{
+    from {
+        width: 0px;
+    }
+}
+#chartDiv{
+    animation-name: chart;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: 1;
+    animation-direction: normal;
+    animation-fill-mode: forwards;
+    animation-play-state: running;
 }

@@ -1,21 +1,21 @@
-let str = 'annotation.tech.ai:"딥러닝" AND annotation.tech:"인공지능" AND annotation.industry:"자동차 산업"';
-let temp = 'annotation.tech:"인공지능"';
+let currentQuery = 'annotation.unstructure.tech:"클라우드" AND annotation.unstructure.tech:"빅데이터"';
+let deleteQuery = 'annotation.unstructure.tech:"클라우드"';
 
-let strLength = temp.length;
+let strLength = deleteQuery.length;
 console.log('strLen : ' + strLength);
-let startPoint = str.indexOf(temp);
+let startPoint = currentQuery.indexOf(deleteQuery);
 console.log('startPoint : ' + startPoint);
 let final;
 //처음
 if(startPoint === 0){
-    final = str.substr(strLength+5, str.length);    //' AND '
+    final = currentQuery.substr(strLength+5, currentQuery.length);    //' AND '
 }
 //마지막
-else if(startPoint + strLength === str.length){
-    final = str.substr(0, startPoint-5);
+else if(startPoint + strLength === currentQuery.length){
+    final = currentQuery.substr(0, startPoint-5);
 }
 //중간
 else{
-    final = str.substr(0, startPoint-5) + str.substr(startPoint+strLength, str.length);
+    final = currentQuery.substr(0, startPoint-5) + currentQuery.substr(startPoint+strLength, currentQuery.length);
 }
 console.log(final);

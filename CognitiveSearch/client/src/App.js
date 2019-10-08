@@ -20,7 +20,8 @@ import {
   fetchPreviewResult,
   fetchSimilarDocumentQueryResult,
   checkConnectionStatus,
-  fetchWordCloudResult
+  fetchWordCloudResult,
+  cancel
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
@@ -32,6 +33,8 @@ import "./App.css";
 import "antd/dist/antd.css";
 
 const { Header, Content } = Layout;
+
+
 
 class App extends Component {
   /* React lifecycle methods */
@@ -48,9 +51,10 @@ class App extends Component {
       documents: [],
       isDocumentsLoading: false,
       facetFields: [
-        {"value":"나랏", "count":'100%'}, {"value":"피자", "count":'70%'},
-        {"value":"말쌈", "count":'50%'},{"value":"치킨", "count":'30%'},
-        {"value":"사과", "count":'0'}], //[{value:, count:}]
+        // {"value":"나랏", "count":'100%'}, {"value":"피자", "count":'70%'},
+        // {"value":"말쌈", "count":'50%'},{"value":"치킨", "count":'30%'},
+        // {"value":"사과", "count":'0'}
+      ],
       isFacetFieldsLoading : false,
       wordStats: [],
       queryHistory: [],
@@ -235,6 +239,10 @@ class App extends Component {
     })
 }
 getNextPage = (page) => {
+  for (const key in cancel) {
+    let cancelAxios = cancel[key];
+    cancelAxios();
+  }
   //page is 1, 2, 3 ...
   //초기호출시 10개 (docIndex is 0~9)
   this.setState({
@@ -242,6 +250,7 @@ getNextPage = (page) => {
     currentPage: page
     },
       () => {
+        console.log("흠 : " + this.state.query + ", " + this.state.newFacet + ", "+ this.state.startDocument)
        this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
       }
   );
@@ -318,83 +327,94 @@ handleDocumentClick = document => {
 
 //패싯 선택 유무 갱신 및 새 쿼리 요청 (여기서는 FacetCheckHistory를 변경하며 실제 호출은 FetchCore에서 이뤄짐)
 handleFacetQuery = (query, newFacet, checkFacetForKey) => { //기존쿼리, 선택된패싯path:값, 패싯값.
+  //Axios Cancellation
+  for (const key in cancel) {
+    let cancelAxios = cancel[key];
+    cancelAxios();
+  }
   let tempArr = this.state.FacetCheckHistory;
   let isUnchecked = false;
-  let editNewFacet = newFacet;
-  if(!isUnchecked){
-    //최초 패싯값 클릭시
-    if(tempArr.length === 0){
-      tempArr.push({'key':checkFacetForKey, 'check':true});
-    }else{
-      //최초 값이 아닌 경우,
-        let isFind = false;
-        isUnchecked = false;
-        //반복하며, 기존 값과 새 값이 같으면 !check로 변경
-        for(let i=0; i<tempArr.length; i++){
-          if(tempArr[i].key === checkFacetForKey.trim()){
-            isFind = true;
-            tempArr[i].check = !tempArr[i].check;
-            if(tempArr[i].check === true){
-              console.log("unchecked");
-              isUnchecked = true;  
-            }
+
+  //최초 패싯값 클릭시
+  if(tempArr.length === 0){
+    tempArr.push({'key':checkFacetForKey, 'check':true});
+  }else{
+    //최초 값이 아닌 경우,
+      let isFind = false;
+      isUnchecked = false;
+      //반복하며, 기존 값과 새 값이 같으면 !check로 변경
+      for(let i=0; i<tempArr.length; i++){
+        if(tempArr[i].key === checkFacetForKey.trim()){
+          isFind = true;
+          tempArr[i].check = !tempArr[i].check;
+          if(tempArr[i].check === false){
+            console.log("unchecked");
+            isUnchecked = true;  
           }
-        } //end for
-        //반복하며, 기존 값에 새 값이 없으면 push한다.
-        if(!isFind){
-          tempArr.push({'key':checkFacetForKey, 'check':true});
         }
-        
-    }
+      } //end for
+      //반복하며, 기존 값에 새 값이 없으면 push한다.
+      if(!isFind){
+        tempArr.push({'key':checkFacetForKey, 'check':true});
+      }
+      
+  }
+  //패싯 셀렉트 박스를 언체크 하는게 아닌경우에는 그냥 쿼리를 보낸다.
+  if(isUnchecked === false){
     this.setState(
-      {
-        query: query,
-        documents: [],
-        facetFields: [],
-        FacetCheckHistory: tempArr
+      {          isDocumentsLoading: true,
+        isFacetFieldsLoading: true,
+        FacetCheckHistory: tempArr,
+        //ResultCard영역 1페이지로 초기화
+        currentPage: 1,
+        startDocument: 0
       },
       () => {
           this.fetchAnalysisData(query, newFacet, this.state.startDocument);
       }
     );
   }
-
-  //uncheck된 경우 newFacet을 기존 query에서 제거하고, 
-  //fetchAnalysisData에 newFacet=null을 보낸다.
-  let final;
-  if(isUnchecked){
-    //newFacet을 전달하면 안된다.
-    editNewFacet = '';
-    let currentQuery = query;
+  //근데 만약 언체크인게 감지되었을 경우에는
+  else if(isUnchecked === true){
+    console.log("@이건 언체크 시도야@");
+    //uncheck된 경우 newFacet을 기존 query에서 제거하고, 
+    //fetchAnalysisData에 newFacet=null을 보낸다.
+    let final;
+    let currentQuery = this.state.currentFacetQuery;
     let deleteQuery = newFacet;
-    // console.log(currentQuery + ", " + deleteQuery);
+    console.log('#현재쿼리는 : ' + this.state.currentFacetQuery);
+    console.log('#삭제하고싶은 쿼리는 : ' + deleteQuery)
     let strLength = deleteQuery.length;
     let startPoint = currentQuery.indexOf(deleteQuery);
-    // console.log('strLen : ' + strLength);
-    // console.log('startPoint : ' + startPoint);
+    console.log('삭제하려는 쿼리의 길이는 : ' + strLength);
+    console.log('삭제하려는 쿼리가 어디에 있는지 : ' + startPoint);
 
     //문자열 처음에 패싯쿼리가 있을때
     if(startPoint === 0){
+      console.log('처음');
         final = currentQuery.substr(strLength+5, currentQuery.length);    //' AND '
     }
     //마지막
     else if(startPoint + strLength === currentQuery.length){
+      console.log('마지막');
         final = currentQuery.substr(0, startPoint-5);
     }
     //중간
     else{
+      console.log('중간');
         final = currentQuery.substr(0, startPoint-5) + currentQuery.substr(startPoint+strLength, currentQuery.length);
     }
     console.log('final is : ' + final);
     this.setState(
-      {
-        query: final,
-        documents: [],
-        facetFields: [],
-        FacetCheckHistory: tempArr
+      {          isDocumentsLoading: true,
+        isFacetFieldsLoading: true,
+        FacetCheckHistory: tempArr,
+        currentFacetQuery: final,
+        currentPage: 1,
+        startDocument: 0
       },
       () => {
-          this.fetchAnalysisData(final, editNewFacet, this.state.startDocument);
+          this.fetchAnalysisData(query, final, this.state.startDocument);
       }
     );
   }
@@ -426,11 +446,6 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
     let keys = this.state.FacetCheckHistory;  //Array
     //그냥 최초 검색인 경우
     if(keys.length === 0){
-      this.setState({
-        isClassificationDataLoading: false,
-        isDocumentsLoading: false,
-        isFacetFieldsLoading: false
-      });
       return null;
     }
     let arr = this.state.facetFields; //Array
@@ -443,16 +458,13 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
     }
     console.log('end');
     this.setState({
-      facetFields: arr,
-      isClassificationDataLoading: false,
-      isDocumentsLoading: false,
-      isFacetFieldsLoading: false
+      facetFields: arr
     });
   }
 
   appendFacetQuery = (newFacet) => {
     let prevFacetAndNewFacet;
-    if(newFacet !== null){
+    if(newFacet !== null && newFacet !== undefined){
       console.log("새 패싯은 " +newFacet+ "이야")
       let currentFacetQuery = this.state.currentFacetQuery;
       if(currentFacetQuery === ''){
@@ -460,7 +472,12 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
         prevFacetAndNewFacet = newFacet;
       }else{
         console.log("이전에 받은 쿼리는 "+currentFacetQuery+"이야")
-        prevFacetAndNewFacet = currentFacetQuery + " AND " + newFacet;
+        if(currentFacetQuery.indexOf(newFacet) !== -1){
+          console.log("이전의 쿼리에 새로운 쿼리가 중복이니 추가하지 않음.");
+          prevFacetAndNewFacet = currentFacetQuery;
+        }else{
+          prevFacetAndNewFacet = currentFacetQuery + " AND " + newFacet;
+        }
       }
     }else{
       prevFacetAndNewFacet = newFacet;
@@ -517,7 +534,6 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
     let prevFacetAndNewFacet = this.appendFacetQuery(newFacet);
 
     this.setState({
-      isClassificationDataLoading: true,
       isDocumentsLoading: true,
       isFacetFieldsLoading: true
     });
@@ -577,7 +593,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
               // documents: results[1].docs,
               // facetFields: results[1].facetFields,
               // documents: prevState.documents.concat(results[0].docs), //연속 붙이기의 비밀
-              documents: results[0].docs, //연속 붙이기의 비밀
+              documents: results[0].docs,
               facetFields: results[0].facetFields,
               docIds: docIdsArray,
               chartRate: chartRate,
@@ -588,7 +604,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
           this.updateFacetCheckHistory();
           //비동기 워드클라우드 요청
           for(let i=0; i<10; i++){
-            this.fetchWordCloud(decodeURI(docIdsArray[i]), null, 1);  //docIdsArray : 인공지능의_미래.pdf (한국어는 깨져서 encoding된 string을 Decode 해준다.)
+            this.fetchWordCloud(i, decodeURI(docIdsArray[i]), null, 1);  //docIdsArray : 인공지능의_미래.pdf (한국어는 깨져서 encoding된 string을 Decode 해준다.)
           }
         })
         .catch(error => {
@@ -605,7 +621,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
 
   //wordcloud data
   //여기서는 startpoin가 0이어야한다. 왜냐면 문서id로 검색해서 해당 문서의 어노테이션을 가져오니까
-  fetchWordCloud  = (query, newFacet, docCount) => {
+  fetchWordCloud  = (index, query, newFacet, docCount) => {
     this.setState({
       isClassificationDataLoading: true,
       isDocumentsLoading: true,
@@ -620,7 +636,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
 
         fetchWordCloud = Promise.all([
-          fetchWordCloudResult(collectionId, query, docCount, newFacet)
+          fetchWordCloudResult(index, collectionId, query, docCount, newFacet)
         ]);
         break;
     }
@@ -661,8 +677,6 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
           });
         })
         .catch(error => {
-          console.error(error);
-          Modal.error({ title: i18n.ERROR, content: error.message });
           this.setState({
             isClassificationDataLoading: false,
             isDocumentsLoading: false,

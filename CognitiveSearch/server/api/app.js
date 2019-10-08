@@ -776,7 +776,7 @@ app.post("/similar-document-query1", (req, res) => {
                 finalQuery += " AND ";
             finalQuery += newFacet;
 
-            console.log("#결과1 : " + finalQuery);
+            // console.log("#결과1 : " + finalQuery);
             /***************** NLP 완료 *******************/
 // now(4);
             //error: "Request path contains unescaped characters"
@@ -875,7 +875,7 @@ app.post("/similar-document-query", (req, res) => {
     const docCount = req.body.docCount || 5;
     const start = req.body.start || 0;
     const newFacet = req.body.newFacet || "";
-    console.log("app.js에서 받은 newFacet은 : " + newFacet);
+    // console.log("app.js에서 받은 newFacet은 : " + newFacet);
 
     const nlpData = {
         fields: {
@@ -929,7 +929,11 @@ app.post("/similar-document-query", (req, res) => {
                 finalQuery += " AND ";
                 finalQuery += newFacet;
 
+<<<<<<< HEAD
             console.log("#결과 : " + finalQuery);
+=======
+            // console.log("#결과 : " + finalQuery.trim());
+>>>>>>> 7585966... Axios Cancellation + Barchar Calculation, done
             /***************** NLP 완료 *******************/
 // now(4);
             //error: "Request path contains unescaped characters"
@@ -1005,6 +1009,7 @@ app.post("/similar-document-query", (req, res) => {
                         docs: docs  //array
                             .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews)), //similar에서는 addUserDefinedAnnotations에서 ___annotaions들을 반환하고, basic에서는 addHighlightingAndUserDefinedAnnotations에서 ___ano..를 반환한다.
                         facetFields: facetsArray
+
 
                     });
 

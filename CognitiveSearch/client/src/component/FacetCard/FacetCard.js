@@ -37,13 +37,6 @@ class FacetCard extends Component {
              dataSource={data.slice(0,5)}   //data is FacetFields from App.js
              renderItem={item => (
                 <List.Item style={{border:'none',cursor:'pointer'}}
-                    // onClick={onClickQuery.bind(
-                    //     this,
-                    //     0,
-                    //     queryData,
-                    //     1,
-                    //     'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
-                    // )}
                 >
                     <List.Item.Meta
                         description={
@@ -85,13 +78,6 @@ class FacetCard extends Component {
              dataSource={data.slice(5,10)}
              renderItem={item => (
                 <List.Item style={{border:'none',cursor:'pointer'}}
-                    // onClick={onClickQuery.bind(
-                    //     this,
-                    //     0,
-                    //     queryData,
-                    //     1,
-                    //     'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
-                    // )}
                 >
                     <List.Item.Meta
                         description={
@@ -100,13 +86,13 @@ class FacetCard extends Component {
                                 (
                                 <React.Fragment>
                                     <div id="valueBlock">
-                                        <Checkbox onChange={onFacetQuery.bind(
+                                        <Checkbox checked={item.check} onChange={onFacetQuery.bind(
                                             this,
                                             queryData,
-                                            'annotation.unstructure.tech:"' + item.value.trim() + '"',
+                                            'annotation.unstructure.industry:"' + item.value.trim() + '"',
                                             item.value.trim()   //To be pushed into FacetCheckHistory Array
                                         )}>
-                                            {item.value}
+                                            {item.value} {item.check}
                                         </Checkbox>
                                     </div>
                                     <div id="countBlock">
@@ -133,13 +119,6 @@ class FacetCard extends Component {
              dataSource={data.slice(10,15)}
              renderItem={item => (
                 <List.Item style={{border:'none',cursor:'pointer'}}
-                    // onClick={onClickQuery.bind(
-                    //     this,
-                    //     0,
-                    //     queryData,
-                    //     1,
-                    //     'annotation.unstructure.tech:"' + item.substr(0, item.indexOf(':')-1) + '"'
-                    // )}
                 >
                     <List.Item.Meta
                         description={
@@ -148,13 +127,13 @@ class FacetCard extends Component {
                                 (
                                 <React.Fragment>
                                     <div id="valueBlock">
-                                        <Checkbox onChange={onFacetQuery.bind(
+                                        <Checkbox checked={item.check} onChange={onFacetQuery.bind(
                                             this,
                                             queryData,
-                                            'annotation.unstructure.tech:"' + item.value.trim() + '"',
+                                            'annotation.unstructure.application:"' + item.value.trim() + '"',
                                             item.value.trim()   //To be pushed into FacetCheckHistory Array
                                         )}>
-                                            {item.value}
+                                            {item.value} {item.check}
                                         </Checkbox>
                                     </div>
                                     <div id="countBlock">

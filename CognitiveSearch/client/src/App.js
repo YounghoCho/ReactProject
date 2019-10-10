@@ -139,6 +139,9 @@ class App extends Component {
 
             </div>
           </div>
+         </div>
+
+        <div className="App-query-container"> 
           <QueryBar
               inputValue={query}
               onChangeInput={this.handleQueryInputChange}
@@ -150,6 +153,7 @@ class App extends Component {
               disabled={isApplicationLoading}
           />
         </div>
+        <div className="App-collection-container"> 
           <CollectionSelect
               collections={collections}
               currentCollectionId={currentCollection.id}
@@ -157,6 +161,7 @@ class App extends Component {
               onClickRefresh={this.handleCollectionRefreshClick}
               isLoadingCollection={isFetchingCollections}
           />
+        </div>
     </Header>
 
     <Layout className="App-body">
@@ -250,7 +255,7 @@ getNextPage = (page) => {
     currentPage: page
     },
       () => {
-        console.log("흠 : " + this.state.query + ", " + this.state.newFacet + ", "+ this.state.startDocument)
+        // console.log("흠 : " + this.state.query + ", " + this.state.newFacet + ", "+ this.state.startDocument)
        this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
       }
   );
@@ -348,7 +353,7 @@ handleFacetQuery = (query, newFacet, checkFacetForKey) => { //기존쿼리, 선�
           isFind = true;
           tempArr[i].check = !tempArr[i].check;
           if(tempArr[i].check === false){
-            console.log("unchecked");
+            // console.log("unchecked");
             isUnchecked = true;  
           }
         }
@@ -376,35 +381,35 @@ handleFacetQuery = (query, newFacet, checkFacetForKey) => { //기존쿼리, 선�
   }
   //근데 만약 언체크인게 감지되었을 경우에는
   else if(isUnchecked === true){
-    console.log("@이건 언체크 시도야@");
+    // console.log("@이건 언체크 시도야@");
     //uncheck된 경우 newFacet을 기존 query에서 제거하고, 
     //fetchAnalysisData에 newFacet=null을 보낸다.
     let final;
     let currentQuery = this.state.currentFacetQuery;
     let deleteQuery = newFacet;
-    console.log('#현재쿼리는 : ' + this.state.currentFacetQuery);
-    console.log('#삭제하고싶은 쿼리는 : ' + deleteQuery)
+    // console.log('#현재쿼리는 : ' + this.state.currentFacetQuery);
+    // console.log('#삭제하고싶은 쿼리는 : ' + deleteQuery)
     let strLength = deleteQuery.length;
     let startPoint = currentQuery.indexOf(deleteQuery);
-    console.log('삭제하려는 쿼리의 길이는 : ' + strLength);
-    console.log('삭제하려는 쿼리가 어디에 있는지 : ' + startPoint);
+    // console.log('삭제하려는 쿼리의 길이는 : ' + strLength);
+    // console.log('삭제하려는 쿼리가 어디에 있는지 : ' + startPoint);
 
     //문자열 처음에 패싯쿼리가 있을때
     if(startPoint === 0){
-      console.log('처음');
+      // console.log('처음');
         final = currentQuery.substr(strLength+5, currentQuery.length);    //' AND '
     }
     //마지막
     else if(startPoint + strLength === currentQuery.length){
-      console.log('마지막');
+      // console.log('마지막');
         final = currentQuery.substr(0, startPoint-5);
     }
     //중간
     else{
-      console.log('중간');
+      // console.log('중간');
         final = currentQuery.substr(0, startPoint-5) + currentQuery.substr(startPoint+strLength, currentQuery.length);
     }
-    console.log('final is : ' + final);
+    // console.log('final is : ' + final);
     this.setState(
       {          isDocumentsLoading: true,
         isFacetFieldsLoading: true,
@@ -442,7 +447,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
     //비교 : facetFields를 가져온다 [{value:'', count:'', check:''}]
     //if 키.key가 facetFields.value와 같으면 
       //비교.check에 키.check을 넣어준다.
-    console.log('start')
+    // console.log('start')
     let keys = this.state.FacetCheckHistory;  //Array
     //그냥 최초 검색인 경우
     if(keys.length === 0){
@@ -456,7 +461,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
         }
       }
     }
-    console.log('end');
+    // console.log('end');
     this.setState({
       facetFields: arr
     });
@@ -465,15 +470,15 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
   appendFacetQuery = (newFacet) => {
     let prevFacetAndNewFacet;
     if(newFacet !== null && newFacet !== undefined){
-      console.log("새 패싯은 " +newFacet+ "이야")
+      // console.log("새 패싯은 " +newFacet+ "이야")
       let currentFacetQuery = this.state.currentFacetQuery;
       if(currentFacetQuery === ''){
-        console.log("이전에 받은 쿼리는 null이라구")
+        // console.log("이전에 받은 쿼리는 null이라구")
         prevFacetAndNewFacet = newFacet;
       }else{
-        console.log("이전에 받은 쿼리는 "+currentFacetQuery+"이야")
+        // console.log("이전에 받은 쿼리는 "+currentFacetQuery+"이야")
         if(currentFacetQuery.indexOf(newFacet) !== -1){
-          console.log("이전의 쿼리에 새로운 쿼리가 중복이니 추가하지 않음.");
+          // console.log("이전의 쿼리에 새로운 쿼리가 중복이니 추가하지 않음.");
           prevFacetAndNewFacet = currentFacetQuery;
         }else{
           prevFacetAndNewFacet = currentFacetQuery + " AND " + newFacet;
@@ -482,7 +487,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
     }else{
       prevFacetAndNewFacet = newFacet;
     }
-    console.log("최종 newfacet은 : " +  prevFacetAndNewFacet);
+    // console.log("최종 newfacet은 : " +  prevFacetAndNewFacet);
     return prevFacetAndNewFacet;
   }
   /* end of ui handler methods */
@@ -555,7 +560,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
     return fetchFunc
         .then(results => {
           //패싯 선택시 쿼리를 계속 붙여나간다
-          console.log('results[0].resultFacet : ' + results[0].prevFacet);
+          // console.log('results[0].resultFacet : ' + results[0].prevFacet);
           //문서들의 id값을 수집한다(api 비동기 콜을 위해서)
           // console.log("#" + results[0].docs[0].id);
           let docIdsArray=[];

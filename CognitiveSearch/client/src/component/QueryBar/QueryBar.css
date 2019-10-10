@@ -1,5 +1,5 @@
 .QueryBar {
-  /* min-width: 600px; */
+  min-width: 400px;
   height: 34px;
   display: flex;
   align-items: flex-start;
@@ -14,79 +14,4 @@
   justify-content: flex-start;
   width: 100%;
   border: 1px solid #e8e8e8;
-}
-/* 작은 순으로 */
-@media (min-width:0px) and (max-width:1163px) {  
-  .QueryBar {
-    min-width: 400px;
-  }
-}
-@media (min-width:1164px) and (max-width:1280px) {  
-  .QueryBar {
-    min-width: 500px;
-  }
-}
-/*mac*/
-@media (min-width:1281px) and (max-width:1309px) {
-  .QueryBar {
-    min-width: 500px;
-  }
-}
-@media (min-width:1310px) and (max-width:1422px) {
-  .QueryBar {
-    min-width: 580px;
-  }
-}
-/*mac*/
-@media (min-width:1423px) and (max-width:1440px) {
-  .QueryBar {
-    min-width: 600px;
-  }
-}
-@media (min-width:1441px) and (max-width:1600px) {
-  .QueryBar {
-    min-width: 700px;
-  }
-}
-@media (min-width:1601px) and (max-width:1707px) {  
-  .QueryBar {
-    min-width: 850px;
-  }
-}
-@media (min-width:1708px) and (max-width:1745px) {  
-  .QueryBar {
-    min-width: 950px;
-  }
-}
-/*mac*/
-@media (min-width:1746px) and (max-width:1800px) {
-  .QueryBar {
-    min-width: 900px;
-  }
-}
-@media (min-width:1801px) and (max-width:1920px) {
-  .QueryBar {
-    min-width: 1000px;
-  }
-}
-@media (min-width:1921px) and (max-width:2133px) {  
-  .QueryBar {
-    min-width: 1200px;
-  }
-}
-/*mac*/
-@media (min-width:2134px) and (max-width:2400px) {
-  .QueryBar {
-    min-width: 1200px;
-  }
-}
-@media (min-width:2401px) and (max-width:2560px) {  
-  .QueryBar {
-    min-width: 1250px;
-  }
-}
-@media (min-width:2561px) {  
-  .QueryBar {
-    min-width: 1300px;
-  }
 }

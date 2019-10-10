@@ -1,25 +1,30 @@
 .App-header {
   width: 100%;
   padding: 0 32px !important;
-  display: flex;
-  justify-content: space-between;
-  /*justify-content: flex-start;*/
+  display: block;
+  float: left;
   align-items: center;
   z-index: 1000;
 }
 
 .App-header-container {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
+  display: inline-block;
+  vertical-align: middle;
 }
-
+.App-query-container {
+  display: inline-block;
+  vertical-align: middle;
+  width: 40%;
+}
+.App-collection-container {
+  display: inline-block;
+  vertical-align: middle;
+  float:right;
+}
 .App-name-container {
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
+  display: block;
+  float: left;
   margin: 0px 16px 0px 0px;
 }
 
@@ -60,6 +65,9 @@
 
 .App-logo {
   margin-right: 8px;
+  display: block;
+  float: left;
+
 }
 
 .App-body-content-column {

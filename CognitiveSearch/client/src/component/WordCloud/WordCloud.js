@@ -6,43 +6,57 @@ import cloud from "d3-cloud";
 import "./WordCloud.css";
 
 // const WORD_COLOR_SETS = {
-//   blue: [
-//     /* IBM Design color: Cerulean */
-//     "#009bef",
-//     "#047cc0",
-//     "#046cc0",
-//     "#175d8d"
-//   ],
 //   red: [
 //     /* IBM Design color: Red */
-//     "#ff5c49",
-//     "#e62325",
-//     "#d31325",
-//     "#aa231f"
+//     "#fb4b53",
+//     "#da1e28",
+//     "#a51920",
+//     "#750e13",
+//     "#570408"
+//   ],
+//   blue: [
+//     /* IBM Design color: Blue */
+//     "#408bfc",
+//     "#061f80",
+//     "#0530ad",
+//     "#054ada",
+//     "#0062ff"
 //   ],
 //   green: [
 //     /* IBM Design color: Green */
-//     "#00aa5e",
-//     "#00884b",
-//     "#00784b",
-//     "#116639"
+//     "#24a148",
+//     "#198038",
+//     "#10642a",
+//     "#054719",
+//     "#01330f"
 //   ]
 // };
 const WORD_COLOR_SETS = {
   blue: [
     /* IBM Design color: 보라 */
     // "rgb(222, 212, 22)"
-      "rgb(137, 76, 156)"
+    "rgb(190, 122, 211)",
+    "rgb(170, 102, 191)",
+    "rgb(150, 82, 171)"
+      
+
   ],
   red: [
     /* IBM Design color: 주황 */
     // "rgb(143, 30, 49)"
-      "rgb(246,161,64)"
+    "rgb(285, 206, 121)",
+    "rgb(265,188,101)",
+    "rgb(245, 168, 81)"
+      
+
   ],
   green: [
     /* IBM Design color: 초록 */
     // "rgb(101, 145, 31)"
-    "rgb(118, 183, 91)"
+    "rgb(171, 239, 143)",
+    "rgb(151, 219, 123)",
+    "rgb(131, 199, 103)"
+  
   ]
 };
 

@@ -293,6 +293,10 @@ handleClearQuery = () => {
 };
 
 handleSearch = () => {
+  for (const key in cancel) {
+    let cancelAxios = cancel[key];
+    cancelAxios();
+  }  
   if (this.state.query.length > 0) {
     this.handleSendQuery(this.state.query, this.state.docIds);
   }
@@ -301,7 +305,10 @@ handleSearch = () => {
 handleSendQuery = (query) => {
   this.setState({
     documents: [],
-    facetFields: []
+    facetFields: [],
+    FacetCheckHistory: [],
+    startDocument: 0,
+    currentPage: 1    
   });
   this.fetchAnalysisData(query, null, this.state.startDocument);
 };
@@ -431,8 +438,7 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
       {
         nextQueryMode: queryMode,
         query: query,
-        documents: [],
-        facetFields: []
+        documents: []
       },
       () => {
         this.fetchAnalysisData(query, newFacet, this.state.startDocument);

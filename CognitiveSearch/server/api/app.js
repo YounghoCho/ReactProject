@@ -1011,6 +1011,7 @@ app.post("/similar-document-query", (req, res) => {
                         facetFields: facetsArray
 
 
+
                     });
 
 

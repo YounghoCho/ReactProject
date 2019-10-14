@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Modal, Table, Tabs } from "antd";
@@ -46,7 +44,7 @@ class DocumentDetailModal extends Component {
     const { currentFieldPage, currentWordPage } = this.state;
     return (
       <Modal
-        title={doc.journalTitle || doc.Title || "No title"}
+        title={doc.titleOfThesis || doc.Title || "No title"}
         visible={visible}
         onCancel={onCancel}
         onOk={onOk}

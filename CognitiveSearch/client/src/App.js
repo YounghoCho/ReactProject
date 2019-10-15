@@ -1,7 +1,11 @@
 // module imports
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { setCurrentCollection, fetchCollections, changeDocCountWithCurrentCollection } from "./action";
+import { 
+  setCurrentCollection, 
+  fetchCollections, 
+  // changeDocCountWithCurrentCollection 
+} from "./action";
 import { Layout, Modal, Spin } from "antd";
 import moment from "moment";
 import QueryBar from "./component/QueryBar";
@@ -777,9 +781,10 @@ const mapDispatchToProps = dispatch => ({
   fetchCollections: defaultCollectionId =>
       dispatch(fetchCollections(defaultCollectionId)),
   setCurrentCollection: collectionId =>
-      dispatch(setCurrentCollection(collectionId)),
-  changeDocCountWithCurrentCollection: collectionId =>
-    dispatch(changeDocCountWithCurrentCollection(collectionId))    
+      dispatch(setCurrentCollection(collectionId))
+  //     ,
+  // changeDocCountWithCurrentCollection: collectionId =>
+  //   dispatch(changeDocCountWithCurrentCollection(collectionId))    
 });
 
 export default connect(

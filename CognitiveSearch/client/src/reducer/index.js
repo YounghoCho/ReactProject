@@ -6,8 +6,9 @@ import { combineReducers } from "redux";
 import {
   SET_CURRENT_COLLECTION,
   SET_COLLECTIONS,
-  REQUEST_COLLECTIONS,
-  SET_CURRENT_COLLECTION_DOC_COUNT
+  REQUEST_COLLECTIONS
+  // ,
+  // SET_CURRENT_COLLECTION_DOC_COUNT
 } from "../action";
 
 let collections = (
@@ -39,10 +40,10 @@ let collections = (
       return Object.assign({}, state, {
         isFetching: true
       });
-    case SET_CURRENT_COLLECTION_DOC_COUNT:
-      return Object.assign({}, state, {
-        currentCollectionDocCount: action.docCount
-      })
+    // case SET_CURRENT_COLLECTION_DOC_COUNT:
+    //   return Object.assign({}, state, {
+    //     currentCollectionDocCount: action.docCount
+    //   })
     default:
       return state;
   }

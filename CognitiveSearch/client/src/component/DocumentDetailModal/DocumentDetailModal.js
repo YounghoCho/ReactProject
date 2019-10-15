@@ -143,7 +143,7 @@ class DocumentDetailModal extends Component {
 
   renderWordTable = (annotations, wordPageSize, currentWordPage) => {
     if (!annotations || annotations.length === 0) {
-      return <div class="ant-list-empty-text">No data</div>;
+      return <div className="ant-list-empty-text">No data</div>;
     }
     // console.log("무엇이왔나요? : " + JSON.stringify(annotations));
 

@@ -269,7 +269,7 @@ goToHome = () => {
 }
 handleCollectionChange = collectionId => {
   this.props.setCurrentCollection(collectionId);
-  // this.props.changeDocCountWithCurrentCollection(collectionId);
+  this.props.changeDocCountWithCurrentCollection(collectionId);
   browserStorage.setItem("defaultCollectionId", collectionId);
 };
 

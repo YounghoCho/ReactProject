@@ -292,10 +292,10 @@ const addHighlighting = (
 const addHighlightingAndUserDefinedAnnotations = (
     previews
 ) => doc => {
-    // console.log("#1 higligihting : " + JSON.stringify(highlightings));
     const docId = doc.id;
     const analyzedFacets = previews[docId].analyzed_facets;
     //  console.log("### doc id ? " + docId);
+    // console.log("#1 analyzedFacets : " + Object.keys(analyzedFacets));
     return {
         ...doc,
         // ___highlighting: highlighting, //preview에서 이미 불러온값
@@ -330,6 +330,7 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     annoName,
     annoList = [],
     splitterIndex,
+    splitterAi,
     indices,
     colorGroup;
   for (fieldName in analyzedFacets) {
@@ -344,6 +345,30 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
         
       //annotation.subfacet : ._phrase, ._word 등
         //
+
+          //'인공지능 외의 상위 패싯들도 포함시켜준다
+          //단, 상위 패싯이 '인공지능'인 경우엔
+          //상위패싯은 하위 패싯들을 포함하기에 상위 인공지능을 제거한다.
+          if(annoName.startsWith("annotation.unstructure.tech$")){
+            // console.log("in : " + annoName);
+            splitterAi = annoName.indexOf("$") + 1;
+            if(annoName.slice(splitterAi) === '인공지능'){
+              // console.log('무시되는 인공지능');
+              // console.log(annoName.slice(splitterAi));
+            }else{
+              // console.log("인공지능아님")
+              //추가
+              splitterIndex = annoName.indexOf("$") + 1;
+              indices = temp[annoName];
+              annoList.push({
+                annotation: annoName.slice(splitterIndex),
+                indices,
+                count: indices.length,
+                colorGroup: "ai"
+              });
+            }
+          }
+
         if  (annoName.startsWith("annotation.unstructure.tech.ai")){
           splitterIndex = annoName.indexOf("$") + 1;
           indices = temp[annoName];
@@ -378,7 +403,7 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
   }
   // console.log("#10 annotaions : " + JSON.stringify(annoList));
   return annoList
-    .filter(val => val.annotation.length > 1)
+    .filter(val => val.annotation.length >= 1)
     .sort((prev, next) => next.count - prev.count);
 };
 //collections api에서 가져온 녀석들중에 

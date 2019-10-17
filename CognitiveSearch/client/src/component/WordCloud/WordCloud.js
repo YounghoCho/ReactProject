@@ -77,13 +77,25 @@ class WordCloud extends Component {
       this.svgElement.clientHeight
     );
   }
-
+  //아래 주기가 없으면 워드클라우드가 아예 안그려짐
+  //data만 가지고 비교하면 첫번째 데이터만 기준으로 비교하고, 변화가 없으면 뒤의 data2 data3의 변화와 관계없이 그리지 않음
   componentDidUpdate(prevProps) {
     const prevDataLength = prevProps.data.length;
+    const prevDataLength2 = prevProps.data2.length;
+    const prevDataLength3 = prevProps.data3.length;
+
     const newDataLength = this.props.data.length;
+    const newDataLength2 = this.props.data2.length;
+    const newDataLength3 = this.props.data3.length;
+    // console.log("pre is "+ JSON.stringify(prevProps))
+    // console.log("now Object is " + JSON.stringify(this.props) + '\n')
     if (
       prevDataLength !== newDataLength ||
-      this.isDataChanged(prevProps.data, this.props.data)
+      this.isDataChanged(prevProps.data, this.props.data) ||
+      prevDataLength2 !== newDataLength2 ||
+      this.isDataChanged(prevProps.data2, this.props.data2) ||
+      prevDataLength3 !== newDataLength3 ||
+      this.isDataChanged(prevProps.data3, this.props.data3) 
     ) {
       this.renderWordCloud(
         this.props.data,

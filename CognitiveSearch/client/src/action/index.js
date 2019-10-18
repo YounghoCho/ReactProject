@@ -101,16 +101,16 @@ let fetchCollections = defaultCollectionId => {
         // console.log(mappedCollections[0]);
         let customCollectionId = 'e8d1c521-b10b-f9be-0000-016d3dfc800c';
         mappedCollections = mappedCollections.filter(info => info.id == customCollectionId);
-        isCollectionFound = true;
-        //OriginalCode : 컬렉션들중에 선택한 컬렉션을 지정해준다.
-        // if (defaultCollectionId) {
-        //   for (let i = 0, count = mappedCollections.length; i < count; i++) {
-        //     if (mappedCollections[i].id === defaultCollectionId) {  //defaultCollectionId은 CollectionSelect에서 선택된 컬렉션 id값
-        //       isCollectionFound = true;
-        //       break;
-        //     }
-        //   }
-        // }
+        // OriginalCode : 컬렉션들중에 선택한 컬렉션을 지정해준다.
+        if (defaultCollectionId) {
+          for (let i = 0, count = mappedCollections.length; i < count; i++) {
+            if (mappedCollections[i].id === defaultCollectionId) {  //defaultCollectionId은 CollectionSelect에서 선택된 컬렉션 id값
+              isCollectionFound = true;
+              break;
+            }
+          }
+        }
+        console.log("defaultCollectionId is " + defaultCollectionId);
         dispatch(setCollections(mappedCollections));
         dispatch(
           setCurrentCollection(

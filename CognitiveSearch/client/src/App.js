@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { 
   setCurrentCollection, 
   fetchCollections, 
-  // changeDocCountWithCurrentCollection 
+  // changeDocCountWithCurrentCollection
 } from "./action";
 import { Layout, Modal, Spin } from "antd";
 import moment from "moment";

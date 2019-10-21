@@ -642,16 +642,17 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
       isDocumentsLoading: true,
       isFacetFieldsLoading: true
     });
-
     let fetchWordCloud;
     let collectionId = this.props.currentCollection.id;
 
     switch (this.state.nextQueryMode) {
       default:
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
-
+      
         fetchWordCloud = Promise.all([
-          fetchWordCloudResult(index, collectionId, query, docCount, newFacet)
+          //decodeURI는 한글 utf9 인코딩을 디코딩하고
+          //decodeURIComponent는 & -> %32 등의 인코딩을 디코딩한다.
+          fetchWordCloudResult(index, collectionId, decodeURIComponent(decodeURI(query)), docCount, newFacet)
         ]);
         break;
     }

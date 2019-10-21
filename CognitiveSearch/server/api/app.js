@@ -954,11 +954,6 @@ app.post("/similar-document-query", (req, res) => {
                 finalQuery += " AND ";
                 finalQuery += newFacet;
 
-<<<<<<< HEAD
-            console.log("#결과 : " + finalQuery);
-=======
-            // console.log("#결과 : " + finalQuery.trim());
->>>>>>> 7585966... Axios Cancellation + Barchar Calculation, done
             /***************** NLP 완료 *******************/
 // now(4);
             //error: "Request path contains unescaped characters"

@@ -47,8 +47,7 @@ class ResultCard extends Component {
       isLoading,
       onClickDocument,
       pageSize,
-      renderRow,
-      pageNow
+      renderRow
     } = this.props;
  
     const { currentPage } = this.state;

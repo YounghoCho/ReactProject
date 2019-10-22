@@ -313,16 +313,16 @@ const addHighlightingAndUserDefinedAnnotations = (
  * @param {[]} val.response.docs
  * @param {Object} val.preview
  */
-const addUserDefinedAnnotations = val => {
-  const { responseHeader, response, previews } = val;
-  const id = responseHeader.params["___doc_id"];
-  const docInfo = response.docs[0];
-  const analyzedFacets = previews[id].analyzed_facets;
-  return {
-    ...docInfo,
-    ___annotations: makeUserDefinedAnnotationList(analyzedFacets)
-  };
-};
+// const addUserDefinedAnnotations = val => {
+//   const { responseHeader, response, previews } = val;
+//   const id = responseHeader.params["___doc_id"];
+//   const docInfo = response.docs[0];
+//   const analyzedFacets = previews[id].analyzed_facets;
+//   return {
+//     ...docInfo,
+//     ___annotations: makeUserDefinedAnnotationList(analyzedFacets)
+//   };
+// };
 
 const makeUserDefinedAnnotationList = analyzedFacets => {
   let temp,
@@ -331,8 +331,7 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     annoList = [],
     splitterIndex,
     splitterAi,
-    indices,
-    colorGroup;
+    indices;
   for (fieldName in analyzedFacets) {
     temp = analyzedFacets[fieldName];
     for (annoName in temp) {
@@ -349,10 +348,14 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
           //'인공지능 외의 상위 패싯들도 포함시켜준다
           //단, 상위 패싯이 '인공지능'인 경우엔
           //상위패싯은 하위 패싯들을 포함하기에 상위 인공지능을 제거한다.
+          //각 문서별로 어노테이션을 가져와야하기때문에 하위패싯을 가져오는게 맞다.
           if(annoName.startsWith("annotation.unstructure.tech$")){
             // console.log("in : " + annoName);
             splitterAi = annoName.indexOf("$") + 1;
-            if(annoName.slice(splitterAi) === '인공지능'){
+            if(annoName.slice(splitterAi) === '인공지능' ||
+                annoName.slice(splitterAi) === '머신러닝' ||
+                annoName.slice(splitterAi) === '딥러닝' ||
+                annoName.slice(splitterAi) === '자연어처리'){
               // console.log('무시되는 인공지능');
               // console.log(annoName.slice(splitterAi));
             }else{
@@ -702,6 +705,7 @@ app.get("/collections/:collectionId", (req, res) => {
 
 
 
+
 //final
 app.post("/similar-document-query1", (req, res) => {
     const collectionId = req.body.collectionId;
@@ -761,28 +765,21 @@ app.post("/similar-document-query1", (req, res) => {
                     let temp = 'annotation' + path + ':"' + fval + '"';
                     annoResult += temp;
                     annoResult += " AND ";
+
                   }
-                }
-            } //end 1
-
-            //for 2.명사 수집
-            for(let i=0; i<annoLength; i++){
-              if(parseData[i].type === "._word.noun.general" )  //_word.noun.others 는 형용사등의 못잡는 단어들이 나옴.
-              {
-                console.log("1 명사는 : " + parseData[i].properties.facetval.trim());
-                  console.log("2 패스는 : " + parseData[i].properties.facetpath.trim());
-
-                  //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
-                let fval = parseData[i].properties.facetval.trim();
-                let mlToCompare = '인공지능 딥러닝 머신러닝 자연어처리';
-
-                  // console.log("비교문장은 :" + facetvalToCompare);
-                if(facetvalToCompare.indexOf(fval) == -1 && mlToCompare.indexOf(fval) == -1){
-                  // console.log("비교결과:" + "없음");
-                  annoResult += fval;
-                  annoResult += " AND ";
-                }else{
-                  // console.log("비교결과:있음");
+              } //end 1
+              //draw a query index's range
+              let size = query.length;
+              console.log("query : " + query + "\nsize : " + query.length);
+              let queryRange = [];
+              //init
+              for(let i=0; i<size; i++){
+                queryRange.push(false);
+              }
+              //draw queryIndex into queryRange
+              for(let i=0; i<queryIndex.length; i++){
+                for(j=queryIndex[i].beginIndex; j<=queryIndex[i].endIndex; j++){
+                  queryRange[j] = true;
                 }
               }
             } //end for 2      
@@ -801,7 +798,6 @@ app.post("/similar-document-query1", (req, res) => {
                 finalQuery += " AND ";
             finalQuery += newFacet;
 
-            // console.log("#결과1 : " + finalQuery);
             /***************** NLP 완료 *******************/
 // now(4);
             //error: "Request path contains unescaped characters"
@@ -932,6 +928,7 @@ app.post("/similar-document-query", (req, res) => {
             const parseData = responseData.enriched.body[0].annotations;
             const annoLength = parseData.length;
             let annoResult = ''; //나중에 원본 query와 합친다.
+            let queryIndex = [];
 
 
             for(let i=0; i<annoLength; i++){
@@ -942,6 +939,7 @@ app.post("/similar-document-query", (req, res) => {
 
                     annoResult += " OR ";
                     annoResult += parseData[i].properties.facetval.trim();
+
                 }
             } //end for
             let finalQuery = '';
@@ -1029,9 +1027,6 @@ app.post("/similar-document-query", (req, res) => {
                         docs: docs  //array
                             .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews)), //similar에서는 addUserDefinedAnnotations에서 ___annotaions들을 반환하고, basic에서는 addHighlightingAndUserDefinedAnnotations에서 ___ano..를 반환한다.
                         facetFields: facetsArray
-
-
-
                     });
 
 

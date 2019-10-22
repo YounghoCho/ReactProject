@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Input, Button } from "antd";
-import QueryModeSelect from "../QueryModeSelect";
+// import QueryModeSelect from "../QueryModeSelect";
 
 import "./QueryBar.css";
 const { TextArea } = Input;
@@ -17,18 +17,17 @@ class QueryBar extends Component {
 
   render() {
     const {
-      queryMode,
-      onChangeQueryMode,
+      // queryMode,
+      // onChangeQueryMode,
       onChangeInput,
       inputValue,
       onClear,
       onSearch,
       placeholder,
-      disabled,
-      style
+      disabled
     } = this.props;
     return (
-      <div className="QueryBar" sytle={style}>
+      <div className="QueryBar">
         {/*<QueryModeSelect*/}
           {/*value={queryMode}*/}
           {/*onChange={onChangeQueryMode}*/}

@@ -50,6 +50,22 @@ export const fetchSimilarDocumentQueryResult = (
     }
   }).then(response => response.data);
 
+  export const fetchFirstQueryResult = (
+    collectionId,
+    query
+  ) =>
+    axios({
+      url: `${ROOT_URI}/first-query`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      data: {
+        collectionId,
+        query
+      }
+    }).then(response => response.data);
+
 export const fetchWordCloudResult = (
   index, //0~9
   collectionId,

@@ -5,6 +5,7 @@
   align-items: flex-start;
   background-color: white;
   margin-left:20px;
+  width:100%;
 }
 
 .QueryBar-container {
@@ -14,4 +15,15 @@
   justify-content: flex-start;
   width: 100%;
   border: 1px solid #e8e8e8;
+}
+
+@media (min-width: 1441px) and (max-width: 2114px){
+  .QueryBar {
+    margin-left: 10%;
+  }
+}
+@media (min-width: 2115px){
+  .QueryBar {
+    margin-left: 20%;
+  }
 }

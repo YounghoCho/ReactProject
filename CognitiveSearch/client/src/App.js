@@ -7,7 +7,6 @@ import {
   // changeDocCountWithCurrentCollection
 } from "./action";
 import { Layout, Modal, Spin } from "antd";
-import moment from "moment";
 import QueryBar from "./component/QueryBar";
 import {
   // QUERY_MODE_BASIC_SEARCH,
@@ -23,6 +22,7 @@ import WordCloudRow from "./component/ResultCard/WordCloudRow";
 import {
   fetchPreviewResult,
   fetchSimilarDocumentQueryResult,
+  fetchFirstQueryResult,
   checkConnectionStatus,
   fetchWordCloudResult,
   cancel
@@ -84,6 +84,7 @@ class App extends Component {
           this.props.fetchCollections(
               browserStorage.getItem("defaultCollectionId")
           );
+          this.fetchFirstCall('*:*', 'e8d1c521-b10b-f9be-0000-016d3dfc800c');
           this.setState({
             isApplicationLoading: false
           });
@@ -601,7 +602,6 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
             this.getBarChartSize(chartRate, results[0].facetFields); //float, jsonArray
 
           this.setState((prevState, props) => {
-            const index = prevState.queryHistory.length;
             return {
               queryMode: prevState.nextQueryMode,
               // classificationData: results[0].classes, //fetchClassifierResult method 제거함으로써 1->0으로 response index 옮김.
@@ -633,6 +633,61 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
         });
   };
 
+  //최초 로딩시 패싯결과 호출하기
+  fetchFirstCall  = (query, defaultCollectionId) => {
+    let fetchFunc;
+    switch (this.state.nextQueryMode) {
+      default:
+      case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
+        fetchFunc = Promise.all([
+          fetchFirstQueryResult(defaultCollectionId, query)
+        ]);
+        break;
+    }
+
+    return fetchFunc
+        .then(results => {
+            //그래프 계산하기
+            let arr = [results[0].facetFields[0].count,
+                              results[0].facetFields[5].count,
+                              results[0].facetFields[10].count]; //index is 0~14
+            // console.log("countArray : " + arr.toString());
+            //sort
+            for(let i=0; i<2; i++){
+                for(let j=0; j<2; j++){
+                    if(arr[j] < arr[j+1]){                     
+                        let temp = arr[i];
+                        arr[i] = arr[j];
+                        arr[j] = temp;
+                    }
+                }
+            }
+            // console.log("sortedArray : " + arr.toString());
+            const chartRate = arr[0]/7.0;   //vmax 7이 넘어가면 그래프가 아래로 내려가는 현상 발생.
+            // console.log("rate : " + chartRate);
+            this.getBarChartSize(chartRate, results[0].facetFields); //float, jsonArray
+
+          this.setState((prevState, props) => {
+            return {
+              queryMode: prevState.nextQueryMode,
+              documents: results[0].docs,
+              facetFields: results[0].facetFields,
+              chartRate: chartRate
+            };
+          });
+          //패싯 선택 유무 갱신
+          this.updateFacetCheckHistory();
+        })
+        .catch(error => {
+          console.error(error);
+          Modal.error({ title: i18n.ERROR, content: error.message });
+          this.setState({
+            isClassificationDataLoading: false,
+            isDocumentsLoading: false,
+            isFacetFieldsLoading: false
+          });
+        });
+  };
 
   //wordcloud data
   //여기서는 startpoin가 0이어야한다. 왜냐면 문서id로 검색해서 해당 문서의 어노테이션을 가져오니까
@@ -766,6 +821,9 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
               />
           );
         };
+      default:
+        console.log("swich default");
+        break;
     }
   }
   /* end of other methods */

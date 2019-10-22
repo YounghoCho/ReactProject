@@ -8,9 +8,6 @@ const title1st = "기술요소";
 const title2nd = "적용산업";
 const title3rd = "응용분야";
 
-const style = {
-    'checked' : true    
-}
 //비구조 할당 함수형 컴포넌트
 class FacetCard extends Component {
     constructor(props){
@@ -21,7 +18,7 @@ class FacetCard extends Component {
     render(){
         const{
             className, title, data, isLoading, queryData, 
-            onFacetQuery, currentCollectionDocCount, FacetCheckHistory            
+            onFacetQuery, currentCollectionDocCount            
         } = this.props;
         return(
             <Card

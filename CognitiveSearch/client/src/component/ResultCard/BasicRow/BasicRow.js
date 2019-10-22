@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { List, Avatar } from "antd";
+import { List } from "antd";
 
 import "./BasicRow.css";
 

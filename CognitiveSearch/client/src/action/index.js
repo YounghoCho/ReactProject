@@ -48,13 +48,13 @@ let requestCollections = () => {
   };
 };
 
-let setCurrentCollectionDocsCount = (docCount) => {
-  // console.log("반환값 : " + docCount)
-  return {
-    type: SET_CURRENT_COLLECTION_DOC_COUNT,
-    docCount
-  }
-}
+// let setCurrentCollectionDocsCount = (docCount) => {
+//   // console.log("반환값 : " + docCount)
+//   return {
+//     type: SET_CURRENT_COLLECTION_DOC_COUNT,
+//     docCount
+//   }
+// }
 
 
 //컬렉션 전체문서 얻기
@@ -100,7 +100,7 @@ let fetchCollections = defaultCollectionId => {
         //최초 접속해서 해당 브라우저의 사용자가 collections을 선택한 적 없을 경우
         // console.log(mappedCollections[0]);
         let customCollectionId = 'e8d1c521-b10b-f9be-0000-016d3dfc800c';
-        mappedCollections = mappedCollections.filter(info => info.id == customCollectionId);
+        mappedCollections = mappedCollections.filter(info => info.id === customCollectionId);
         // OriginalCode : 컬렉션들중에 선택한 컬렉션을 지정해준다.
         if (defaultCollectionId) {
           for (let i = 0, count = mappedCollections.length; i < count; i++) {

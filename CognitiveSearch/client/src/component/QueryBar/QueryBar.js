@@ -1,10 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Input, Button } from "antd";
+import { Input, Button, AutoComplete  } from "antd";
 // import QueryModeSelect from "../QueryModeSelect";
 
 import "./QueryBar.css";
 const { TextArea } = Input;
+const dataSource = [
+  '이미지 인식',
+  '영상에서 물체를 분류',
+  '영상 속의 특정 객체를 찾다',
+  '영상 속의 특정 객체를 찾는 것을 인공지능을 활용해서 자동차 산업에 적용한',
+  '공공부문에 인공지능을 도입한 것을 찾아주세요'
+];
 
 class QueryBar extends Component {
   /* React lifecycle methods */
@@ -24,7 +31,8 @@ class QueryBar extends Component {
       onClear,
       onSearch,
       placeholder,
-      disabled
+      disabled,
+      defaultQueryValue
     } = this.props;
     return (
       <div className="QueryBar">
@@ -34,6 +42,16 @@ class QueryBar extends Component {
           {/*disabled={disabled}*/}
           {/*style={{ margin: "1px 0px", minWidth: 155 }}*/}
         {/*/>*/}
+        <form 
+            onSubmit={(e) => { 
+              e.preventDefault();
+              this.props.onSearch();  //앤터넣는 방법..고생
+            }}
+            style={{
+              width: "100%",
+              inlineHeight: "0px"
+            }}
+            >
         <div
           className="QueryBar-container"
           style={{
@@ -41,23 +59,48 @@ class QueryBar extends Component {
             overflow: this.state.isFocused ? "auto" : "hidden"
           }}
         >
-          <TextArea
-            disabled={disabled}
-            placeholder={placeholder}
-            autosize
-            onChange={onChangeInput}
+            {<AutoComplete
+            // onBlur={this.handleInputBlur}
+            // onFocus={this.handleInputFocus}
             style={{
+              width: "100%",
+              border: "none",
+              boxShadow: "none"
+            }}
+            dataSource={dataSource}
+            placeholder="ex) 이미지 인식"
+            filterOption={(inputValue, option) =>
+              option.props.children.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+            }
+            onChange={onChangeInput}
+            allowClear={true}
+            value={defaultQueryValue}
+            defaultActiveFirstOption={true}
+            autoFocus={true}
+            //  onKeyPress={this.handleKeyPress}
+            //  onPressEnter={this.handleKeyPress}
+            />
+            }
+
+          {/* <AutoComplete
+            disabled={disabled}
+            placeholder="ex) 이미지 인식"
+            dataSource={dataSource}
+            autosize
+            // onChange={onChangeInput}
+            style={{
+              width: "100%",
               marginRight: "8px",
               resize: "none",
               border: "none",
               boxShadow: "none"
             }}
             value={inputValue}
-            onBlur={this.handleInputBlur}
-            onFocus={this.handleInputFocus}
-            onKeyPress={this.handleKeyPress}
-          />
-          <Button icon="close" onClick={onClear} style={{ border: "none" }} />
+            // onBlur={this.handleInputBlur}
+            // onFocus={this.handleInputFocus}
+            // onKeyPress={this.handleKeyPress}
+          /> */}
+          {/* <Button icon="close" onClick={onClear} style={{ border: "none" }} /> */}
           <Button
             icon="search"
             onClick={onSearch}
@@ -66,6 +109,7 @@ class QueryBar extends Component {
             }}
           />
         </div>
+        </form>
       </div>
     );
   }
@@ -85,6 +129,7 @@ class QueryBar extends Component {
   };
 
   handleKeyPress = event => {
+    console.log('in1');
     let code = event.key
       ? event.key
       : event.keyCode

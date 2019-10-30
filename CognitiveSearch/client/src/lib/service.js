@@ -28,6 +28,7 @@ export const fetchPreviewResult = (
         }
     }).then(response => response.data);
 
+
 export const fetchSimilarDocumentQueryResult = (
   collectionId,
   query,
@@ -50,6 +51,27 @@ export const fetchSimilarDocumentQueryResult = (
     }
   }).then(response => response.data);
 
+
+export const fetchFirstDocsResult = (
+  collectionId,
+  query,
+  docCount,
+  start
+) =>
+  axios({
+    url: `${ROOT_URI}/fetch-first-docs`,
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    data: {
+      collectionId,
+      query,
+      docCount,
+      start
+    }
+  }).then(response => response.data);
+  //first
   export const fetchFirstQueryResult = (
     collectionId,
     query

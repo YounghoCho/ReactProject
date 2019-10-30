@@ -1,6 +1,7 @@
 // module imports
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import firstGivenCollectionId from "./config/firstGivenCollectionId.json";
 import { 
   setCurrentCollection, 
   fetchCollections, 
@@ -22,6 +23,7 @@ import WordCloudRow from "./component/ResultCard/WordCloudRow";
 import {
   fetchPreviewResult,
   fetchSimilarDocumentQueryResult,
+  fetchFirstDocsResult,
   fetchFirstQueryResult,
   checkConnectionStatus,
   fetchWordCloudResult,
@@ -29,8 +31,8 @@ import {
 } from "./lib/service";
 import { browserStorage } from "./lib/util";
 import { i18n } from "./lib/constant";
-import logo from "./logo.svg";
-// import logo from "./logo2.png";
+// import logo from "./logo.svg";
+import logo from "./logo2.png";
 
 // static file imports
 import "./App.css";
@@ -74,7 +76,9 @@ class App extends Component {
       currentPage: 1,
       indexForResult: 1,
       chartRate: '0%',
-      FacetCheckHistory: [] //[{key:'', check:''}]
+      FacetCheckHistory: [], //[{key:'', check:''}]
+      firstGivenCollectionId: firstGivenCollectionId.cid,
+      defaultQuertValue: ''
     };
   }
 
@@ -84,7 +88,9 @@ class App extends Component {
           this.props.fetchCollections(
               browserStorage.getItem("defaultCollectionId")
           );
-          this.fetchFirstCall('*:*', 'e8d1c521-b10b-f9be-0000-016d3dfc800c');
+          this.fetchFirstCall('*:*', this.state.firstGivenCollectionId);
+          this.fetchFirstDocs('*:*', this.state.firstGivenCollectionId, 10, 0);
+
           this.setState({
             isApplicationLoading: false
           });
@@ -156,6 +162,7 @@ class App extends Component {
               onChangeQueryMode={this.handleQueryModeChange}
               placeholder={i18n.QUERY_BAR_PLACEHOLDER}
               disabled={isApplicationLoading}
+              defaultQuertValue={this.state.defaultQuertValue}
           />
         </div>
         <div className="App-collection-container"> 
@@ -182,7 +189,7 @@ class App extends Component {
           style={{ gridTemplateRows: "1fr" }}
         >
           <FacetCard
-            title={i18n.Facet_CARD_TITLE + `(전체 1,009)`}
+            title={i18n.Facet_CARD_TITLE + ` (전체 1,009)`}
             isLoading={isFacetFieldsLoading}
             data={facetFields}
             queryData={this.state.query}
@@ -260,8 +267,16 @@ getNextPage = (page) => {
     currentPage: page
     },
       () => {
+        console.log('호출')
+        console.log('query:' + this.state.query);
         // console.log("흠 : " + this.state.query + ", " + this.state.newFacet + ", "+ this.state.startDocument)
-       this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
+        if(this.state.query == ''){
+          this.fetchFirstCall('*:*', this.state.firstGivenCollectionId);
+          this.fetchFirstDocs('*:*', this.state.firstGivenCollectionId, 10, (page-1)*10);
+        }
+        else{
+          this.fetchAnalysisDataMore(this.state.query, this.state.newFacet, this.state.startDocument);
+        }
       }
   );
 };
@@ -285,7 +300,8 @@ handleQueryModeChange = value => {
 };
 
 handleQueryInputChange = event => {
-  const query = event.target.value;
+  // const query = event.target.value;
+  const query = event;
   this.setState({
     query
   });
@@ -298,22 +314,39 @@ handleClearQuery = () => {
 };
 
 handleSearch = () => {
-  for (const key in cancel) {
-    let cancelAxios = cancel[key];
-    cancelAxios();
-  }  
   if (this.state.query.length > 0) {
     this.handleSendQuery(this.state.query, this.state.docIds);
   }
 };
 
 handleSendQuery = (query) => {
+  for (const key in cancel) {
+    let cancelAxios = cancel[key];
+    cancelAxios();
+  }  
   this.setState({
     documents: [],
     facetFields: [],
     FacetCheckHistory: [],
     startDocument: 0,
     currentPage: 1    
+  });
+  this.fetchAnalysisData(query, null, this.state.startDocument);
+};
+
+handleSendFacet = (query) => {
+  for (const key in cancel) {
+    let cancelAxios = cancel[key];
+    cancelAxios();
+  }  
+  this.setState({
+    query,
+    documents: [],
+    facetFields: [],
+    FacetCheckHistory: [],
+    startDocument: 0,
+    currentPage: 1,
+    defaultQuertValue: query  
   });
   this.fetchAnalysisData(query, null, this.state.startDocument);
 };
@@ -544,7 +577,6 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
           });
 
   }
-
   //문서 프리뷰
   fetchCore  = (query, newFacet, docCount, startPoint) => {
     let prevFacetAndNewFacet = this.appendFacetQuery(newFacet);
@@ -634,13 +666,13 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
   };
 
   //최초 로딩시 패싯결과 호출하기
-  fetchFirstCall  = (query, defaultCollectionId) => {
+  fetchFirstCall  = (query, firstGivenCollectionId) => {
     let fetchFunc;
     switch (this.state.nextQueryMode) {
       default:
       case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
         fetchFunc = Promise.all([
-          fetchFirstQueryResult(defaultCollectionId, query)
+          fetchFirstQueryResult(firstGivenCollectionId, query)
         ]);
         break;
     }
@@ -649,8 +681,8 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
         .then(results => {
             //그래프 계산하기
             let arr = [results[0].facetFields[0].count,
-                              results[0].facetFields[5].count,
-                              results[0].facetFields[10].count]; //index is 0~14
+                              results[0].facetFields[10].count,
+                              results[0].facetFields[20].count]; //index is 0~14
             // console.log("countArray : " + arr.toString());
             //sort
             for(let i=0; i<2; i++){
@@ -670,9 +702,9 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
           this.setState((prevState, props) => {
             return {
               queryMode: prevState.nextQueryMode,
-              documents: results[0].docs,
               facetFields: results[0].facetFields,
-              chartRate: chartRate
+              chartRate: chartRate,
+              docsCount: results[0].docsCount
             };
           });
           //패싯 선택 유무 갱신
@@ -689,14 +721,66 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
         });
   };
 
-  //wordcloud data
-  //여기서는 startpoin가 0이어야한다. 왜냐면 문서id로 검색해서 해당 문서의 어노테이션을 가져오니까
-  fetchWordCloud  = (index, query, newFacet, docCount) => {
+  //최초 프리뷰, 워드클라우드 호출
+  fetchFirstDocs  = (query, firstGivenCollectionId, docCount, startPoint) => {
     this.setState({
-      isClassificationDataLoading: true,
       isDocumentsLoading: true,
       isFacetFieldsLoading: true
     });
+    let fetchFunc;
+    let collectionId = firstGivenCollectionId;
+
+    switch (this.state.nextQueryMode) {
+      default:
+      case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
+
+        fetchFunc = Promise.all([
+          fetchFirstDocsResult(collectionId, query, docCount, startPoint)
+        ]);
+        break;
+    }
+
+    return fetchFunc
+        .then(results => {
+
+          let docIdsArray=[];
+          for(let i=0; i<results[0].docs.length; i++){
+            docIdsArray.push(results[0].docs[i].id);
+          }
+
+          this.setState((prevState, props) => {
+            return {
+              queryMode: prevState.nextQueryMode,
+              documents: results[0].docs,
+              docIds: docIdsArray,
+              isDocumentsLoading: false,
+              isFacetFieldsLoading: false,
+            };
+          });
+
+          //비동기 워드클라우드 요청
+          for(let i=0; i<10; i++){
+            this.fetchFirstWordCloud(collectionId, i, decodeURI(docIdsArray[i]), null, 1);  //docIdsArray : 인공지능의_미래.pdf (한국어는 깨져서 encoding된 string을 Decode 해준다.)
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          Modal.error({ title: i18n.ERROR, content: error.message });
+          this.setState({
+            isClassificationDataLoading: false,
+            isDocumentsLoading: false,
+            isFacetFieldsLoading: false
+          });
+        });
+  };
+  //wordcloud data
+  //여기서는 startpoin가 0이어야한다. 왜냐면 문서id로 검색해서 해당 문서의 어노테이션을 가져오니까
+  fetchWordCloud  = (index, query, newFacet, docCount) => {
+    // this.setState({
+    //   isClassificationDataLoading: true,
+    //   isDocumentsLoading: true,
+    //   isFacetFieldsLoading: true
+    // });
     let fetchWordCloud;
     let collectionId = this.props.currentCollection.id;
 
@@ -756,6 +840,125 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
         });
   };
 
+  //fetchFirstWordCloud
+  fetchFirstWordCloud  = (firstGivenCollectionId, index, query, newFacet, docCount) => {
+    let fetchWordCloud;
+    let collectionId = firstGivenCollectionId;
+
+    switch (this.state.nextQueryMode) {
+      default:
+      case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
+      
+        fetchWordCloud = Promise.all([
+          //decodeURI는 한글 utf9 인코딩을 디코딩하고
+          //decodeURIComponent는 & -> %32 등의 인코딩을 디코딩한다.
+          fetchWordCloudResult(index, collectionId, decodeURIComponent(decodeURI(query)), docCount, newFacet)
+        ]);
+        break;
+    }
+
+    return fetchWordCloud 
+        .then(results => {
+           this.setState((prevState, props) => {
+          //preview JSON객체와 wordCloud JSON객체를 합친다
+            let tempArr = this.state.documents;  //10개의 프리뷰 문서를 불러온다.
+            //비동기로 호출한 wordcloud를 기존에 불러온 preview 내용에 각 문서의 id값을 기준으로 highlight_body와 annotation들을 매핑해준다.
+            for(let i=0; i<tempArr.length; i++){
+              if(Object.keys(results[0].docs).length > 0){  //docs[i].id 가 없는 애들이 있음
+                if(this.state.docIds[i] === results[0].docs[0].id){
+                  Object.assign(tempArr[i], results[0].docs[0])
+                }
+              }              
+            }     
+                     
+            // let finalDocument;
+            // if(startPoint > 0){
+            //   finalDocument = Object.assign(slicedArr, tempArr);
+            // } 
+            // console.dir("#1 :" + JSON.stringify(tempArr))
+            return {
+              queryMode: prevState.nextQueryMode,
+              isClassificationDataLoading: false,
+              isDocumentsLoading: false,
+              isFacetFieldsLoading: false,
+              documents: tempArr  //Array
+              // documents: finalDocument  //prevState.documents의 한개의 객체에만 annotation을 싣어서 documnets객체 자체를 return한다.
+            };
+          });
+        })
+        .catch(error => {
+          this.setState({
+            isClassificationDataLoading: false,
+            isDocumentsLoading: false,
+            isFacetFieldsLoading: false
+          });
+        });
+  };
+
+    fetchWordCloud  = (index, query, newFacet, docCount) => {
+    // this.setState({
+    //   isClassificationDataLoading: true,
+    //   isDocumentsLoading: true,
+    //   isFacetFieldsLoading: true
+    // });
+    let fetchWordCloud;
+    let collectionId = this.props.currentCollection.id;
+
+    switch (this.state.nextQueryMode) {
+      default:
+      case QUERY_MODE_SIMILAR_DOCUMENT_SEARCH:
+      
+        fetchWordCloud = Promise.all([
+          //decodeURI는 한글 utf9 인코딩을 디코딩하고
+          //decodeURIComponent는 & -> %32 등의 인코딩을 디코딩한다.
+          fetchWordCloudResult(index, collectionId, decodeURIComponent(decodeURI(query)), docCount, newFacet)
+        ]);
+        break;
+    }
+
+    return fetchWordCloud 
+        .then(results => {
+           this.setState((prevState, props) => {
+          //preview JSON객체와 wordCloud JSON객체를 합친다
+            // console.dir("result3: " + JSON.stringify(prevState.documents));
+            // console.dir("#1 : " + JSON.stringify(prevState.documents[0]));
+            // console.dir("#3 : " + JSON.stringify(results[0].docs[0]));
+            
+            let tempArr = this.state.documents;  //10개의 프리뷰 문서를 불러온다.
+            // console.log("#prevState.documents : " + JSON.stringify(tempArr));
+
+            //비동기로 호출한 wordcloud를 기존에 불러온 preview 내용에 각 문서의 id값을 기준으로 highlight_body와 annotation들을 매핑해준다.
+            for(let i=0; i<tempArr.length; i++){
+              if(Object.keys(results[0].docs).length > 0){  //docs[i].id 가 없는 애들이 있음
+                if(this.state.docIds[i] === results[0].docs[0].id){
+                  Object.assign(tempArr[i], results[0].docs[0])
+                }
+              }              
+            }     
+                     
+            // let finalDocument;
+            // if(startPoint > 0){
+            //   finalDocument = Object.assign(slicedArr, tempArr);
+            // } 
+            // console.dir("#1 :" + JSON.stringify(tempArr))
+            return {
+              queryMode: prevState.nextQueryMode,
+              isClassificationDataLoading: false,
+              isDocumentsLoading: false,
+              isFacetFieldsLoading: false,
+              documents: tempArr  //Array
+              // documents: finalDocument  //prevState.documents의 한개의 객체에만 annotation을 싣어서 documnets객체 자체를 return한다.
+            };
+          });
+        })
+        .catch(error => {
+          this.setState({
+            isClassificationDataLoading: false,
+            isDocumentsLoading: false,
+            isFacetFieldsLoading: false
+          });
+        });
+  };
 //실제 API 호출
   fetchAnalysisData = (query, newFacet, startDocument) => {
       this.fetchPreview(query, newFacet);
@@ -816,8 +1019,9 @@ handleClickQuery = (index, query, queryMode, newFacet) => {
                 keyword = {keyword}
                 author = {author}
                 journalTitle = {journalTitle}
-                publisher = {publisher} s
+                publisher = {publisher}
                 yearOfPublication = {yearOfPublication}
+                handleSendQuery = {this.handleSendFacet}
               />
           );
         };

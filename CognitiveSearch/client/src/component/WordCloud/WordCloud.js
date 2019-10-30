@@ -35,10 +35,10 @@ const WORD_COLOR_SETS = {
   blue: [
     /* IBM Design color: 보라 */
     // "rgb(222, 212, 22)"
-    "rgb(190, 122, 211)",
-    "rgb(170, 102, 191)",
-    "rgb(150, 82, 171)"
-      
+
+    "rgb(161, 224, 135)",
+    "rgb(151, 219, 123)",
+    "rgb(131, 199, 103)"  
 
   ],
   red: [
@@ -53,9 +53,9 @@ const WORD_COLOR_SETS = {
   green: [
     /* IBM Design color: 초록 */
     // "rgb(101, 145, 31)"
-    "rgb(171, 239, 143)",
-    "rgb(151, 219, 123)",
-    "rgb(131, 199, 103)"
+    "rgb(190, 122, 211)",
+    "rgb(170, 102, 191)",
+    "rgb(150, 82, 171)"
   
   ]
 };
@@ -236,7 +236,8 @@ class WordCloud extends Component {
       .selectAll(".wordCloud")
       .data(words, word => word.index);
     wordCloud.exit().remove();
-
+    
+    //.data의 words의 word.index가 들어오는건가?
     wordCloud = wordCloud
       .enter()
       .append("text")
@@ -247,9 +248,13 @@ class WordCloud extends Component {
           "translate(" + [datum.x, datum.y] + ")rotate(" + datum.rotate + ")"
       )
       .attr("text-anchor", "middle")
+      .attr("cursor", "pointer")
       .attr("font-size", datum => datum.fontSize)
       .attr("font-weight", datum => datum.fontWeight)
       .style("fill", datum => datum.color)
+      .on("click", d => {
+        this.props.handleSendQuery(d.text);
+      })
       .text(datum => datum.text);
   };
   /* end of d3 rendering methods */

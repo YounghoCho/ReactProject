@@ -73,10 +73,10 @@ const STRINGS = {
   },
   // FacetField Card
   Facet_CARD_TITLE: {
-    "ko-KR": "문서 분포",
-    ko: "문서 분포",
-    "en-US": "문서 분포",
-    en: "문서 분포"
+    "ko-KR": "문서 분포 및 필터",
+    ko: "문서 분포 및 필터",
+    "en-US": "문서 분포 및 필터",
+    en: "문서 분포 및 필터"
   },
   // Word Statistics Card
   WORD_STATISTICS_CARD_TITLE: {

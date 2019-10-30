@@ -15,7 +15,7 @@ const CollectionSelect = ({
   isLoadingCollection
 }) => (
   <div className="CollectionSelect" style={{color:'white'}}>
-    {`컬렉션 : `}
+    {`검색대상 콜렉션 : `}
     <Select
       className="CollectionSelect-select"
       value={currentCollectionId}

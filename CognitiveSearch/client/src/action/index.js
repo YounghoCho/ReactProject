@@ -3,7 +3,7 @@
  * Please refer to https://redux.js.org/basics/actions
  */
 import axios from "axios";
-
+import firstGivenCollectionId from "../config/firstGivenCollectionId.json";
 export const SET_CURRENT_COLLECTION = "SET_CURRENT_COLLECTION";
 export const SET_COLLECTIONS = "SET_COLLECTIONS";
 export const REQUEST_COLLECTIONS = "REQUEST_COLLECTIONS";
@@ -99,7 +99,7 @@ let fetchCollections = defaultCollectionId => {
         let isCollectionFound = false;
         //최초 접속해서 해당 브라우저의 사용자가 collections을 선택한 적 없을 경우
         // console.log(mappedCollections[0]);
-        let customCollectionId = 'e8d1c521-b10b-f9be-0000-016d3dfc800c';
+        let customCollectionId = firstGivenCollectionId.cid;
         mappedCollections = mappedCollections.filter(info => info.id === customCollectionId);
         // OriginalCode : 컬렉션들중에 선택한 컬렉션을 지정해준다.
         if (defaultCollectionId) {

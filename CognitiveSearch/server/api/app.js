@@ -281,7 +281,7 @@ const addHighlighting = (
     // console.dir(doc);
     const docId = doc.id;
     const keys = Object.keys(highlightings[docId]);
-    const highlighting = highlightings[docId][keys[2]].join("<br><br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
+    const highlighting = highlightings[docId][keys[2]].join("<br>...<br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
     return {
       ...doc,
         id: docId,
@@ -843,13 +843,15 @@ app.post("/similar-document-query1", (req, res) => {
                     const annoApplication = facet_counts.facet_fields[`annotation.unstructure.application`];
                     // console.log("#11 : " + annoTech);
                     let facetsArray = [];
-                    let facetsCount = 5*2;
+                    let facetCountToGet = 10;
+                    let facetsCount = facetCountToGet*2;
                     let assemble = (annoArray) => {
                         if(annoArray == undefined){
                             let emptyString = "";
                             facetsArray.push(emptyString);
                             facetsArray.push(emptyString);
                             facetsArray.push(emptyString);
+
                         }
                         else{
                             for( let i=0; i< facetsCount; i+=2){
@@ -883,8 +885,6 @@ app.post("/similar-document-query1", (req, res) => {
         }) //end nlpRequest
         .catch(promiseErrorHandler("2"+res));
 });
-
-
 
 
 
@@ -1012,7 +1012,6 @@ app.post("/similar-document-query", (req, res) => {
                                 // console.log("#Annotation Arrays : "+annoArray.toString())
                                 let temp = (annoArray[i] + " : " + annoArray[i + 1]);
                                 facetsArray.push(temp);
-
 
                             }
                         }

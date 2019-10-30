@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import classNames from "classnames/bind";
-import { Card, List, Checkbox} from "antd";
+import { Card, List, Checkbox, Tag} from "antd";
 import "./FacetCard.css";
 
 const title1st = "기술요소";
@@ -26,12 +26,15 @@ class FacetCard extends Component {
             title={title + "" + (currentCollectionDocCount !== 0 ? " (전체:" + currentCollectionDocCount + "건)" : "")}
             bodyStyle={{ overflow: "scroll", height: "calc(100% - 56px)" }}
         >
+            <div style={{fontWeight:'bold', fontSize:'1.2em', width:'100%',textAlign:'center'}}>
+             AI Technology 관점
+            </div>
             <List
              size="small"
-             header={<div id={'listHeader1'}>{title1st}</div>}
+             header={<Tag color='green' style={{padding:'5px'}} id={'listHeader1'}>{title1st}</Tag>}
              itemLayout="horizontal"
              loading={isLoading}
-             dataSource={data.slice(0,5)}   //data is FacetFields from App.js
+             dataSource={data.slice(0,10)}   //data is FacetFields from App.js
              renderItem={item => (
                 <List.Item style={{border:'none',cursor:'pointer'}}
                 >
@@ -52,7 +55,7 @@ class FacetCard extends Component {
                                         </Checkbox>
                                     </div>
                                     <div id="countBlock">
-                                        <div id="chartDiv" style={{width:item.size}}>
+                                        <div id="chartDiv" className="charDiv1" style={{width:item.size}}>
                                             <font color='white'>&nbsp;{item.count}</font>
                                         </div>
                                     </div>
@@ -69,10 +72,10 @@ class FacetCard extends Component {
             />
             <List
             size="small"
-             header={<div id={'listHeader2'}>{title2nd}</div>}
+             header={<Tag color='orange' style={{padding:'5px'}} id={'listHeader2'}>{title2nd}</Tag>}
              itemLayout="horizontal"
              loading={isLoading}
-             dataSource={data.slice(5,10)}
+             dataSource={data.slice(10,20)}
              renderItem={item => (
                 <List.Item style={{border:'none',cursor:'pointer'}}
                 >
@@ -93,7 +96,7 @@ class FacetCard extends Component {
                                         </Checkbox>
                                     </div>
                                     <div id="countBlock">
-                                        <div id="chartDiv" style={{width:item.size}}>
+                                        <div id="chartDiv" className="charDiv2" style={{width:item.size}}>
                                             <font color='white'>&nbsp;{item.count}</font>
                                         </div>
                                     </div>
@@ -110,10 +113,10 @@ class FacetCard extends Component {
             />
             <List
             size="small"
-             header={<div id={'listHeader3'}>{title3rd}</div>}
+             header={<Tag color='purple' style={{padding:'5px'}} id={'listHeader3'}>{title3rd}</Tag>}
              itemLayout="horizontal"
              loading={isLoading}
-             dataSource={data.slice(10,15)}
+             dataSource={data.slice(20,30)}
              renderItem={item => (
                 <List.Item style={{border:'none',cursor:'pointer'}}
                 >
@@ -134,7 +137,7 @@ class FacetCard extends Component {
                                         </Checkbox>
                                     </div>
                                     <div id="countBlock">
-                                        <div id="chartDiv" style={{width:item.size}}>
+                                        <div id="chartDiv" className="charDiv3" style={{width:item.size}}>
                                             <font color='white'>&nbsp;{item.count}</font>
                                         </div>
                                     </div>

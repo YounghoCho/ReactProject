@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { List } from "antd";
+import { List, Tag } from "antd";
 
 import "./BasicRow.css";
 
@@ -48,8 +48,13 @@ const BasicRow = ({title, body, highlighting, onClick, style,
 
     </List.Item>
       <div>
-          {author ? `${author} / ` : null}{publisher ? `${publisher} / ` : null}{yearOfPublication ? `${yearOfPublication}` : null}
-      </div>
+          {/* {author ? <Tag style={{border:'1px solid #ccc', fontWeight:'bold'}}>{author}</Tag> : null}
+          {publisher ? <Tag style={{border:'1px solid #ccc', fontWeight:'bold'}}>{publisher}</Tag> : null}
+          {yearOfPublication ? <Tag style={{border:'1px solid #ccc', fontWeight:'bold'}}>{yearOfPublication}></Tag> : null} */}
+       {author ? <Tag style={{backgroundColor:'#999', color:'white'}}>{author}</Tag> : null}
+          {publisher ? <Tag style={{backgroundColor:'#999', color:'white'}}>{publisher}</Tag> : null}
+          {yearOfPublication ? <Tag style={{backgroundColor:'#999', color:'white'}}>{yearOfPublication}</Tag> : null}
+       </div>
   </div>
 
 );

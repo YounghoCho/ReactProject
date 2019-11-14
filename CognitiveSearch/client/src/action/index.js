@@ -102,6 +102,11 @@ let fetchCollections = defaultCollectionId => {
         let customCollectionId = firstGivenCollectionId.cid;
         mappedCollections = mappedCollections.filter(info => info.id === customCollectionId);
         // OriginalCode : 컬렉션들중에 선택한 컬렉션을 지정해준다.
+
+        //최초 접속시 defaultCollectionId가 없어서 페이지 안뜸
+        if(defaultCollectionId == null){
+          defaultCollectionId = customCollectionId;
+        }
         if (defaultCollectionId) {
           for (let i = 0, count = mappedCollections.length; i < count; i++) {
             if (mappedCollections[i].id === defaultCollectionId) {  //defaultCollectionId은 CollectionSelect에서 선택된 컬렉션 id값

@@ -1,10 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Input, Button, AutoComplete  } from "antd";
+import { Button, AutoComplete  } from "antd";
 // import QueryModeSelect from "../QueryModeSelect";
 
 import "./QueryBar.css";
-const { TextArea } = Input;
 const dataSource = [
   '이미지 인식',
   '영상에서 물체를 분류',
@@ -27,11 +26,7 @@ class QueryBar extends Component {
       // queryMode,
       // onChangeQueryMode,
       onChangeInput,
-      inputValue,
-      onClear,
       onSearch,
-      placeholder,
-      disabled,
       defaultQueryValue
     } = this.props;
     return (

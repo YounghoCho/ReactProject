@@ -78,7 +78,7 @@ class App extends Component {
       chartRate: '0%',
       FacetCheckHistory: [], //[{key:'', check:''}]
       firstGivenCollectionId: firstGivenCollectionId.cid,
-      defaultQuertValue: ''
+      defaultQueryValue: ''
     };
   }
 
@@ -162,7 +162,7 @@ class App extends Component {
               onChangeQueryMode={this.handleQueryModeChange}
               placeholder={i18n.QUERY_BAR_PLACEHOLDER}
               disabled={isApplicationLoading}
-              defaultQuertValue={this.state.defaultQuertValue}
+              defaultQueryValue={this.state.defaultQueryValue}
           />
         </div>
         <div className="App-collection-container"> 
@@ -270,7 +270,7 @@ getNextPage = (page) => {
         console.log('호출')
         console.log('query:' + this.state.query);
         // console.log("흠 : " + this.state.query + ", " + this.state.newFacet + ", "+ this.state.startDocument)
-        if(this.state.query == ''){
+        if(this.state.query === ''){
           this.fetchFirstCall('*:*', this.state.firstGivenCollectionId);
           this.fetchFirstDocs('*:*', this.state.firstGivenCollectionId, 10, (page-1)*10);
         }
@@ -281,7 +281,7 @@ getNextPage = (page) => {
   );
 };
 goToHome = () => {
-  window.location.href = 'http://klab-onewex-host.fyre.ibm.com:8001';
+  window.location.href = 'http://klab-cognitive-demo.fyre.ibm.com:8001';
 }
 handleCollectionChange = collectionId => {
   this.props.setCurrentCollection(collectionId);
@@ -303,7 +303,8 @@ handleQueryInputChange = event => {
   // const query = event.target.value;
   const query = event;
   this.setState({
-    query
+    query,
+    defaultQueryValue: query
   });
 };
 
@@ -346,7 +347,7 @@ handleSendFacet = (query) => {
     FacetCheckHistory: [],
     startDocument: 0,
     currentPage: 1,
-    defaultQuertValue: query  
+    defaultQueryValue: query
   });
   this.fetchAnalysisData(query, null, this.state.startDocument);
 };

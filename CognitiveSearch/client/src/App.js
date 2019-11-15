@@ -189,7 +189,7 @@ class App extends Component {
           style={{ gridTemplateRows: "1fr" }}
         >
           <FacetCard
-            title={i18n.Facet_CARD_TITLE + ` (전체 1,009)`}
+            title={i18n.Facet_CARD_TITLE + ` (전체 1,005)`}
             isLoading={isFacetFieldsLoading}
             data={facetFields}
             queryData={this.state.query}
@@ -281,7 +281,7 @@ getNextPage = (page) => {
   );
 };
 goToHome = () => {
-  window.location.href = 'http://klab-cognitive-demo.fyre.ibm.com:8001';
+  window.location.href = 'http://klab-cognitive-demo.fyre.ibm.com:8000';
 }
 handleCollectionChange = collectionId => {
   this.props.setCurrentCollection(collectionId);

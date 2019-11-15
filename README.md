@@ -8,8 +8,8 @@ Developed a Business Intelligence web application for data visualization from en
 ![cognitiveSearch](./cognitiveSearch.png)
 
 
-## Application's URL
-http://klab-cognitive-demo.fyre.ibm.com:8000/
+## Application's Demo URL
+https://youtu.be/wV2HLRPYg3s
 
 
 ## Code Architecture

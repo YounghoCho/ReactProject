@@ -152,24 +152,12 @@ app.get("/connection", (req, res) => {
  * 
  * Methods Modules
  * 
- * 1)fetchFields
- * 2)fetchDocCount
- * 3)fetchDocPreview
- * 4)addHighlighting
- * 5)addHighlightingAndUserDefinedAnnotations
- * 6)makeUserDefinedAnnotationList
- * 7)makeFieldMap @deprecated
- * 8)mapFieldLabel @deprecated
+ * 1)fetchDocCount : axios object
+ * 2)fetchDocPreview : axios object
+ * 3)addHighlighting : parsing highlight response
+ * 4)addHighlightingAndUserDefinedAnnotations
+ * 5)makeUserDefinedAnnotationList
  */
-const fetchFields = collectionId =>
-  axios({
-    method: "GET",
-    url: `${STD_API_URI}/collections/${collectionId}`,
-    headers: {
-      Authorization: `Bearer ${session.token}`
-    }
-  });
-
 const fetchDocCount = (collectionId, finalQuery) =>
     axios({
         method: "POST",
@@ -223,7 +211,6 @@ const addHighlighting = (
     if(highlightings != null){
       /* below codes were changed cause there was a problem while parsing response data.
       ** const keys = Object.keys(highlightings[docId]); //body, views
-      ** console.log('keys : ' + keys)
       ** highlighting = highlightings[docId].body.join("<br>...<br>"); //Arr.join : 배열안의 값을 ()안의 내용으로 구분지어서 하나의 값으로 만든다. ref : https://www.codingfactory.net/10450
       */
     }
@@ -245,7 +232,7 @@ const addHighlightingAndUserDefinedAnnotations = (
     };
 };
 
-/**Param 'analyzedFacets' is from 'previews[docId].analyzed_facets'
+/**'analyzedFacets' is from 'previews[docId].analyzed_facets'
  * makeUserDefinedAnnotationList return 'parsed annotation list'
  * @param {Obejct} val
  * @param {Object} val.responseHeader
@@ -261,12 +248,11 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     splitterIndex,
     splitterAi,
     indices;
-
-  //Exclude parant tree including its children tree. 
+  //Exclude parent tree and include its children tree. 
   for (fieldName in analyzedFacets) {
     temp = analyzedFacets[fieldName];
     for (annoName in temp) {
-      
+           
       if(annoName.startsWith("annotation.unstructure.tech$")){
         splitterAi = annoName.indexOf("$") + 1;
         //exclude
@@ -323,281 +309,21 @@ const makeUserDefinedAnnotationList = analyzedFacets => {
     .sort((prev, next) => next.count - prev.count);
 };
 
-const makeFieldMap = (tags, fields) => {
-  const { defaultBodyFieldId, defaultDateFieldId, defaultTitleFieldId } = tags;
-  let fieldMap = {};
-  for (let dataSetId in fields) {
-    currentDataSet = fields[dataSetId];
-    fieldCount = currentDataSet.length;
-    for (let i = 0; i < fieldCount; i++) {
-      switch (currentDataSet[i].id) {
-        case defaultBodyFieldId:
-          fieldMap[currentDataSet[i].id] = "body";
-          break;
-        case defaultDateFieldId:
-          fieldMap[currentDataSet[i].id] = "date";
-          break;
-        case defaultTitleFieldId:
-          fieldMap[currentDataSet[i].id] = "title";
-          break;
-        default:
-          fieldMap[currentDataSet[i].id] = currentDataSet[i].label;
-          break;
-      }
-    }
-  }
-  if (defaultTitleFieldId === "id") {
-    fieldMap["id"] = "title";
-  }
-  return fieldMap;
-};
-
-const mapFieldLabel = fieldMap => {
-  return (val, index) => {
-    const newDoc = {};
-    for (let fieldId in val) {
-      if (Array.isArray(val[fieldId]) && !fieldId.startsWith("___")) {
-        newDoc[fieldMap[fieldId] || fieldId] = val[fieldId].join("\n");
-      } else {
-        newDoc[fieldMap[fieldId] || fieldId] = val[fieldId];
-      }
-    }
-    newDoc.rank = index + 1;
-    return newDoc;
-  };
-};
 
 /** Section3
  * 
  * API Methods
  * 
- * 1)/basic-query @deprecated
- * 2)/facets @deprecated
- * 3)/phrasal-query @deprecated
- * 4)/classify @deprecated
- * 5)/collections
- * 6)/collections/:collectionId
- * 7)/preview-query
- * 8)/similar-document-query
- * 9)/word-cloud-query
- * 10)/first-query
- * 11)/fetch-first-docs
+ * 1)/collections
+ * 2)/preview-query
+ * 3)/similar-document-query
+ * 4)/word-cloud-query
+ * 5)/first-query
+ * 6)/fetch-first-docs
  * 
  */
 
-app.post("/basic-query", (req, res) => {
-  const collectionId = req.body.collectionId;
-  const query = req.body.query || "";
-  const docCount = req.body.docCount || 20;
-
-  const basicQuery = axios({
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${session.token}`,
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    data: queryString.stringify({
-      q: query,
-      wt: "json",
-      preview: true //preview 팝업을 켜는 옵션
-      // shortCircuit: false,
-      // q: `*:* AND (${query})`,
-      // rows: docCount,
-      // wt: "json"
-    }),
-    url: `${STD_API_URI}/explore/${collectionId}/query?facet=on&facet.field=author&facet.field=keyword`
-  });
-
-  Promise.all([basicQuery, fetchFields(collectionId)])
-    .then(responses => {
-      const basicQueryResponse = responses[0];
-      const fetchFieldsResponse = responses[1];
-      // console.log("token : " + session.token);
-      //   console.log("#2 : " + JSON.stringify(basicQueryResponse.data));
-     //  console.log("#3 : " + JSON.stringify(fetchFieldsResponse.data));
-
-      //response객체는 크게 response, highlights, previews JSON 형태
-      const { response, facet_counts, highlighting, previews } = basicQueryResponse.data;
-      const docs = response.docs; //배열형태의 데이터¥
-      const author =  facet_counts.facet_fields.author; //facet_fileds는 배열이 아니라서 author 까지잡아줌
-      const keyword =  facet_counts.facet_fields.keyword;
-      // console.log("#1 : " + JSON.stringify(facet_counts.facet_fields.author));
-      // console.log("#2 : " + JSON.stringify(facet_counts.facet_fields.keyword));
-      let facetsArray = [];
-      let facetsCount = 3*2; //패싯은 3줄만 가져올것이며, 가져올 배열은 패싯명:갯수로 되어있어서 *2
-      
-      for( let i=0; i< facetsCount; i+=2){
-          let temp = author[i] + " : " + author[i+1];
-          facetsArray.push(temp); 
-      }
-      for( let i=0; i< facetsCount; i+=2){
-        let temp = keyword[i] + " : " + keyword[i+1];
-        facetsArray.push(temp); 
-    }
-      const { tags, fields } = fetchFieldsResponse.data;
-      const fieldMap = makeFieldMap(tags, fields);
-      // console.log("highlighting : " + highlighting);
-      // console.log("previews : " + previews);
-      res.status(200).send({
-        docs: docs  //array
-         .map(addHighlightingAndUserDefinedAnnotations(highlighting, previews)) //similar에서는 addUserDefinedAnnotations에서 ___annotaions들을 반환하고, basic에서는 addHighlightingAndUserDefinedAnnotations에서 ___ano..를 반환한다.
-         .map(mapFieldLabel(fieldMap)),
-        facetFields: facetsArray
-      });
-    })
-    .catch(promiseErrorHandler(res));
-});
-
-app.get("/facets", (req, res) => {
-  const collectionId = req.query.collectionId;
-
-  axios({
-    method: "POST",
-    url: `${ROOT_URI}/miner/main/rapi/solr/${collectionId}/category`,
-    headers: {
-      Authorization: `Bearer ${session.token}`,
-      "content-type": "application/x-www-form-urlencoded"
-    },
-    data: queryString.stringify({
-      shortCircuit: false,
-      wt: "json"
-    })
-  })
-    .then(response => {
-      res.status(200).send(response.data);
-    })
-    .catch(err => {
-      res.status(err.statusCode).send(err.error);
-    });
-});
-
-app.post("/phrasal-query", (req, res) => {
-  const collectionId = req.body.collectionId;
-  const phrase = req.body.query;
-  const docCount = req.body.docCount || 20;
-  const nlpOptions = {
-    method: "POST",
-    url: `${STD_API_URI}/collections/${collectionId}/analyze`,
-    headers: {
-      Authorization: `Bearer ${session.token}`
-    },
-    data: {
-      fields: {
-        body: phrase
-      },
-      metadata: {}
-    }
-  };
-
-  const filterAnnotations = response => {
-    const nlpResult = response.data;
-    if (
-      nlpResult.enriched &&
-      nlpResult.enriched.body &&
-      nlpResult.enriched.body[0] &&
-      nlpResult.enriched.body[0].annotations
-    ) {
-      const annotations = nlpResult.enriched.body[0].annotations;
-      const annotationCount = annotations.length;
-      let filteredAnnotations = [];
-      let temp;
-      for (let i = 0; i < annotationCount; i++) {
-        temp = annotations[i];
-        if (
-          temp.type &&
-          (!temp.type.startsWith("._phrase") &&
-            !temp.type.startsWith("._word") &&
-            !temp.type.startsWith("._ne") &&
-            !temp.type.startsWith("$$$") &&
-            !temp.type.startsWith("._sentiment") &&
-            !temp.type.startsWith("uima"))
-        ) {
-          filteredAnnotations.push(
-            `annotation${temp.type}:"${temp.properties.facetval}"`
-          );
-        }
-      }
-      return filteredAnnotations;
-    }
-    return [];
-  };
-
-  // lack of referential transparency, need to get rid of variables from outer function such as phrase, collectionId, session.token
-  const queryWithAnnotations = annotations => {
-    let query = phrase; //쿼리문
-    const queryOptions = {
-      method: "POST",
-      url: `${ROOT_URI}/miner/main/rapi/solr/${collectionId}/query`,
-      headers: {
-        Authorization: `Bearer ${session.token}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      }
-    };
-    const form = {
-      preview: true,
-      shortCircuit: false,
-      rows: docCount,
-      start: 0,
-      wt: "json"
-    };
-    if (annotations.length > 0) {
-      query = `AND (${annotations.reduce((prevAnnotation, curAnnotation) => {
-        return `${prevAnnotation} OR ${curAnnotation}`;
-      })} OR ${query})`;
-    }
-
-    
-    form.q = `*:* AND ${query}`;
-    queryOptions.data = queryString.stringify(form);
-    return axios(queryOptions);
-  };
-
-  axios(nlpOptions)
-    .then(filterAnnotations)
-    .then(queryWithAnnotations)
-    .then(queryResponse => {
-      const { response, highlighting, previews } = queryResponse.data;
-      const docs = response.docs;
-      fetchFields(collectionId)
-        .then(fetchFieldsResponse => {
-          const { tags, fields } = fetchFieldsResponse.data;
-          const fieldMap = makeFieldMap(tags, fields);
-          res.status(200).send({
-            docs: docs
-              .map(
-                addHighlightingAndUserDefinedAnnotations(highlighting, previews)
-              )
-              .map(mapFieldLabel(fieldMap))
-          });
-        })
-        .catch(promiseErrorHandler(res));
-    })
-    .catch(promiseErrorHandler(res));
-});
-
-app.post("/classify", (req, res) => {
-  const collectionId = req.body.collectionId;
-  const query = req.body.query;
-  
-  axios({
-    method: "POST",
-    url: `${STD_API_URI}/collections/${collectionId}/analyze`,
-    headers: {
-      Authorization: `Bearer ${session.token}`
-    },
-    data: {
-      fields: {
-        globalFieldName: query
-      },
-      metadata: {}
-    }
-  })
-    .then(response => {
-      res.status(200).send(response.data.metadata); // NLP api의 response를 참조.
-    })
-    .catch(promiseErrorHandler(res));
-});
-//client에서 axios 요청을 받고, 여기 라우터에서 실제 onewex로 Http 요청을 전달한다.
+//API Call Process : client -> node api(here) -> onewex api
 app.get("/collections", (req, res) => {
   axios({
     url: `${STD_API_URI}/collections`,
@@ -605,12 +331,12 @@ app.get("/collections", (req, res) => {
       Authorization: `Bearer ${session.token}`
     }
   })
-    .then(response => { //axios response객체는 .data형태로 결과를 반환한다.
-      const collections = response.data.items; //item : [{ "id" : .., "name" : ...}] 이런 구조로 response가 오고 item하위의 정보를 collections 객체에 담는다.
+    .then(response => {
+      const collections = response.data.items; //items : [{ "id" : .., "name" : ...}]
       res.status(200).send({
-        collections: collections //client 단의 collections객체로 방금 응답받은 콜렉션 정보를 맵핑한다.
-          ? collections.map(collection => ({ //선언되지 않았으니 호이스팅으로 가장 가까운 변수인 collections(=response.data.items)가 collection변수에 들어간다. map ref : https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/map
-              id: collection.id, //ket:value형태로 response를 보낸다.(client/src/action/index.js -> 실제로는 build되서 server에 client에 들어있을것임.)
+        collections: collections
+          ? collections.map(collection => ({ //Hoisting : collection is from collections. map ref : https://developer.mozilla.org/ko/docs/Web/JavaScript/Reference/Global_Objects/Array/map
+              id: collection.id,
               name: collection.name
             }))
           : []
@@ -619,24 +345,8 @@ app.get("/collections", (req, res) => {
     .catch(promiseErrorHandler(res));
 });
 
-app.get("/collections/:collectionId", (req, res) => {
-  const collectionId = req.params.collectionId;
-  axios({
-    method: "GET",
-    url: `${STD_API_URI}/collections/${collectionId}`,
-    headers: {
-      Authorization: `Bearer ${session.token}`
-    }
-  })
-    .then(response => {
-      res.status(response.status).send(response.data);
-    })
-    .catch(promiseErrorHandler(res));
-});
-
-//문서 수 구하기(result doc count)
+//Get document count and facet list
 app.post("/preview-query", (req, res) => {
-  // now(1)
       const collectionId = req.body.collectionId;
       const query = req.body.query || "";
       const newFacet = req.body.newFacet || "";
@@ -660,12 +370,11 @@ app.post("/preview-query", (req, res) => {
       });
       Promise.all([nlpRequest])
           .then(responses => {
-  // now(2)
-              const nlpResponse = responses[0]; //miner 화면의 query결과
+              const nlpResponse = responses[0];
               const responseData = nlpResponse.data;
               const parseData = responseData.enriched.body[0].annotations;
               const annoLength = parseData.length;
-              let annoResult = ''; //나중에 원본 query와 합친다.
+              let annoResult = '';
               let queryIndex = [];
 
               //1. 패싯 어노테이션 수집
@@ -682,7 +391,7 @@ app.post("/preview-query", (req, res) => {
                               annoResult += mlAnnotation;
                               annoResult += " AND ";
                           }
-                          //일반 어노테이션 처리
+                      //일반 어노테이션 처리
                       }else{
                           let path = parseData[i].properties.facetpath.trim();
                           let fval = parseData[i].properties.facetval.trim();
@@ -692,7 +401,7 @@ app.post("/preview-query", (req, res) => {
                           annoResult += temp;
                           annoResult += " AND ";
                       }
-                    //query중, 어노테이션에 속한 멍사를 제외하기위해 query의 index를 구한다.
+                    //query중, 어노테이션에 속한 명사를 제외하기위해 query의 index를 구한다.
                     queryIndex.push(
                       {
                         'beginIndex':parseData[i].beginIndex,
@@ -722,13 +431,10 @@ app.post("/preview-query", (req, res) => {
               for(let i=0; i<annoLength; i++){
                   if(parseData[i].type === "._word.noun.general" )
                   {
-                      // console.log("1 명사는 : " + parseData[i].properties.facetval.trim());
                       //수집한 명사가 어노테이션과 같지 않을때만 문자열에 추가한다.
                       let fval = parseData[i].properties.facetval.trim();
                       let mlToCompare = '인공지능 딥러닝 머신러닝 자연어처리';
-                      console.log("비교문장 : " + facetvalToCompare);
-                      // console.log("비교문장은 :" + facetvalToCompare);
-                     
+
                       if(facetvalToCompare.indexOf(fval) == -1 && mlToCompare.indexOf(fval) == -1){
                           //query index에서 범위내에 명사가 있는지 검사한다.
                           //핵심 알고리즘1
@@ -758,8 +464,7 @@ app.post("/preview-query", (req, res) => {
               if(newFacet !== '')
                   finalQuery += " AND ";
               finalQuery += newFacet;
-             //로딩시 first query를 보내면 넘어온 query가 ''이기때문에 AND ~ 로 쿼리가 날아가니까 이상한 결과가 나온다
-            // console.log("테스트 finalQuery: " + finalQuery);
+            //로딩시 first query를 보내면 넘어온 query가 ''이기때문에 AND ~ 로 쿼리가 날아가니까 이상한 결과가 나온다
             if(finalQuery.startsWith(' AND')){
               finalQuery = finalQuery.substring(4, finalQuery.length);
             }
@@ -776,16 +481,13 @@ app.post("/preview-query", (req, res) => {
                       res.status(200).send({
                           docsCount: docsCount
                       });
-  
-  
                   }) //end Promise freeTextSearch
                   .catch(promiseErrorHandler("1:"+res))
-  
           }) //end nlpRequest
           .catch(promiseErrorHandler("2"+res));
   });
 
-//preview (nlp -> explore{response, highlight})
+//Get preview (nlp -> explore{response, highlight})
 app.post("/similar-document-query", (req, res) => {
     const collectionId = req.body.collectionId;
     const query = req.body.query || "";
@@ -980,7 +682,7 @@ app.post("/similar-document-query", (req, res) => {
         .catch(promiseErrorHandler("2"+res));
 });
 
-//wordcloud data
+//Get wordcloud data
 app.post("/word-cloud-query", (req, res) => {
   // console.log("in...");
 
@@ -1027,7 +729,7 @@ app.post("/word-cloud-query", (req, res) => {
       .catch(promiseErrorHandler("1:"+res))
 }) //end nlpRequest
 
-//fisrt query
+//Get fisrt doc count and facet list
 app.post("/first-query", (req, res) => {
   const collectionId = req.body.collectionId;
   const query = req.body.query || "";
@@ -1103,7 +805,7 @@ app.post("/first-query", (req, res) => {
 
 });
 
-//first preview
+//Get first preview
 app.post("/fetch-first-docs", (req, res) => {
   const collectionId = req.body.collectionId;
   const query = req.body.query || "";
